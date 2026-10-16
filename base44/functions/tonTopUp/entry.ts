@@ -21,12 +21,24 @@ function toRawAddress(addr) {
 }
 
 async function getTonPriceUsd() {
-  const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd", {
-    signal: AbortSignal.timeout(10000),
+  // Primary: CoinGecko. Fallback: Kraken (CoinGecko rate-limits shared IPs at times).
+  try {
+    const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd", {
+      signal: AbortSignal.timeout(8000),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      const price = data && data["the-open-network"] && data["the-open-network"].usd;
+      if (price && price > 0) return Number(price);
+    }
+  } catch (e) { /* try fallback */ }
+
+  const res = await fetch("https://api.kraken.com/0/public/Ticker?pair=TONUSD", {
+    signal: AbortSignal.timeout(8000),
   });
   if (!res.ok) throw new Error("Could not fetch TON price");
   const data = await res.json();
-  const price = data && data["the-open-network"] && data["the-open-network"].usd;
+  const price = data && data.result && data.result.TONUSD && data.result.TONUSD.c && data.result.TONUSD.c[0];
   if (!price || price <= 0) throw new Error("Could not fetch TON price");
   return Number(price);
 }
