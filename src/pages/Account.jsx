@@ -3,19 +3,42 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Image } from "@/components/ui/image";
-import { Coins, ShoppingBag, Smartphone } from "lucide-react";
+import { Check, Coins, Copy, ShoppingBag, Smartphone } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
+import WithdrawForm from "@/components/account/WithdrawForm";
+import WithdrawList from "@/components/account/WithdrawList";
+import AdminWithdrawals from "@/components/account/AdminWithdrawals";
 import { formatMoney } from "@/lib/format";
 import { useTgIdentity } from "@/lib/TgIdentityContext";
 
 export default function Account() {
   const { identity, invoke } = useTgIdentity();
+  const { toast } = useToast();
   const [data, setData] = useState(null);
+  const [copied, setCopied] = useState(false);
+
+  async function load() {
+    try {
+      const res = await invoke("getMyData", {});
+      setData(res.data);
+    } catch {
+      setData({ balance: 0, orders: [], account_sales: [], withdrawals: [] });
+    }
+  }
 
   useEffect(() => {
-    invoke("getMyData", {})
-      .then((res) => setData(res.data))
-      .catch(() => setData({ balance: 0, orders: [], account_sales: [] }));
+    load();
   }, []);
+
+  const referralLink = identity?.telegram_id
+    ? `https://t.me/tgtopsbot?startapp=${identity.telegram_id}`
+    : "";
+
+  function copyReferral() {
+    navigator.clipboard.writeText(referralLink);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  }
 
   const name =
     [identity?.first_name, identity?.last_name].filter(Boolean).join(" ") ||
@@ -73,6 +96,34 @@ export default function Account() {
           </Link>
         </Button>
       </div>
+
+      <section className="space-y-3">
+        <h2 className="font-heading text-base font-semibold">Withdraw USDT</h2>
+        <WithdrawForm onSubmitted={load} />
+        <WithdrawList withdrawals={data?.withdrawals || []} />
+      </section>
+
+      {referralLink && (
+        <section className="space-y-3">
+          <h2 className="font-heading text-base font-semibold">Refer & Earn</h2>
+          <div className="flex items-center gap-2 rounded-xl border border-border/60 bg-card p-4">
+            <p className="min-w-0 flex-1 truncate font-mono text-xs">{referralLink}</p>
+            <Button type="button" size="icon" variant="ghost" onClick={copyReferral} aria-label="Copy referral link">
+              {copied ? <Check className="text-primary" /> : <Copy />}
+            </Button>
+          </div>
+          <p className="text-[11px] text-muted-foreground">
+            Share this link — friends who join through it earn you a referral reward.
+          </p>
+        </section>
+      )}
+
+      {data?.role === "admin" && (
+        <section className="space-y-3">
+          <h2 className="font-heading text-base font-semibold">Pending Withdrawals — All Users</h2>
+          <AdminWithdrawals pending={data?.pending_withdrawals || []} onChanged={load} />
+        </section>
+      )}
     </div>
   );
 }

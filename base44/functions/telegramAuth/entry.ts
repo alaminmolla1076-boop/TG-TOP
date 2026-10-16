@@ -1,4 +1,4 @@
-import { callB44 } from "../../shared/supabase.ts";
+import { callB44, callPublicEdge } from "../../shared/supabase.ts";
 
 // Telegram Mini App login — delegated entirely to the existing Supabase b44fn
 // function (telegramWebAppAuth): it verifies the initData signature with the
@@ -15,6 +15,22 @@ export default async function (req) {
     const res = await callB44("telegramWebAppAuth", { initData });
     const u = res.user && typeof res.user === "object" ? res.user : {};
     const telegramId = String(res.telegram_id ?? u.id ?? "");
+
+    // Referral: when the app is opened through a referral deep link (start_param
+    // carries the referrer's Telegram id), credit it via the existing Supabase
+    // processReferral function. Best-effort — must never block login.
+    try {
+      const startParam = new URLSearchParams(initData).get("start_param") || "";
+      const referrerId = startParam.replace(/[^0-9]/g, "");
+      if (telegramId && referrerId && referrerId !== telegramId && referrerId.length <= 12) {
+        await callPublicEdge("processReferral", {
+          referee_telegram_id: telegramId,
+          referrer_telegram_id: referrerId,
+        });
+      }
+    } catch (refError) {
+      /* referral processing must never block login */
+    }
 
     return Response.json({
       telegram_id: telegramId,

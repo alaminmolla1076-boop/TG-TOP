@@ -10,7 +10,7 @@ export default async function(req) {
     const profile = identity.profile;
     const isAdmin = identity.role === 'admin';
 
-    const [topUps, orders, accountSales, countries] = await Promise.all([
+    const [topUps, orders, accountSales, countries, withdrawals] = await Promise.all([
       runSql(
         `select id, amount, network, tx_hash, status, created_date
          from top_ups where user_email = ${email} order by created_date desc limit 20`
@@ -27,6 +27,10 @@ export default async function(req) {
         `select country_iso, country_name, flag, reward_price, reward_wait_hours
          from reward_prices where active = true order by country_name asc limit 100`
       ),
+      runSql(
+        `select id, amount, coin, network, wallet_address, status, created_date
+         from withdrawals where user_email = ${email} order by created_date desc limit 20`
+      ),
     ]);
 
     let pendingDeposits = [];
@@ -34,6 +38,15 @@ export default async function(req) {
       pendingDeposits = await runSql(
         `select id, amount, network, tx_hash, status, user_email, created_date
          from top_ups where status = 'pending' order by created_date desc limit 50`
+      );
+    }
+
+    let pendingWithdrawals = [];
+    if (isAdmin) {
+      pendingWithdrawals = await runSql(
+        `select id, amount, coin, network, wallet_address, status, user_email, created_date
+         from withdrawals where status not in ('approved', 'rejected')
+         order by created_date desc limit 50`
       );
     }
 
@@ -61,6 +74,8 @@ export default async function(req) {
       account_sales: accountSales,
       countries: countries.map((c) => ({ ...c, reward_price: Number(c.reward_price) })),
       pending_deposits: pendingDeposits,
+      withdrawals: withdrawals.map((w) => ({ ...w, amount: Number(w.amount) })),
+      pending_withdrawals: pendingWithdrawals.map((w) => ({ ...w, amount: Number(w.amount) })),
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
