@@ -43,7 +43,7 @@ export default function WithdrawForm({ onSubmitted }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="grid gap-4 rounded-xl border border-border/60 bg-card p-4">
+    <form onSubmit={handleSubmit} className="grid gap-4 rounded-2xl border border-border/50 bg-card p-4">
       <div className="grid gap-1.5">
         <Label htmlFor="w-amount">Amount ($)</Label>
         <Input
@@ -84,7 +84,11 @@ export default function WithdrawForm({ onSubmitted }) {
           Double-check the address — transfers on-chain cannot be reversed.
         </p>
       </div>
-      <Button type="submit" disabled={saving || !amount || !walletAddress}>
+      <Button
+        type="submit"
+        disabled={saving || !amount || !walletAddress}
+        className="rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 font-semibold text-white shadow-md shadow-emerald-500/25 hover:from-emerald-600 hover:to-teal-600"
+      >
         {saving ? "Requesting…" : "Request Withdrawal"}
       </Button>
     </form>
