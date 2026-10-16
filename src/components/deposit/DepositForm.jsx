@@ -2,25 +2,29 @@ import React, { useEffect, useRef, useState } from "react";
 import { useTgIdentity } from "@/lib/TgIdentityContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
+import TopUpInstructions from "@/components/deposit/TopUpInstructions";
 import { Check, Copy, ExternalLink, Timer, Wallet, Zap } from "lucide-react";
 import { formatMoney } from "@/lib/format";
 
+const PRESETS = [5, 10, 25, 50, 100, 250, 500, 1000];
+
 const NETWORKS = [
-  { value: "TRC20", label: "TRC20" },
-  { value: "ERC20", label: "ERC20" },
-  { value: "BEP20", label: "BEP20" },
+  { value: "TRC20", label: "TRC20", dot: "bg-red-500" },
+  { value: "ERC20", label: "ERC20", dot: "bg-blue-500" },
+  { value: "BEP20", label: "BEP20", dot: "bg-amber-500" },
 ];
 
 // Official Keeper Wallet (formerly Tonkeeper) — supports USDT on TRON, Ethereum and BNB Chain.
 const KEEPER_URL = "https://wallet.tonkeeper.com/";
+const KEEPER_LOGO = "https://keeperwallet.com/apple-touch-icon.png";
 
 export default function DepositForm({ onApproved }) {
   const { toast } = useToast();
   const { invoke } = useTgIdentity();
-  const [network, setNetwork] = useState("TRC20");
+  const [preset, setPreset] = useState(null);
   const [amount, setAmount] = useState("");
+  const [network, setNetwork] = useState("TRC20");
   const [request, setRequest] = useState(null);
   const [status, setStatus] = useState(null);
   const [checking, setChecking] = useState(false);
@@ -45,6 +49,7 @@ export default function DepositForm({ onApproved }) {
     stopPolling();
     setRequest(null);
     setStatus(null);
+    setPreset(null);
     setAmount("");
   }
 
@@ -104,66 +109,78 @@ export default function DepositForm({ onApproved }) {
     window.open(KEEPER_URL, "_blank");
   }
 
+  const qrUrl = request
+    ? `https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=8&data=${encodeURIComponent(request.wallet_address)}`
+    : null;
+
   if (request) {
     return (
-      <div className="grid gap-4 rounded-2xl border border-emerald-500/25 bg-card p-4">
-        <div className="flex items-center gap-2 rounded-xl bg-emerald-500/10 p-3">
-          <Zap className="h-4 w-4 shrink-0 text-emerald-400" />
-          <p className="text-sm font-semibold text-emerald-300">
-            Send USDT ({request.network})
-          </p>
-        </div>
-
-        <div className="grid gap-1.5">
-          <Label>Top-Up Address</Label>
-          <div className="flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3">
-            <Wallet className="h-4 w-4 shrink-0 text-emerald-400" />
-            <p className="min-w-0 flex-1 break-all font-mono text-xs">{request.wallet_address}</p>
-            <Button type="button" size="icon" variant="ghost" onClick={() => copy(request.wallet_address, "addr")} aria-label="Copy address">
-              {copied === "addr" ? <Check className="text-emerald-400" /> : <Copy />}
-            </Button>
+      <div className="grid gap-4">
+        <div className="grid gap-4 rounded-2xl border border-emerald-500/25 bg-card p-4">
+          <div className="flex items-center gap-3 rounded-xl bg-emerald-500/10 p-3">
+            <img src={KEEPER_LOGO} alt="Keeper Wallet" className="h-10 w-10 rounded-xl" />
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-bold text-emerald-300">Send USDT ({request.network})</p>
+              <p className="text-[11px] text-muted-foreground">via Keeper Wallet</p>
+            </div>
+            <Zap className="h-4 w-4 shrink-0 text-emerald-400" />
           </div>
-        </div>
 
-        <div className="grid gap-1.5">
-          <Label>Exact Amount to Send</Label>
-          <div className="flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3">
-            <p className="flex-1 font-heading text-lg font-bold text-emerald-300">
-              {formatMoney(request.identify_amount)}
+          <div className="grid gap-1.5">
+            <Label>Top-Up Address</Label>
+            <div className="flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3">
+              <Wallet className="h-4 w-4 shrink-0 text-emerald-400" />
+              <p className="min-w-0 flex-1 break-all font-mono text-xs">{request.wallet_address}</p>
+              <Button type="button" size="icon" variant="ghost" onClick={() => copy(request.wallet_address, "addr")} aria-label="Copy address">
+                {copied === "addr" ? <Check className="text-emerald-400" /> : <Copy />}
+              </Button>
+            </div>
+          </div>
+
+          <div className="flex flex-col items-center gap-3 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4">
+            <span className="flex h-[188px] w-[188px] items-center justify-center rounded-2xl bg-white p-2">
+              <img src={qrUrl} alt="Top-up address QR code" className="h-full w-full" />
+            </span>
+            <p className="text-[11px] text-muted-foreground">
+              Scan this QR code with Keeper Wallet to fill the address automatically.
             </p>
-            <Button type="button" size="icon" variant="ghost" onClick={() => copy(String(request.identify_amount), "amt")} aria-label="Copy amount">
-              {copied === "amt" ? <Check className="text-emerald-400" /> : <Copy />}
-            </Button>
           </div>
-          <p className="text-[11px] text-muted-foreground">
-            Send exactly this amount — the unique cents identify your top-up and verify it automatically on-chain.
+
+          <div className="grid gap-1.5">
+            <Label>Exact Amount to Send</Label>
+            <div className="flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3">
+              <p className="flex-1 font-heading text-lg font-bold text-emerald-300">
+                {formatMoney(request.identify_amount)}
+              </p>
+              <Button type="button" size="icon" variant="ghost" onClick={() => copy(String(request.identify_amount), "amt")} aria-label="Copy amount">
+                {copied === "amt" ? <Check className="text-emerald-400" /> : <Copy />}
+              </Button>
+            </div>
+            <p className="text-[11px] text-muted-foreground">
+              Send exactly this amount — the unique cents identify your top-up and verify it automatically on-chain.
+            </p>
+          </div>
+
+          <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <Timer className="h-3.5 w-3.5" />
+            Request expires: {new Date(request.expires_at).toLocaleString()}
           </p>
+          <div className="flex items-center justify-between rounded-xl bg-secondary px-3 py-2 text-sm">
+            <span className="text-muted-foreground">Status</span>
+            <span className="font-medium capitalize">{status || "pending"}</span>
+          </div>
         </div>
 
-        <div className="rounded-xl border border-emerald-500/25 bg-gradient-to-r from-emerald-500/15 to-teal-500/10 p-3">
-          <p className="text-xs font-semibold uppercase tracking-wider text-emerald-300">
-            Pay with Keeper Wallet
-          </p>
-          <p className="mt-1 text-[11px] text-muted-foreground">
-            Open Keeper, paste the address above and send the exact amount — your top-up is credited automatically.
-          </p>
-          <Button
-            type="button"
-            onClick={openKeeper}
-            className="mt-3 w-full rounded-full bg-white font-semibold text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800"
-          >
-            <ExternalLink className="mr-2 h-4 w-4" /> Connect Keeper Wallet
-          </Button>
-        </div>
+        <TopUpInstructions network={request.network} />
 
-        <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <Timer className="h-3.5 w-3.5" />
-          Request expires: {new Date(request.expires_at).toLocaleString()}
-        </p>
-        <div className="flex items-center justify-between rounded-xl bg-secondary px-3 py-2 text-sm">
-          <span className="text-muted-foreground">Status</span>
-          <span className="font-medium capitalize">{status || "pending"}</span>
-        </div>
+        <Button
+          type="button"
+          onClick={openKeeper}
+          className="rounded-full bg-white font-semibold text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800"
+        >
+          <img src={KEEPER_LOGO} alt="" className="mr-1 h-5 w-5 rounded" />
+          <ExternalLink className="mr-2 h-4 w-4" /> Open Keeper Wallet
+        </Button>
         <Button
           type="button"
           onClick={() => checkStatus(false)}
@@ -181,8 +198,37 @@ export default function DepositForm({ onApproved }) {
 
   return (
     <form onSubmit={handleSubmit} className="grid gap-4 rounded-2xl border border-border/50 bg-card p-4">
-      <div className="grid gap-1.5">
-        <Label>Network</Label>
+      <div className="grid gap-2">
+        <Label>1. Choose Amount ($)</Label>
+        <div className="grid grid-cols-4 gap-2">
+          {PRESETS.map((v) => (
+            <button
+              key={v}
+              type="button"
+              onClick={() => { setPreset(v); setAmount(String(v)); }}
+              className={`rounded-2xl border px-2 py-3 text-center transition-colors ${
+                preset === v
+                  ? "border-emerald-500/60 bg-emerald-500/10 text-emerald-300"
+                  : "border-border/50 bg-card hover:bg-accent"
+              }`}
+            >
+              <span className="block text-sm font-bold">${v}</span>
+            </button>
+          ))}
+        </div>
+        <Input
+          type="number"
+          min="1"
+          step="0.01"
+          placeholder="Custom amount ($)"
+          value={amount}
+          onChange={(e) => { setPreset(null); setAmount(e.target.value); }}
+          className="rounded-xl"
+        />
+      </div>
+
+      <div className="grid gap-2">
+        <Label>2. Select Network</Label>
         <div className="grid grid-cols-3 gap-2">
           {NETWORKS.map((n) => (
             <button
@@ -195,6 +241,7 @@ export default function DepositForm({ onApproved }) {
                   : "border-border/50 bg-card hover:bg-accent"
               }`}
             >
+              <span className={`mx-auto mb-1 block h-2.5 w-2.5 rounded-full ${n.dot}`} />
               <span className={`block text-[10px] font-semibold uppercase tracking-widest ${network === n.value ? "text-emerald-300" : "text-muted-foreground"}`}>
                 USDT
               </span>
@@ -205,24 +252,10 @@ export default function DepositForm({ onApproved }) {
           ))}
         </div>
         <p className="text-[11px] text-muted-foreground">
-          Top-ups are verified automatically on-chain — no TXID needed.
+          Verified automatically on-chain — no TXID needed. AVAX coming soon.
         </p>
       </div>
-      <div className="grid gap-1.5">
-        <Label htmlFor="d-amount">Amount ($)</Label>
-        <Input
-          id="d-amount"
-          type="number"
-          min="1"
-          step="0.01"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          required
-        />
-        <p className="text-[11px] text-muted-foreground">
-          You will be asked to send a slightly different unique amount so the top-up can be matched to you.
-        </p>
-      </div>
+
       <Button
         type="submit"
         disabled={saving || !amount}
@@ -232,4 +265,8 @@ export default function DepositForm({ onApproved }) {
       </Button>
     </form>
   );
+}
+
+function Label({ children }) {
+  return <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{children}</p>;
 }
