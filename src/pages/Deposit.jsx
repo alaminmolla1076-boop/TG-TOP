@@ -43,7 +43,7 @@ export default function Deposit() {
           </span>
           <div className="min-w-0 flex-1">
             <p className="font-heading text-base font-bold text-white">Start Top Up</p>
-            <p className="text-[11px] text-emerald-50/85">USDT · TRC20 / ERC20 / BEP20 · Keeper Wallet supported</p>
+            <p className="text-[11px] text-emerald-50/85">USDT · TRC20 / ERC20 / BEP20 · TON via Keeper</p>
           </div>
           <ChevronRight className="h-5 w-5 shrink-0 text-white" />
         </div>
