@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,6 +6,7 @@
 @layer base {
   :root {
     --background: 210 19% 12.5%;
+    --obsidian: 222 32% 6%;
     --foreground: 0 0% 100%;
     --card: 207 19% 17%;
     --card-foreground: 0 0% 100%;
@@ -31,7 +33,7 @@
     --radius: 0.75rem;
     --font-heading: ui-sans-serif, system-ui, sans-serif;
     --font-body: ui-sans-serif, system-ui, sans-serif;
-    --font-display: ui-sans-serif, system-ui, sans-serif;
+    --font-display: "Playfair Display", "Didot", Georgia, serif;
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     --sidebar-background: 207 19% 15%;
     --sidebar-foreground: 0 0% 100%;
@@ -45,6 +47,7 @@
 
   .dark {
     --background: 210 19% 12.5%;
+    --obsidian: 222 32% 6%;
     --foreground: 0 0% 100%;
     --card: 207 19% 17%;
     --card-foreground: 0 0% 100%;

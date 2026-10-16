@@ -12,6 +12,7 @@ module.exports = {
   		},
   		colors: {
   			background: 'hsl(var(--background))',
+  			obsidian: 'hsl(var(--obsidian))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
   				DEFAULT: 'hsl(var(--card))',

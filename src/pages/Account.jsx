@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Wallet, ShieldCheck } from "lucide-react";
-import ProfileCard from "@/components/account/ProfileCard";
-import { BalanceCard, StatsCard, ActionCards } from "@/components/account/AccountCards";
+import ProfileHeroCard from "@/components/account/ProfileHeroCard";
+import { StatsCard, ActionCards } from "@/components/account/AccountCards";
 import WithdrawWizard from "@/components/account/WithdrawWizard";
 import WithdrawList from "@/components/account/WithdrawList";
 import AdminWithdrawals from "@/components/account/AdminWithdrawals";
@@ -42,8 +42,7 @@ export default function Account() {
 
   return (
     <div className="mx-auto max-w-md space-y-6">
-      <ProfileCard identity={identity} />
-      <BalanceCard data={data} />
+      <ProfileHeroCard identity={identity} data={data} />
       <StatsCard data={data} />
       <ActionCards referralLink={referralLink} onWithdraw={() => setWizardOpen(true)} />
 
