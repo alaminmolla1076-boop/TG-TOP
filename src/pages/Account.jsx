@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Wallet, ShieldCheck, ChevronRight } from "lucide-react";
-import ProfileHero from "@/components/account/ProfileHero";
-import ReferralCard from "@/components/account/ReferralCard";
+import { Wallet, ShieldCheck } from "lucide-react";
+import ProfileCard from "@/components/account/ProfileCard";
+import { BalanceCard, StatsCard, ActionCards } from "@/components/account/AccountCards";
 import WithdrawWizard from "@/components/account/WithdrawWizard";
 import WithdrawList from "@/components/account/WithdrawList";
 import AdminWithdrawals from "@/components/account/AdminWithdrawals";
@@ -42,24 +42,10 @@ export default function Account() {
 
   return (
     <div className="mx-auto max-w-md space-y-6">
-      <ProfileHero identity={identity} data={data} />
-
-      <button
-        type="button"
-        onClick={() => setWizardOpen(true)}
-        className="w-full rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 p-4 text-left shadow-[0_0_40px_-10px_rgba(16,185,129,0.55)] transition-transform active:scale-[0.98]"
-      >
-        <div className="flex items-center gap-3">
-          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white/15">
-            <Wallet className="h-6 w-6 text-white" />
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="font-heading text-base font-bold text-white">Withdraw Funds</p>
-            <p className="text-[11px] text-emerald-50/85">USDT · BEP20 / Polygon PoS · TON (Gram)</p>
-          </div>
-          <ChevronRight className="h-5 w-5 shrink-0 text-white" />
-        </div>
-      </button>
+      <ProfileCard identity={identity} />
+      <BalanceCard data={data} />
+      <StatsCard data={data} />
+      <ActionCards referralLink={referralLink} onWithdraw={() => setWizardOpen(true)} />
 
       <section className="space-y-3">
         <div className="flex items-center gap-2">
@@ -70,8 +56,6 @@ export default function Account() {
         </div>
         <WithdrawList withdrawals={data?.withdrawals || []} />
       </section>
-
-      {referralLink && <ReferralCard referralLink={referralLink} />}
 
       {data?.role === "admin" && (
         <section className="space-y-3">
