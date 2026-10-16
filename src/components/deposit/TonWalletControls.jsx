@@ -38,7 +38,7 @@ export default function TonWalletControls({ request, status, onCheck }) {
     {restoring ? <p className="flex items-center justify-center gap-2 py-3 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" />Restoring wallet connection…</p> : <>
       {address && <div className="flex items-center justify-between gap-2 rounded-xl bg-secondary px-3 py-2 text-xs"><span className="truncate font-mono">{address.slice(0, 6)}…{address.slice(-6)}</span><button type="button" onClick={disconnect} disabled={sending} className="shrink-0 text-primary">Change wallet</button></div>}
       {wrongNetwork && <p role="alert" className="text-xs text-destructive">Switch Keeper to TON mainnet, then reconnect.</p>}
-      <Button type="button" onClick={address ? pay : connect} disabled={sending || submitted || wrongNetwork || !pending} className="h-12 w-full rounded-full text-sm font-semibold">
+      <Button type="button" onClick={address ? pay : connect} disabled={sending || submitted || wrongNetwork || !pending} className="h-12 w-full rounded-full bg-chart-4 text-primary-foreground text-sm font-semibold hover:bg-chart-4/90">
         {sending ? <Loader2 className="h-5 w-5 animate-spin" /> : <img src={LOGOS.keeper} alt="Keeper Wallet" className="h-6 w-6 rounded-md" />}
         {sending ? "Confirm in Keeper…" : submitted ? "Awaiting confirmation…" : address ? `Pay ${request.amount_ton} TON via Keeper` : "Connect Keeper Wallet"}
       </Button>

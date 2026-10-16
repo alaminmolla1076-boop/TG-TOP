@@ -14,6 +14,7 @@ export default function Deposit() {
   async function load() {
     const res = await invoke("getMyData", {});
     setData(res.data);
+    window.dispatchEvent(new CustomEvent("tg-balance-updated", { detail: { balance: res.data.balance } }));
   }
 
   useEffect(() => {

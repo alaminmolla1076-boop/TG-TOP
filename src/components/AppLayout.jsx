@@ -14,9 +14,12 @@ export default function AppLayout() {
   const [balance, setBalance] = useState(null);
 
   useEffect(() => {
+    const updateBalance = (event) => setBalance(event.detail.balance);
+    window.addEventListener("tg-balance-updated", updateBalance);
     invoke("getMyData", {})
       .then((res) => setBalance(res.data.balance))
       .catch(() => setBalance(0));
+    return () => window.removeEventListener("tg-balance-updated", updateBalance);
   }, []);
 
   return (
