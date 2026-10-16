@@ -1,7 +1,6 @@
 import React from "react";
 import { ChevronRight, Loader2 } from "lucide-react";
 import { LOGOS } from "@/components/deposit/logos";
-import KeeperWalletOption from "@/components/deposit/KeeperWalletOption";
 
 const CHAINS = [
   { value: "TON", name: "TON", logo: LOGOS.TON, badge: "TON Coin", desc: "Connect Keeper Wallet & pay in TON — auto-credited at live TON price" },
@@ -57,7 +56,6 @@ export default function NetworkStep({ amount, network, creating, onSelect }) {
         AVAX network is coming soon. Top-ups are verified automatically on-chain — no TXID needed.
       </p>
 
-      <KeeperWalletOption disabled={creating} onConnected={() => onSelect("TON")} />
     </div>
   );
 }
