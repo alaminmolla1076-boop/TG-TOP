@@ -113,7 +113,7 @@ export default async function(req) {
       }
       if (!matched) return Response.json({ status: 'pending' });
 
-      const hash = (matched.transaction_id && matched.transaction_id.hash) || nano;
+      const hash = (typeof matched.hash === 'string' && matched.hash) || nano;
       await runSql(
         `update top_ups set status = 'approved', tx_hash = ${sqlString(hash)} where id = ${sqlString(rec.id)} and status = 'pending'`
       );
