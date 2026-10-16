@@ -41,11 +41,6 @@ module.exports = {
   				DEFAULT: 'hsl(var(--destructive))',
   				foreground: 'hsl(var(--destructive-foreground))'
   			},
-  			topup: {
-  				DEFAULT: 'hsl(var(--topup))',
-  				foreground: 'hsl(var(--topup-foreground))',
-  				soft: 'hsl(var(--topup-soft))'
-  			},
   			border: 'hsl(var(--border))',
   			input: 'hsl(var(--input))',
   			ring: 'hsl(var(--ring))',

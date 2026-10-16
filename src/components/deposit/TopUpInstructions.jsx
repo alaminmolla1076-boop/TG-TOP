@@ -5,7 +5,7 @@ export default function TopUpInstructions({ network }) {
   const steps = [
     {
       title: "Open your wallet",
-      text: network === "TON" ? "Open your TON wallet and choose Send TON, or use your connected Keeper wallet above." : `Open a compatible USDT wallet and choose Send USDT on the ${network} network.`,
+      text: `Open Keeper Wallet (or any USDT wallet) and choose Send USDT on the ${network} network.`,
     },
     {
       title: "Paste the address",
@@ -23,11 +23,11 @@ export default function TopUpInstructions({ network }) {
 
   return (
     <div className="grid gap-3 rounded-2xl border border-border/50 bg-card p-4">
-      <p className="text-xs font-bold uppercase tracking-wider text-topup-soft">How to top up</p>
+      <p className="text-xs font-bold uppercase tracking-wider text-emerald-300">How to top up</p>
       <ol className="grid gap-3">
         {steps.map((s, i) => (
           <li key={i} className="flex items-start gap-3">
-            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-topup text-[11px] font-bold text-topup-foreground">
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 text-[11px] font-bold text-white">
               {i + 1}
             </span>
             <div>
@@ -37,7 +37,7 @@ export default function TopUpInstructions({ network }) {
           </li>
         ))}
       </ol>
-      <p className="flex items-start gap-2 rounded-xl bg-destructive/10 p-3 text-xs text-destructive">
+      <p className="flex items-start gap-2 rounded-xl bg-red-500/10 p-3 text-xs text-red-300">
         <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
         Sending on a different network or editing the unique amount cannot be credited. Double-check the network before sending.
       </p>
