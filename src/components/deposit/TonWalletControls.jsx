@@ -30,7 +30,15 @@ export default function TonWalletControls({ request, status, onCheck }) {
       toast({ title: "Transfer submitted", description: "Waiting for on-chain confirmation. Do not send again." });
       onCheck?.();
     } catch (err) {
-      toast({ title: "Transfer not submitted", description: err.message || "Confirm the transfer in Keeper to continue.", variant: "destructive" });
+      // A user decline in the wallet is not an error — show a calm message, not the raw SDK string.
+      const cancelled = /reject|declin|cancel/i.test(String(err?.message || ""));
+      toast({
+        title: cancelled ? "Transfer cancelled" : "Transfer not submitted",
+        description: cancelled
+          ? "You declined the transfer in Keeper — nothing was sent. You can try again anytime."
+          : err.message || "Confirm the transfer in Keeper to continue.",
+        variant: cancelled ? "default" : "destructive",
+      });
     } finally { setSending(false); }
   }
 
@@ -39,7 +47,7 @@ export default function TonWalletControls({ request, status, onCheck }) {
       {address && <div className="flex items-center justify-between gap-2 rounded-xl bg-secondary px-3 py-2 text-xs"><span className="truncate font-mono">{address.slice(0, 6)}…{address.slice(-6)}</span><button type="button" onClick={disconnect} disabled={sending} className="shrink-0 text-primary">Change wallet</button></div>}
       {wrongNetwork && <p role="alert" className="text-xs text-destructive">Switch Keeper to TON mainnet, then reconnect.</p>}
       <Button type="button" onClick={address ? pay : connect} disabled={sending || submitted || wrongNetwork || !pending} className="h-12 w-full rounded-full bg-chart-4 text-primary-foreground text-sm font-semibold hover:bg-chart-4/90">
-        {sending ? <Loader2 className="h-5 w-5 animate-spin" /> : <img src={LOGOS.keeper} alt="Keeper Wallet" className="h-6 w-6 rounded-md" />}
+        {sending ? <Loader2 className="h-5 w-5 animate-spin" /> : <img src={LOGOS.keeper} alt="Keeper Wallet" className="h-6 w-6 rounded-full bg-secondary/60 p-1" />}
         {sending ? "Confirm in Keeper…" : submitted ? "Awaiting confirmation…" : address ? `Pay ${request.amount_ton} TON via Keeper` : "Connect Keeper Wallet"}
       </Button>
       <p className="text-[11px] text-muted-foreground">{address ? "Confirm the pre-filled transfer in Keeper. Network fees are paid separately." : "Approve the connection in Keeper, then confirm your deposit here."}</p>
