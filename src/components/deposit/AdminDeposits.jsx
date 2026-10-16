@@ -15,7 +15,7 @@ export default function AdminDeposits({ pending, onChanged }) {
     try {
       await invoke("reviewTopUp", { id: d.id, action });
       toast({
-        title: action === "approve" ? "Deposit approved" : "Deposit rejected",
+        title: action === "approve" ? "Top-up approved" : "Top-up rejected",
         description: action === "approve" ? `${formatMoney(Number(d.amount))} credited to balance.` : undefined,
       });
       onChanged && onChanged();
@@ -29,19 +29,24 @@ export default function AdminDeposits({ pending, onChanged }) {
     setBusyId(null);
   }
 
-  if (!pending || pending.length === 0) return <p className="text-sm text-muted-foreground">No pending deposits.</p>;
+  if (!pending || pending.length === 0) return <p className="text-sm text-muted-foreground">No pending top-ups.</p>;
 
   return (
     <div className="space-y-3">
       {pending.map((d) => (
-        <div key={d.id} className="rounded-xl border border-border/60 bg-card p-4">
+        <div key={d.id} className="rounded-2xl border border-border/50 bg-card p-4">
           <div className="flex items-center justify-between gap-2">
-            <p className="font-heading font-semibold text-primary">{formatMoney(Number(d.amount))}</p>
+            <p className="font-heading text-lg font-bold text-emerald-400">{formatMoney(Number(d.amount))}</p>
             <div className="flex gap-2">
-              <Button size="sm" onClick={() => review(d, "approve")} disabled={busyId === d.id}>
+              <Button
+                size="sm"
+                onClick={() => review(d, "approve")}
+                disabled={busyId === d.id}
+                className="rounded-full bg-emerald-500 font-semibold text-white hover:bg-emerald-600"
+              >
                 <Check className="h-4 w-4" /> Approve
               </Button>
-              <Button size="sm" variant="destructive" onClick={() => review(d, "reject")} disabled={busyId === d.id}>
+              <Button size="sm" variant="destructive" onClick={() => review(d, "reject")} disabled={busyId === d.id} className="rounded-full">
                 <X className="h-4 w-4" /> Reject
               </Button>
             </div>

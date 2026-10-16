@@ -3,12 +3,18 @@ import { useTgIdentity } from "@/lib/TgIdentityContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
-import { Check, Copy, Timer, Wallet } from "lucide-react";
+import { Check, Copy, ExternalLink, Timer, Wallet, Zap } from "lucide-react";
 import { formatMoney } from "@/lib/format";
 
-const NETWORKS = ["TRC20", "ERC20", "BEP20"];
+const NETWORKS = [
+  { value: "TRC20", label: "TRC20" },
+  { value: "ERC20", label: "ERC20" },
+  { value: "BEP20", label: "BEP20" },
+];
+
+// Official Keeper Wallet (formerly Tonkeeper) — supports USDT on TRON, Ethereum and BNB Chain.
+const KEEPER_URL = "https://wallet.tonkeeper.com/";
 
 export default function DepositForm({ onApproved }) {
   const { toast } = useToast();
@@ -51,11 +57,11 @@ export default function DepositForm({ onApproved }) {
       });
       setStatus(res.data.status);
       if (res.data.status === "approved") {
-        toast({ title: "Deposit confirmed", description: "Your balance has been credited." });
+        toast({ title: "Top-up confirmed", description: "Your balance has been credited." });
         reset();
         onApproved && onApproved();
       } else if (res.data.status === "rejected") {
-        toast({ title: "Deposit rejected", variant: "destructive" });
+        toast({ title: "Top-up rejected", variant: "destructive" });
         reset();
         onApproved && onApproved();
       }
@@ -86,7 +92,7 @@ export default function DepositForm({ onApproved }) {
       pollRef.current = setInterval(() => checkStatus(true), 20000);
     } catch (err) {
       toast({
-        title: "Could not create deposit request",
+        title: "Could not create top-up request",
         description: err.response?.data?.error || err.message,
         variant: "destructive",
       });
@@ -94,45 +100,79 @@ export default function DepositForm({ onApproved }) {
     setSaving(false);
   }
 
+  function openKeeper() {
+    window.open(KEEPER_URL, "_blank");
+  }
+
   if (request) {
     return (
-      <div className="grid gap-4 rounded-xl border border-border/60 bg-card p-4">
+      <div className="grid gap-4 rounded-2xl border border-emerald-500/25 bg-card p-4">
+        <div className="flex items-center gap-2 rounded-xl bg-emerald-500/10 p-3">
+          <Zap className="h-4 w-4 shrink-0 text-emerald-400" />
+          <p className="text-sm font-semibold text-emerald-300">
+            Send USDT ({request.network})
+          </p>
+        </div>
+
         <div className="grid gap-1.5">
-          <Label>Send USDT ({request.network})</Label>
-          <div className="flex items-center gap-2 rounded-md border border-primary/30 bg-primary/10 p-3">
-            <Wallet className="h-4 w-4 shrink-0 text-primary" />
+          <Label>Top-Up Address</Label>
+          <div className="flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3">
+            <Wallet className="h-4 w-4 shrink-0 text-emerald-400" />
             <p className="min-w-0 flex-1 break-all font-mono text-xs">{request.wallet_address}</p>
             <Button type="button" size="icon" variant="ghost" onClick={() => copy(request.wallet_address, "addr")} aria-label="Copy address">
-              {copied === "addr" ? <Check className="text-primary" /> : <Copy />}
+              {copied === "addr" ? <Check className="text-emerald-400" /> : <Copy />}
             </Button>
           </div>
         </div>
+
         <div className="grid gap-1.5">
           <Label>Exact Amount to Send</Label>
-          <div className="flex items-center gap-2 rounded-md border border-primary/30 bg-primary/10 p-3">
-            <p className="flex-1 font-heading text-lg font-semibold text-primary">
+          <div className="flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3">
+            <p className="flex-1 font-heading text-lg font-bold text-emerald-300">
               {formatMoney(request.identify_amount)}
             </p>
             <Button type="button" size="icon" variant="ghost" onClick={() => copy(String(request.identify_amount), "amt")} aria-label="Copy amount">
-              {copied === "amt" ? <Check className="text-primary" /> : <Copy />}
+              {copied === "amt" ? <Check className="text-emerald-400" /> : <Copy />}
             </Button>
           </div>
           <p className="text-[11px] text-muted-foreground">
-            Send exactly this amount — the unique cents identify your deposit and verify it automatically on-chain.
+            Send exactly this amount — the unique cents identify your top-up and verify it automatically on-chain.
           </p>
         </div>
+
+        <div className="rounded-xl border border-emerald-500/25 bg-gradient-to-r from-emerald-500/15 to-teal-500/10 p-3">
+          <p className="text-xs font-semibold uppercase tracking-wider text-emerald-300">
+            Pay with Keeper Wallet
+          </p>
+          <p className="mt-1 text-[11px] text-muted-foreground">
+            Open Keeper, paste the address above and send the exact amount — your top-up is credited automatically.
+          </p>
+          <Button
+            type="button"
+            onClick={openKeeper}
+            className="mt-3 w-full rounded-full bg-white font-semibold text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800"
+          >
+            <ExternalLink className="mr-2 h-4 w-4" /> Connect Keeper Wallet
+          </Button>
+        </div>
+
         <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
           <Timer className="h-3.5 w-3.5" />
           Request expires: {new Date(request.expires_at).toLocaleString()}
         </p>
-        <div className="flex items-center justify-between rounded-md bg-secondary px-3 py-2 text-sm">
+        <div className="flex items-center justify-between rounded-xl bg-secondary px-3 py-2 text-sm">
           <span className="text-muted-foreground">Status</span>
           <span className="font-medium capitalize">{status || "pending"}</span>
         </div>
-        <Button type="button" onClick={() => checkStatus(false)} disabled={checking}>
+        <Button
+          type="button"
+          onClick={() => checkStatus(false)}
+          disabled={checking}
+          className="rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 font-semibold text-white shadow-md shadow-emerald-500/25 hover:from-emerald-600 hover:to-teal-600"
+        >
           {checking ? "Checking…" : "Check Status"}
         </Button>
-        <Button type="button" variant="outline" onClick={reset}>
+        <Button type="button" variant="outline" onClick={reset} className="rounded-full">
           Cancel Request
         </Button>
       </div>
@@ -140,23 +180,32 @@ export default function DepositForm({ onApproved }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="grid gap-4 rounded-xl border border-border/60 bg-card p-4">
+    <form onSubmit={handleSubmit} className="grid gap-4 rounded-2xl border border-border/50 bg-card p-4">
       <div className="grid gap-1.5">
         <Label>Network</Label>
-        <Select value={network} onValueChange={setNetwork}>
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {NETWORKS.map((n) => (
-              <SelectItem key={n} value={n}>
-                {n}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="grid grid-cols-3 gap-2">
+          {NETWORKS.map((n) => (
+            <button
+              key={n.value}
+              type="button"
+              onClick={() => setNetwork(n.value)}
+              className={`rounded-2xl border p-3 text-center transition-colors ${
+                network === n.value
+                  ? "border-emerald-500/60 bg-emerald-500/10"
+                  : "border-border/50 bg-card hover:bg-accent"
+              }`}
+            >
+              <span className={`block text-[10px] font-semibold uppercase tracking-widest ${network === n.value ? "text-emerald-300" : "text-muted-foreground"}`}>
+                USDT
+              </span>
+              <span className={`mt-0.5 block text-xs font-bold ${network === n.value ? "text-emerald-300" : ""}`}>
+                {n.label}
+              </span>
+            </button>
+          ))}
+        </div>
         <p className="text-[11px] text-muted-foreground">
-          Deposits are verified automatically on-chain — no TXID needed.
+          Top-ups are verified automatically on-chain — no TXID needed.
         </p>
       </div>
       <div className="grid gap-1.5">
@@ -171,11 +220,15 @@ export default function DepositForm({ onApproved }) {
           required
         />
         <p className="text-[11px] text-muted-foreground">
-          You will be asked to send a slightly different unique amount so the deposit can be matched to you.
+          You will be asked to send a slightly different unique amount so the top-up can be matched to you.
         </p>
       </div>
-      <Button type="submit" disabled={saving || !amount}>
-        {saving ? "Creating…" : "Get Deposit Address"}
+      <Button
+        type="submit"
+        disabled={saving || !amount}
+        className="rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 font-semibold text-white shadow-md shadow-emerald-500/25 hover:from-emerald-600 hover:to-teal-600"
+      >
+        {saving ? "Creating…" : "Get Top-Up Address"}
       </Button>
     </form>
   );
