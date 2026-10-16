@@ -1,7 +1,7 @@
 import React from "react";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, Check } from "lucide-react";
-import { LOGOS } from "../logos";
+import { ChevronRight, Loader2 } from "lucide-react";
+import { LOGOS } from "@/components/deposit/logos";
+import KeeperWalletOption from "@/components/deposit/KeeperWalletOption";
 
 const CHAINS = [
   { value: "TRC20", name: "Tron", logo: LOGOS.TRC20, desc: "USDT on Tron — low fees, fast confirmation" },
@@ -9,7 +9,7 @@ const CHAINS = [
   { value: "BEP20", name: "BNB Chain", logo: LOGOS.BEP20, desc: "USDT on BNB Chain — low fees, fast confirmation" },
 ];
 
-export default function NetworkStep({ amount, network, onSelect, onNext }) {
+export default function NetworkStep({ amount, network, creating, onSelect }) {
   return (
     <div className="grid gap-5">
       <div className="grid gap-1">
@@ -25,6 +25,8 @@ export default function NetworkStep({ amount, network, onSelect, onNext }) {
             key={c.value}
             type="button"
             onClick={() => onSelect(c.value)}
+            disabled={creating}
+            aria-busy={creating && network === c.value}
             className={`flex w-full items-center gap-3 rounded-2xl border p-4 text-left transition-all ${
               network === c.value
                 ? "border-emerald-500/60 bg-emerald-500/10 shadow-[0_0_30px_-10px_rgba(16,185,129,0.5)]"
@@ -43,13 +45,9 @@ export default function NetworkStep({ amount, network, onSelect, onNext }) {
               </div>
               <p className="mt-0.5 text-xs text-muted-foreground">{c.desc}</p>
             </div>
-            <span
-              className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${
-                network === c.value ? "bg-emerald-500 text-white" : "border border-border"
-              }`}
-            >
-              {network === c.value && <Check className="h-4 w-4" />}
-            </span>
+            {creating && network === c.value ? (
+              <Loader2 className="h-5 w-5 shrink-0 animate-spin text-muted-foreground" />
+            ) : <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" />}
           </button>
         ))}
       </div>
@@ -58,14 +56,7 @@ export default function NetworkStep({ amount, network, onSelect, onNext }) {
         AVAX network is coming soon. Top-ups are verified automatically on-chain — no TXID needed.
       </p>
 
-      <Button
-        type="button"
-        onClick={onNext}
-        disabled={!network}
-        className="h-12 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 text-base font-semibold text-white shadow-[0_0_30px_-8px_rgba(16,185,129,0.6)] hover:from-emerald-600 hover:to-teal-600"
-      >
-        Continue <ArrowRight className="h-4 w-4" />
-      </Button>
+      <KeeperWalletOption disabled={creating} />
     </div>
   );
 }

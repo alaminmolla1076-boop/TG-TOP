@@ -4,12 +4,11 @@ import { ChevronLeft } from "lucide-react";
 import { useTgIdentity } from "@/lib/TgIdentityContext";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
-import AmountStep from "./steps/AmountStep";
-import NetworkStep from "./steps/NetworkStep";
-import MethodStep from "./steps/MethodStep";
-import SendStep from "./steps/SendStep";
+import AmountStep from "@/components/deposit/steps/AmountStep";
+import NetworkStep from "@/components/deposit/steps/NetworkStep";
+import SendStep from "@/components/deposit/steps/SendStep";
 
-const STEP_ORDER = ["amount", "network", "method", "send"];
+const STEP_ORDER = ["amount", "network", "send"];
 
 export default function TopUpWizard({ onDone, onClose }) {
   const { toast } = useToast();
@@ -18,7 +17,6 @@ export default function TopUpWizard({ onDone, onClose }) {
   const [amount, setAmount] = useState("");
   const [preset, setPreset] = useState(null);
   const [network, setNetwork] = useState(null);
-  const [method, setMethod] = useState(null);
   const [request, setRequest] = useState(null);
   const [status, setStatus] = useState("pending");
   const [checking, setChecking] = useState(false);
@@ -67,17 +65,18 @@ export default function TopUpWizard({ onDone, onClose }) {
     setChecking(false);
   }
 
-  async function startWithMethod(m) {
+  async function startTopUp(selectedNetwork) {
+    if (creating) return;
+    setNetwork(selectedNetwork);
     setCreating(true);
     try {
       const res = await invoke("verifyUsdtDeposit", {
         action: "create",
         amount: Number(amount),
-        network,
+        network: selectedNetwork,
       });
       requestIdRef.current = res.data.request.request_id;
       setRequest(res.data.request);
-      setMethod(m);
       setStatus("pending");
       setStep("send");
       startPolling();
@@ -93,20 +92,19 @@ export default function TopUpWizard({ onDone, onClose }) {
 
   function goBack() {
     if (step === "network") setStep("amount");
-    else if (step === "method") setStep("network");
   }
 
   const stepIndex = STEP_ORDER.indexOf(step);
   const stepTitle =
     step === "send"
       ? "Complete Your Top-Up"
-      : `Step ${stepIndex} of 3`;
+      : `Step ${stepIndex + 1} of ${STEP_ORDER.length}`;
 
   return (
     <div className="grid gap-6">
       <div className="flex items-center gap-3">
         {stepIndex > 0 && step !== "send" && (
-          <Button type="button" variant="ghost" size="icon" onClick={goBack} aria-label="Back">
+          <Button type="button" variant="ghost" size="icon" onClick={goBack} disabled={creating} aria-label="Back">
             <ChevronLeft className="h-5 w-5" />
           </Button>
         )}
@@ -147,16 +145,8 @@ export default function TopUpWizard({ onDone, onClose }) {
             <NetworkStep
               amount={amount}
               network={network}
-              onSelect={setNetwork}
-              onNext={() => setStep("method")}
-            />
-          )}
-          {step === "method" && (
-            <MethodStep
-              network={network}
-              amount={amount}
               creating={creating}
-              onPick={startWithMethod}
+              onSelect={startTopUp}
             />
           )}
           {step === "send" && (
@@ -164,7 +154,6 @@ export default function TopUpWizard({ onDone, onClose }) {
               request={request}
               status={status}
               checking={checking}
-              method={method}
               onCheck={() => checkStatus(false)}
               onCancel={() => { stopPolling(); onClose && onClose(); }}
             />

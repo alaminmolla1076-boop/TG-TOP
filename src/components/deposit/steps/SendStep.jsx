@@ -1,21 +1,17 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import TopUpInstructions from "../TopUpInstructions";
-import { Check, Copy, ExternalLink, Timer, Zap } from "lucide-react";
+import { Check, Copy, Timer, Zap } from "lucide-react";
 import { formatMoney } from "@/lib/format";
-import { LOGOS, KEEPER_URL } from "../logos";
+import { LOGOS } from "@/components/deposit/logos";
 
-export default function SendStep({ request, status, checking, method, onCheck, onCancel }) {
+export default function SendStep({ request, status, checking, onCheck, onCancel }) {
   const [copied, setCopied] = useState(null);
 
   function copy(text, key) {
     navigator.clipboard.writeText(text);
     setCopied(key);
     setTimeout(() => setCopied(null), 1500);
-  }
-
-  function openKeeper() {
-    window.open(KEEPER_URL, "_blank");
   }
 
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=8&data=${encodeURIComponent(request.wallet_address)}`;
@@ -27,11 +23,8 @@ export default function SendStep({ request, status, checking, method, onCheck, o
           <img src={LOGOS[request.network]} alt={request.network} className="h-9 w-9" />
           <div className="min-w-0 flex-1">
             <p className="text-sm font-bold text-emerald-300">Send USDT ({request.network})</p>
-            <p className="text-[11px] text-muted-foreground">
-              {method === "keeper" ? "via Keeper Wallet" : "manual transfer"}
-            </p>
+            <p className="text-[11px] text-muted-foreground">manual transfer</p>
           </div>
-          {method === "keeper" && <img src={LOGOS.keeper} alt="Keeper" className="h-9 w-9 rounded-xl" />}
           <Zap className="h-4 w-4 shrink-0 text-emerald-400" />
         </div>
 
@@ -81,16 +74,6 @@ export default function SendStep({ request, status, checking, method, onCheck, o
 
       <TopUpInstructions network={request.network} />
 
-      {method === "keeper" && (
-        <Button
-          type="button"
-          onClick={openKeeper}
-          className="h-12 rounded-full bg-white font-semibold text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800"
-        >
-          <img src={LOGOS.keeper} alt="" className="h-5 w-5 rounded" />
-          Connect Keeper Wallet <ExternalLink className="h-4 w-4" />
-        </Button>
-      )}
       <Button
         type="button"
         onClick={onCheck}
