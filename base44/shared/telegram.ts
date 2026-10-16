@@ -16,12 +16,12 @@ export async function verifyInitData(initData) {
   const hash = params.find(([k]) => k === "hash")?.[1];
   if (!botToken || !hash) throw new Error("Telegram login verification failed");
   const checkString = params
-    .filter(([k]) => k !== "hash" && k !== "signature")
+    .filter(([k]) => k !== "hash")
     .sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0))
     .map(([k, v]) => `${k}=${v}`)
     .join("\n");
-  const secretKeyRaw = await crypto.subtle.importKey("raw", enc.encode(botToken), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
-  const secretKey = await crypto.subtle.sign("HMAC", secretKeyRaw, enc.encode("WebAppData"));
+  const secretKeyRaw = await crypto.subtle.importKey("raw", enc.encode("WebAppData"), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const secretKey = await crypto.subtle.sign("HMAC", secretKeyRaw, enc.encode(botToken));
   const computed = await hmacSha256(secretKey, checkString);
   if (computed !== hash) throw new Error("Telegram login verification failed");
   const userRaw = new URLSearchParams(initData).get("user");
@@ -29,27 +29,6 @@ export async function verifyInitData(initData) {
   return JSON.parse(userRaw);
 }
 
-// Extracts the Telegram user from initData WITHOUT verifying the signature.
-// Used only for read paths when the bot token here cannot verify it — every
-// write action goes through the existing b44fn Supabase functions, which
-// verify the signature cryptographically themselves.
-export function parseInitDataUser(initData) {
-  const userRaw = new URLSearchParams(initData).get("user");
-  if (!userRaw) throw new Error("No Telegram user in login data");
-  const tgUser = JSON.parse(userRaw);
-  if (!tgUser || !tgUser.id) throw new Error("No Telegram user in login data");
-  return tgUser;
-}
-
-// Verifies initData when the bot token allows it, otherwise parses the user from it.
-async function resolveTgUser(initData) {
-  try {
-    return await verifyInitData(initData);
-  } catch (error) {
-    if (String(error.message).includes("No Telegram user")) throw error;
-    return parseInitDataUser(initData);
-  }
-}
 
 // Resolves the acting Telegram user from initData (required — the app must be
 // opened from the Telegram bot). Sign-up, profile creation and wallet setup all
@@ -57,7 +36,7 @@ async function resolveTgUser(initData) {
 // here we only READ the user's records to know their role and balance.
 export async function resolveIdentity(initData) {
   if (!initData) throw new Error("Open the app from Telegram to continue");
-  const tgUser = await resolveTgUser(initData);
+  const tgUser = await verifyInitData(initData);
 
   const telegramId = String(tgUser.id);
   const identityEmail = `tg${telegramId}@telegram.local`;

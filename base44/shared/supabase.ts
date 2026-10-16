@@ -50,14 +50,18 @@ async function getAnonKey() {
 // b44fn verifies the Telegram initData signature itself using the bot token.
 export async function callB44(fn, body) {
   const anonKey = await getAnonKey();
+  const { initData, ...payload } = body || {};
+  const telegramData = payload.init_data || initData || "";
+  if (telegramData) payload.init_data = telegramData;
   const r = await fetch(`https://${SUPABASE_REF}.supabase.co/functions/v1/b44fn/${fn}`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${anonKey}`,
       apikey: anonKey,
       "Content-Type": "application/json",
+      ...(telegramData ? { "x-tg-init-data": telegramData } : {}),
     },
-    body: JSON.stringify(body),
+    body: JSON.stringify(payload),
     signal: AbortSignal.timeout(25000),
   });
   const data = await r.json().catch(() => ({}));
