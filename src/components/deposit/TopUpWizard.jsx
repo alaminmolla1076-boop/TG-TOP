@@ -8,6 +8,7 @@ import AmountStep from "@/components/deposit/steps/AmountStep";
 import NetworkStep from "@/components/deposit/steps/NetworkStep";
 import SendStep from "@/components/deposit/steps/SendStep";
 import TonStep from "@/components/deposit/steps/TonStep";
+import connectKeeperWallet from "@/components/deposit/connectKeeperWallet";
 
 export default function TopUpWizard({ onDone, onClose }) {
   const { toast } = useToast();
@@ -71,6 +72,13 @@ export default function TopUpWizard({ onDone, onClose }) {
     networkRef.current = selectedNetwork;
     setCreating(true);
     try {
+      if (selectedNetwork === "TON") {
+        const wallet = await connectKeeperWallet();
+        if (!wallet) return;
+        if (wallet.account.chain !== "-239") {
+          throw new Error("Switch Keeper to TON mainnet, then reconnect.");
+        }
+      }
       const res = await invoke(selectedNetwork === "TON" ? "tonTopUp" : "verifyUsdtDeposit", {
         action: "create",
         amount: Number(amount),
@@ -87,8 +95,9 @@ export default function TopUpWizard({ onDone, onClose }) {
         description: err.response?.data?.error || err.message,
         variant: "destructive",
       });
+    } finally {
+      setCreating(false);
     }
-    setCreating(false);
   }
 
   function goBack() {

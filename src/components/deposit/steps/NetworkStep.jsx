@@ -3,7 +3,7 @@ import { ChevronRight, Loader2 } from "lucide-react";
 import { LOGOS } from "@/components/deposit/logos";
 
 const CHAINS = [
-  { value: "TON", name: "TON", logo: LOGOS.TON, badge: "TON Coin", desc: "Connect Keeper Wallet & pay in TON — auto-credited at live TON price" },
+  { value: "TON", name: "Keeper Wallet", logo: LOGOS.keeper, badge: "TON Coin", desc: "Connect Keeper first, then confirm your TON top-up" },
   { value: "TRC20", name: "Tron", logo: LOGOS.TRC20, badge: "USDT TRC20", desc: "USDT on Tron — low fees, fast confirmation" },
   { value: "ERC20", name: "Ethereum", logo: LOGOS.ERC20, badge: "USDT ERC20", desc: "USDT on Ethereum — higher gas fees" },
   { value: "BEP20", name: "BNB Chain", logo: LOGOS.BEP20, badge: "USDT BEP20", desc: "USDT on BNB Chain — low fees, fast confirmation" },

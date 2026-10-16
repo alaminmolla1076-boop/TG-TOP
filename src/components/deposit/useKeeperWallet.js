@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import getTonConnector from "@/components/deposit/tonConnector";
+import connectKeeperWallet from "@/components/deposit/connectKeeperWallet";
 
 export default function useKeeperWallet() {
   const [wallet, setWallet] = useState(null);
@@ -24,7 +25,7 @@ export default function useKeeperWallet() {
   async function connect() {
     setError("");
     try {
-      await getTonConnector().openSingleWalletModal("tonkeeper");
+      await connectKeeperWallet();
     } catch (err) {
       setError(err.message || "Could not open Keeper. Please try again.");
     }

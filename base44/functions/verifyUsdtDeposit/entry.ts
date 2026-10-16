@@ -38,7 +38,10 @@ export default async function(req) {
         return Response.json({ error: 'Forbidden' }, { status: 403 });
       }
       const result = await callPublicEdge('checkTopUpStatus', { request_id: body.request_id });
-      return Response.json(result);
+      // Supabase uses detected/expired; the wizard uses approved/rejected.
+      const status = result.status === 'detected' ? 'approved'
+        : result.status === 'expired' ? 'rejected' : result.status;
+      return Response.json({ ...result, status });
     }
 
     return Response.json({ error: 'Unknown action' }, { status: 400 });

@@ -1,5 +1,5 @@
 import { secrets } from "base44:runtime";
-import { runSql, sqlString } from "../../shared/supabase.ts";
+import { runSql, sqlString, callB44 } from "../../shared/supabase.ts";
 import { resolveIdentity } from "../../shared/telegram.ts";
 
 // TON top-ups via real Keeper Wallet connection (TonConnect).
@@ -76,12 +76,22 @@ export default async function(req) {
       if (!nano) return Response.json({ error: 'All payment slots are busy. Please try again shortly.' }, { status: 409 });
 
       const amountUsd = Math.round((Number(nano) / 1e9) * price * 100) / 100;
+      // Use the existing Supabase submission flow, including its Telegram
+      // account resolution and notification, instead of a parallel SQL insert.
+      await callB44('submitManualTopUp', {
+        initData: body.initData,
+        amount: amountUsd,
+        coin: 'TON',
+        network: 'TON',
+        tx_hash: `ton:${nano}`,
+      });
       const rows = await runSql(
-        `insert into top_ups (amount, coin, network, user_email, status, tx_hash)
-         values (${amountUsd}, 'TON', 'TON', ${email}, 'pending', 'ton:${nano}')
-         returning id, created_date`
+        `select id, created_date from top_ups
+         where user_email = ${email} and coin = 'TON' and tx_hash = 'ton:${nano}'
+         order by created_date desc limit 1`
       );
       const rec = rows && rows[0];
+      if (!rec) throw new Error('Top-up submission was not saved. Please try again.');
       return Response.json({
         request: {
           request_id: rec.id,

@@ -10,7 +10,7 @@ export default function TonStep({ request, status, checking, onCheck, onCancel }
     <div className="grid gap-4">
       <div className="grid gap-4 rounded-2xl border border-emerald-500/25 bg-card p-4">
         <div className="flex items-center gap-3 rounded-xl bg-emerald-500/10 p-3">
-          <img src={LOGOS.TON} alt="TON" className="h-9 w-9" />
+          <img src={LOGOS.keeper} alt="Keeper Wallet" className="h-9 w-9 rounded-lg" />
           <div className="min-w-0 flex-1">
             <p className="text-sm font-bold text-emerald-300">Pay {request.amount_ton} TON</p>
             <p className="text-[11px] text-muted-foreground">
