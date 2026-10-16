@@ -1,0 +1,35 @@
+{
+  "name": "Deposit",
+  "type": "object",
+  "properties": {
+    "amount": {
+      "type": "number"
+    },
+    "network": {
+      "type": "string",
+      "enum": [
+        "TRC20",
+        "ERC20",
+        "BEP20"
+      ],
+      "default": "TRC20"
+    },
+    "txid": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "default": "pending"
+    }
+  },
+  "required": [
+    "amount",
+    "network",
+    "txid"
+  ]
+}

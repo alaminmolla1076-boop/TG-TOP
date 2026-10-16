@@ -1,0 +1,47 @@
+{
+  "name": "Transaction",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "income",
+        "expense"
+      ],
+      "default": "income"
+    },
+    "amount": {
+      "type": "number"
+    },
+    "method": {
+      "type": "string",
+      "enum": [
+        "bkash",
+        "nagad",
+        "rocket",
+        "bank",
+        "cash",
+        "crypto"
+      ],
+      "default": "cash"
+    },
+    "category": {
+      "type": "string"
+    },
+    "note": {
+      "type": "string"
+    },
+    "product_id": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "type",
+    "amount",
+    "date"
+  ]
+}
