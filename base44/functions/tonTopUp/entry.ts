@@ -13,10 +13,10 @@ function toRawAddress(addr) {
   const a = String(addr || '').trim();
   if (/^-?\d+:[0-9a-fA-F]{64}$/.test(a)) return a.toLowerCase();
   const bin = atob(a.replace(/-/g, '+').replace(/_/g, '/'));
-  if (bin.length !== 48) throw new Error('Invalid TON deposit address');
+  if (bin.length !== 36) throw new Error('Invalid TON deposit address');
   const bytes = Uint8Array.from(bin, (c) => c.charCodeAt(0));
-  const wc = bytes[0] === 0xff ? -1 : bytes[0];
-  const hash = Array.from(bytes.slice(1, 33), (b) => b.toString(16).padStart(2, '0')).join('');
+  const wc = bytes[1] > 127 ? bytes[1] - 256 : bytes[1];
+  const hash = Array.from(bytes.slice(2, 34), (b) => b.toString(16).padStart(2, '0')).join('');
   return `${wc}:${hash}`;
 }
 
@@ -39,12 +39,13 @@ export default async function(req) {
 
     if (body.action === 'create') {
       const usd = Number(body.amount);
-      if (!usd || usd < 1) return Response.json({ error: 'Amount must be at least $1' }, { status: 400 });
+      if (!Number.isFinite(usd) || usd < 1) return Response.json({ error: 'Amount must be at least $1' }, { status: 400 });
       const depositAddress = String(secrets.get('TON_DEPOSIT_ADDRESS') || '').trim();
       if (!depositAddress) {
         return Response.json({ error: 'TON deposit address is not configured yet (app secrets: TON_DEPOSIT_ADDRESS).' }, { status: 500 });
       }
 
+      toRawAddress(depositAddress);
       const price = await getTonPriceUsd();
       const baseTon = Math.round((usd / price) * 100) / 100;
 
@@ -84,7 +85,7 @@ export default async function(req) {
     if (body.action === 'check') {
       if (!body.request_id) return Response.json({ error: 'Missing request_id' }, { status: 400 });
       const rows = await runSql(
-        `select id, user_email, status, tx_hash from top_ups where id = ${sqlString(body.request_id)} limit 1`
+        `select id, user_email, status, tx_hash, created_date from top_ups where id = ${sqlString(body.request_id)} and coin = 'TON' limit 1`
       );
       const rec = rows && rows[0];
       if (!rec) return Response.json({ error: 'Top-up request not found' }, { status: 404 });
@@ -99,8 +100,9 @@ export default async function(req) {
       if (!/^\d+$/.test(nano) || !depositAddress) return Response.json({ status: 'pending' });
 
       const depositRaw = toRawAddress(depositAddress);
+      const createdAt = Math.floor(new Date(rec.created_date).getTime() / 1000);
       const res = await fetch(
-        `https://toncenter.com/api/v3/transactions?account=${encodeURIComponent(depositAddress)}&limit=50&sort=desc`,
+        `https://toncenter.com/api/v3/transactions?account=${encodeURIComponent(depositAddress)}&start_utime=${createdAt}&limit=50&sort=desc`,
         { headers: { Accept: 'application/json' }, signal: AbortSignal.timeout(15000) }
       );
       if (!res.ok) return Response.json({ status: 'pending' });
@@ -108,16 +110,20 @@ export default async function(req) {
       let matched = null;
       for (const tx of (data && data.transactions) || []) {
         const msg = tx && tx.in_msg;
-        if (!msg || msg.bounced) continue;
-        if (msg.destination === depositRaw && String(msg.value) === nano) { matched = tx; break; }
+        if (!msg?.source || msg.bounced || tx.description?.aborted || tx.now < createdAt) continue;
+        if (String(msg.destination).toLowerCase() === depositRaw && String(msg.value) === nano) { matched = tx; break; }
       }
       if (!matched) return Response.json({ status: 'pending' });
 
-      const hash = (typeof matched.hash === 'string' && matched.hash) || nano;
+      const hash = typeof matched.hash === 'string' ? matched.hash : '';
+      if (!hash) return Response.json({ status: 'pending' });
       await runSql(
-        `update top_ups set status = 'approved', tx_hash = ${sqlString(hash)} where id = ${sqlString(rec.id)} and status = 'pending'`
+        `update top_ups set status = 'approved', tx_hash = ${sqlString(hash)}
+         where id = ${sqlString(rec.id)} and status = 'pending'
+         and not exists (select 1 from top_ups where coin = 'TON' and tx_hash = ${sqlString(hash)} and id <> ${sqlString(rec.id)})`
       );
-      return Response.json({ status: 'approved' });
+      const result = await runSql(`select status from top_ups where id = ${sqlString(rec.id)} limit 1`);
+      return Response.json({ status: result[0].status });
     }
 
     return Response.json({ error: 'Unknown action' }, { status: 400 });

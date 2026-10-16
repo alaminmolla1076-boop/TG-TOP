@@ -105,7 +105,7 @@ export default function TopUpWizard({ onDone, onClose }) {
   return (
     <div className="grid gap-6">
       <div className="flex items-center gap-3">
-        {stepIndex > 0 && step !== "send" && (
+        {stepIndex > 0 && step !== "send" && step !== "ton" && (
           <Button type="button" variant="ghost" size="icon" onClick={goBack} disabled={creating} aria-label="Back">
             <ChevronLeft className="h-5 w-5" />
           </Button>

@@ -57,7 +57,7 @@ export default function NetworkStep({ amount, network, creating, onSelect }) {
         AVAX network is coming soon. Top-ups are verified automatically on-chain — no TXID needed.
       </p>
 
-      <KeeperWalletOption disabled={creating} />
+      <KeeperWalletOption disabled={creating} onConnected={() => onSelect("TON")} />
     </div>
   );
 }
