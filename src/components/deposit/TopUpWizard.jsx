@@ -7,8 +7,7 @@ import { Button } from "@/components/ui/button";
 import AmountStep from "@/components/deposit/steps/AmountStep";
 import NetworkStep from "@/components/deposit/steps/NetworkStep";
 import SendStep from "@/components/deposit/steps/SendStep";
-
-const STEP_ORDER = ["amount", "network", "send"];
+import TonStep from "@/components/deposit/steps/TonStep";
 
 export default function TopUpWizard({ onDone, onClose }) {
   const { toast } = useToast();
@@ -23,6 +22,7 @@ export default function TopUpWizard({ onDone, onClose }) {
   const [creating, setCreating] = useState(false);
   const pollRef = useRef(null);
   const requestIdRef = useRef(null);
+  const networkRef = useRef(null);
 
   useEffect(() => () => clearInterval(pollRef.current), []);
 
@@ -39,7 +39,7 @@ export default function TopUpWizard({ onDone, onClose }) {
   async function checkStatus(quiet) {
     setChecking(true);
     try {
-      const res = await invoke("verifyUsdtDeposit", {
+      const res = await invoke(networkRef.current === "TON" ? "tonTopUp" : "verifyUsdtDeposit", {
         action: "check",
         request_id: requestIdRef.current,
       });
@@ -68,9 +68,10 @@ export default function TopUpWizard({ onDone, onClose }) {
   async function startTopUp(selectedNetwork) {
     if (creating) return;
     setNetwork(selectedNetwork);
+    networkRef.current = selectedNetwork;
     setCreating(true);
     try {
-      const res = await invoke("verifyUsdtDeposit", {
+      const res = await invoke(selectedNetwork === "TON" ? "tonTopUp" : "verifyUsdtDeposit", {
         action: "create",
         amount: Number(amount),
         network: selectedNetwork,
@@ -78,7 +79,7 @@ export default function TopUpWizard({ onDone, onClose }) {
       requestIdRef.current = res.data.request.request_id;
       setRequest(res.data.request);
       setStatus("pending");
-      setStep("send");
+      setStep(selectedNetwork === "TON" ? "ton" : "send");
       startPolling();
     } catch (err) {
       toast({
@@ -94,11 +95,12 @@ export default function TopUpWizard({ onDone, onClose }) {
     if (step === "network") setStep("amount");
   }
 
-  const stepIndex = STEP_ORDER.indexOf(step);
+  const steps = network === "TON" ? ["amount", "network", "ton"] : ["amount", "network", "send"];
+  const stepIndex = steps.indexOf(step);
   const stepTitle =
-    step === "send"
+    step === "send" || step === "ton"
       ? "Complete Your Top-Up"
-      : `Step ${stepIndex + 1} of ${STEP_ORDER.length}`;
+      : `Step ${stepIndex + 1} of ${steps.length}`;
 
   return (
     <div className="grid gap-6">
@@ -113,7 +115,7 @@ export default function TopUpWizard({ onDone, onClose }) {
           <h1 className="font-heading text-lg font-bold leading-tight">{stepTitle}</h1>
         </div>
         <div className="flex gap-1.5">
-          {STEP_ORDER.map((s, i) => (
+          {steps.map((s, i) => (
             <span
               key={s}
               className={`h-1.5 rounded-full transition-all ${
@@ -151,6 +153,15 @@ export default function TopUpWizard({ onDone, onClose }) {
           )}
           {step === "send" && (
             <SendStep
+              request={request}
+              status={status}
+              checking={checking}
+              onCheck={() => checkStatus(false)}
+              onCancel={() => { stopPolling(); onClose && onClose(); }}
+            />
+          )}
+          {step === "ton" && (
+            <TonStep
               request={request}
               status={status}
               checking={checking}

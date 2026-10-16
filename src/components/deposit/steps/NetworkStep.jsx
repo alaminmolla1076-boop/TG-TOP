@@ -4,9 +4,10 @@ import { LOGOS } from "@/components/deposit/logos";
 import KeeperWalletOption from "@/components/deposit/KeeperWalletOption";
 
 const CHAINS = [
-  { value: "TRC20", name: "Tron", logo: LOGOS.TRC20, desc: "USDT on Tron — low fees, fast confirmation" },
-  { value: "ERC20", name: "Ethereum", logo: LOGOS.ERC20, desc: "USDT on Ethereum — higher gas fees" },
-  { value: "BEP20", name: "BNB Chain", logo: LOGOS.BEP20, desc: "USDT on BNB Chain — low fees, fast confirmation" },
+  { value: "TON", name: "TON", logo: LOGOS.TON, badge: "TON Coin", desc: "Connect Keeper Wallet & pay in TON — auto-credited at live TON price" },
+  { value: "TRC20", name: "Tron", logo: LOGOS.TRC20, badge: "USDT TRC20", desc: "USDT on Tron — low fees, fast confirmation" },
+  { value: "ERC20", name: "Ethereum", logo: LOGOS.ERC20, badge: "USDT ERC20", desc: "USDT on Ethereum — higher gas fees" },
+  { value: "BEP20", name: "BNB Chain", logo: LOGOS.BEP20, badge: "USDT BEP20", desc: "USDT on BNB Chain — low fees, fast confirmation" },
 ];
 
 export default function NetworkStep({ amount, network, creating, onSelect }) {
@@ -15,7 +16,7 @@ export default function NetworkStep({ amount, network, creating, onSelect }) {
       <div className="grid gap-1">
         <h2 className="font-heading text-2xl font-bold">Select Network</h2>
         <p className="text-xs text-muted-foreground">
-          You&apos;re sending <span className="font-bold text-emerald-300">${amount} USDT</span> — pick the network your wallet supports.
+          You&apos;re topping up <span className="font-bold text-emerald-300">${amount}</span> — pick how you&apos;ll pay.
         </p>
       </div>
 
@@ -40,7 +41,7 @@ export default function NetworkStep({ amount, network, creating, onSelect }) {
               <div className="flex items-center gap-2">
                 <p className="text-sm font-bold">{c.name}</p>
                 <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                  USDT {c.value}
+                  {c.badge}
                 </span>
               </div>
               <p className="mt-0.5 text-xs text-muted-foreground">{c.desc}</p>

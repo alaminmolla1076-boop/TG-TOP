@@ -5,6 +5,7 @@ export const LOGOS = {
   ERC20: "https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/svg/color/eth.svg",
   BEP20: "https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/svg/color/bnb.svg",
   keeper: "https://keeperwallet.com/apple-touch-icon.png",
+  TON: "https://media.base44.com/images/public/6ad1ec4d9f3d182acc871a46/cd4092752_generated_image.png",
 };
 
 // Official Keeper Wallet (formerly Tonkeeper) — supports USDT on TRON, Ethereum and BNB Chain.
