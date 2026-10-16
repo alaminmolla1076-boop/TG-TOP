@@ -1,12 +1,13 @@
 import React from "react";
-import { motion } from "framer-motion";
-import { Image } from "@/components/ui/image";
 import { BadgeCheck, ShieldCheck } from "lucide-react";
+import { Image } from "@/components/ui/image";
 import { useCountUp } from "@/components/account/useCountUp";
 import { formatMoney } from "@/lib/format";
 
-// Obsidian Gold hero card — profile + balance engraved into one near-black
-// glass card with 24k gold hairlines and a guilloché accent.
+const EMB_URL =
+  "https://media.base44.com/images/public/6ad1ec4d9f3d182acc871a46/ded8c6fa6_generated_c78be1e8.jpg";
+
+// Porcelain membership card — identity column, hairline rule, oversized balance.
 export default function ProfileHeroCard({ identity, data }) {
   const name =
     [identity?.first_name, identity?.last_name].filter(Boolean).join(" ") ||
@@ -15,77 +16,54 @@ export default function ProfileHeroCard({ identity, data }) {
   const animated = useCountUp(balance);
 
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 18 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
-      className="relative overflow-hidden rounded-[1.75rem] border border-amber-400/30 bg-obsidian p-5 shadow-[0_0_60px_-18px_rgba(212,175,55,0.6)]"
-    >
-      {/* guilloché engraved pattern */}
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.12]"
-        style={{
-          backgroundImage:
-            "repeating-radial-gradient(circle at 130% -30%, transparent 0px, transparent 9px, rgba(212,175,55,0.7) 10px, transparent 11px)",
-        }}
+    <section className="relative grid grid-cols-[140px_1px_1fr] overflow-hidden rounded-[22px] border border-[#E6E1D6] bg-white px-[18px] py-[22px] shadow-[0_14px_34px_-16px_rgba(36,83,230,0.35)]">
+      <img
+        src={EMB_URL}
+        alt=""
+        aria-hidden="true"
+        className="pc-emb pointer-events-none absolute inset-0 h-full w-full object-cover opacity-50"
       />
-      <div className="pointer-events-none absolute -top-24 left-1/2 h-52 w-80 -translate-x-1/2 rounded-full bg-amber-400/10 blur-2xl" />
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber-400/80 to-transparent" />
-      <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-amber-400/50 to-transparent" />
 
-      {/* profile row */}
-      <div className="relative flex items-center gap-4">
+      <div className="pc-rise relative flex flex-col items-center gap-2 pr-3 text-center">
         {identity?.photo_url ? (
           <Image
             src={identity.photo_url}
             alt={name}
             originWidth={160}
             originHeight={160}
-            className="h-14 w-14 shrink-0 rounded-full object-cover ring-2 ring-amber-400/80 ring-offset-2 ring-offset-obsidian"
+            className="h-14 w-14 rounded-full object-cover shadow-[0_0_0_3px_#fff,0_0_0_5px_#2453E6]"
           />
         ) : (
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-400/25 to-amber-600/10 text-xl font-bold text-amber-300 ring-2 ring-amber-400/80 ring-offset-2 ring-offset-obsidian">
-            {(name || "?")[0].toUpperCase()}
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#2453E6] text-[22px] font-bold text-white shadow-[0_0_0_3px_#fff,0_0_0_5px_#2453E6]">
+            {(name || "T")[0].toUpperCase()}
           </div>
         )}
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-1.5">
-            <p className="truncate font-heading text-base font-bold leading-tight text-white">{name}</p>
-            <BadgeCheck className="h-4 w-4 shrink-0 text-amber-400 drop-shadow-[0_0_6px_rgba(212,175,55,0.7)]" />
-          </div>
-          {identity?.username && (
-            <p className="truncate text-xs text-muted-foreground">@{identity.username}</p>
-          )}
-        </div>
+        <p className="flex items-center gap-1 text-sm font-semibold leading-tight text-[#18233C]">
+          <span className="truncate">{name}</span>
+          <BadgeCheck className="h-[15px] w-[15px] shrink-0 text-[#2453E6]" />
+        </p>
+        {identity?.username && (
+          <p className="text-xs leading-tight text-[#5C6781]">@{identity.username}</p>
+        )}
+        <span className="rounded-full bg-[#EEF2FE] px-[9px] py-[3px] text-[10px] font-semibold tracking-[0.14em] text-[#2453E6]">
+          ID {identity?.telegram_id || "…"}
+        </span>
         {identity?.role === "admin" && (
-          <span className="flex shrink-0 items-center gap-1 rounded-full border border-amber-400/40 bg-amber-400/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-300">
-            <ShieldCheck className="h-3 w-3" /> Admin
+          <span className="flex items-center gap-[3px] rounded-full border border-[#2453E6] px-2 py-[2px] text-[10px] font-semibold text-[#2453E6]">
+            <ShieldCheck className="h-[11px] w-[11px]" /> Admin
           </span>
         )}
       </div>
 
-      {/* id chip */}
-      <div className="relative mt-4 flex items-center gap-2">
-        <span className="rounded-full border border-amber-400/25 bg-amber-400/5 px-3 py-1 text-[10px] font-semibold tracking-[0.2em] text-amber-200/90">
-          ID {identity?.telegram_id || "…"}
-        </span>
-      </div>
+      <div className="relative bg-[#DDD8CC]" />
 
-      {/* gold hairline divider */}
-      <div className="relative my-5 h-px w-full bg-gradient-to-r from-transparent via-amber-400/45 to-transparent" />
-
-      {/* engraved balance */}
-      <div className="relative">
-        <p className="text-center text-[10px] font-bold uppercase tracking-[0.35em] text-amber-300/80">
-          USDT Balance
-        </p>
-        <p className="mt-1 text-center font-display text-[2.5rem] font-semibold leading-none tracking-tight text-transparent bg-gradient-to-b from-amber-100 via-amber-300 to-amber-500 bg-clip-text drop-shadow-[0_2px_10px_rgba(212,175,55,0.25)]">
+      <div className="pc-rise-2 relative flex flex-col justify-center pl-4">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#2453E6]">USDT Balance</p>
+        <p className="my-1.5 text-[44px] font-semibold leading-[1.1] tracking-[-0.04em] text-[#18233C]">
           {balance === null ? "…" : formatMoney(Number(animated.toFixed(2)))}
         </p>
-        <p className="mt-2 text-center text-[11px] text-muted-foreground">
-          Available for trading &amp; withdrawals
-        </p>
+        <p className="text-xs leading-snug text-[#5C6781]">Available for trading &amp; withdrawals</p>
       </div>
-    </motion.section>
+    </section>
   );
 }

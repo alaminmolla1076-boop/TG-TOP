@@ -1,44 +1,19 @@
 import React from "react";
-import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Coins, Wallet, Send, Gift } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
 const CHANNEL_URL = "https://t.me/tgtops";
 
-// Orders / Sales — a dedicated two-tile stats card.
-export function StatsCard({ data }) {
-  const orders = data?.orders?.length ?? 0;
-  const sales = data?.account_sales?.length ?? 0;
+const actClass =
+  "flex flex-col items-center gap-1.5 rounded-[14px] px-[3px] py-1.5 text-center text-white no-underline " +
+  "transition-[background,box-shadow] duration-200 hover:bg-white/15 active:bg-white/25 " +
+  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-1";
+const iconTile = "flex h-[38px] w-[38px] items-center justify-center rounded-[12px] bg-white text-[#2453E6]";
+const actTitle = "text-xs font-semibold leading-tight";
+const actSub = "text-[9.5px] leading-[1.25] opacity-85";
 
-  const tiles = [
-    { label: "Orders", value: orders },
-    { label: "Sales", value: sales },
-  ];
-
-  return (
-    <motion.section
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45, delay: 0.12, ease: "easeOut" }}
-      className="grid grid-cols-2 gap-3"
-    >
-      {tiles.map((t) => (
-        <div
-          key={t.label}
-          className="rounded-3xl border border-amber-400/20 bg-card p-4 shadow-[0_0_35px_-18px_rgba(212,175,55,0.4)]"
-        >
-          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-muted-foreground">
-            {t.label}
-          </p>
-          <p className="mt-1 font-heading text-2xl font-extrabold text-amber-300">{t.value}</p>
-        </div>
-      ))}
-    </motion.section>
-  );
-}
-
-// 2×2 jewel grid of separate action cards: Top Up, Withdraw, Follow Channel, Refer.
+// Cobalt action dock — Top Up, Withdraw, Follow Channel, Refer & Earn.
 export function ActionCards({ referralLink, onWithdraw }) {
   const { toast } = useToast();
 
@@ -48,46 +23,50 @@ export function ActionCards({ referralLink, onWithdraw }) {
     toast({ title: "Referral link copied", description: "Share it with friends to earn rewards." });
   }
 
-  const tileClass = "group flex flex-col items-start gap-2.5 rounded-3xl border p-4 text-left transition-transform active:scale-[0.97]";
+  return (
+    <nav className="pc-rise-3 grid grid-cols-4 rounded-[20px] bg-[#2453E6] px-1 py-2.5 shadow-[0_14px_28px_-14px_rgba(36,83,230,0.7)]">
+      <Link to="/deposit" className={actClass}>
+        <span className={iconTile}><Coins className="h-5 w-5" /></span>
+        <span className={actTitle}>Top Up</span>
+        <span className={actSub}>USDT, TON &amp; more</span>
+      </Link>
+      <button type="button" onClick={onWithdraw} className={actClass}>
+        <span className={iconTile}><Wallet className="h-5 w-5" /></span>
+        <span className={actTitle}>Withdraw</span>
+        <span className={actSub}>BEP20 · Polygon · TON</span>
+      </button>
+      <a href={CHANNEL_URL} target="_blank" rel="noreferrer" className={actClass}>
+        <span className={iconTile}><Send className="h-5 w-5" /></span>
+        <span className={actTitle}>Follow Channel</span>
+        <span className={actSub}>Updates &amp; offers</span>
+      </a>
+      <button type="button" onClick={copyReferral} className={actClass}>
+        <span className={iconTile}><Gift className="h-5 w-5" /></span>
+        <span className={actTitle}>Refer &amp; Earn</span>
+        <span className={actSub}>Copy invite link</span>
+      </button>
+    </nav>
+  );
+}
+
+// Slim vertical Orders / Sales rail.
+export function StatsCard({ data }) {
+  const tiles = [
+    { label: "Orders", value: data?.orders?.length ?? 0 },
+    { label: "Sales", value: data?.account_sales?.length ?? 0 },
+  ];
 
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45, delay: 0.18, ease: "easeOut" }}
-      className="grid grid-cols-2 gap-3"
-    >
-      <Link to="/deposit" className={`${tileClass} border-emerald-500/30 bg-gradient-to-br from-emerald-500/15 to-teal-500/10 hover:border-emerald-400/60`}>
-        <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-md shadow-emerald-500/30">
-          <Coins className="h-5 w-5" />
-        </span>
-        <p className="font-heading text-sm font-bold text-white">Top Up</p>
-        <p className="text-[11px] text-muted-foreground">USDT, TON & more</p>
-      </Link>
-
-      <button type="button" onClick={onWithdraw} className={`${tileClass} border-emerald-500/30 bg-gradient-to-br from-emerald-500/15 to-teal-500/10 hover:border-emerald-400/60`}>
-        <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-md shadow-emerald-500/30">
-          <Wallet className="h-5 w-5" />
-        </span>
-        <p className="font-heading text-sm font-bold text-white">Withdraw</p>
-        <p className="text-[11px] text-muted-foreground">BEP20 · Polygon · TON</p>
-      </button>
-
-      <a href={CHANNEL_URL} target="_blank" rel="noreferrer" className={`${tileClass} border-amber-400/30 bg-gradient-to-br from-amber-400/15 to-yellow-600/10 hover:border-amber-400/60`}>
-        <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-yellow-600 text-white shadow-md shadow-amber-400/30">
-          <Send className="h-5 w-5" />
-        </span>
-        <p className="font-heading text-sm font-bold text-white">Follow Channel</p>
-        <p className="text-[11px] text-muted-foreground">Updates & offers</p>
-      </a>
-
-      <button type="button" onClick={copyReferral} className={`${tileClass} border-amber-400/30 bg-gradient-to-br from-amber-400/15 to-yellow-600/10 hover:border-amber-400/60`}>
-        <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-yellow-600 text-white shadow-md shadow-amber-400/30">
-          <Gift className="h-5 w-5" />
-        </span>
-        <p className="font-heading text-sm font-bold text-white">Refer & Earn</p>
-        <p className="text-[11px] text-muted-foreground">Copy invite link</p>
-      </button>
-    </motion.section>
+    <div className="flex flex-col gap-2.5">
+      {tiles.map((t) => (
+        <div
+          key={t.label}
+          className="rounded-2xl border border-[#E6E1D6] bg-white px-2.5 py-3 shadow-[0_8px_20px_-14px_rgba(24,35,60,0.3)]"
+        >
+          <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#5C6781]">{t.label}</p>
+          <p className="mt-0.5 text-[26px] font-semibold tracking-[-0.03em] text-[#2453E6]">{t.value}</p>
+        </div>
+      ))}
+    </div>
   );
 }
