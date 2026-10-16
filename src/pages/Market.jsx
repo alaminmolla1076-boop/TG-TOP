@@ -8,7 +8,7 @@ import { Package, ShoppingBag } from "lucide-react";
 import { formatMoney } from "@/lib/format";
 
 const steps = [
-  { no: "01", title: "Top up your balance", desc: "Deposit USDT from the Account tab — deposits are verified automatically on-chain." },
+  { no: "01", title: "Top up your balance", desc: "Top Up USDT from the Account tab — top-ups are verified automatically on-chain." },
   { no: "02", title: "Browse the market", desc: "Pick any product below — all prices are in USDT." },
   { no: "03", title: "Buy instantly", desc: "Your balance is charged and the order is completed immediately." },
 ];

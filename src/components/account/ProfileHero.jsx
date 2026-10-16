@@ -101,7 +101,7 @@ export default function ProfileHero({ identity, data }) {
         className="relative mt-4 rounded-full bg-white px-5 font-semibold text-emerald-700 shadow-md hover:bg-emerald-50 hover:text-emerald-800"
       >
         <Link to="/deposit">
-          <Coins className="mr-2 h-4 w-4" /> Deposit USDT
+          <Coins className="mr-2 h-4 w-4" /> Top Up USDT
         </Link>
       </Button>
     </motion.section>

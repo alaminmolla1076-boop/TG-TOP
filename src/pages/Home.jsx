@@ -45,11 +45,11 @@ export default function Home() {
         <p className="text-xs uppercase tracking-widest text-muted-foreground">Available Balance</p>
         <p className="mt-1 font-heading text-4xl font-bold text-primary">{formatMoney(data.balance)}</p>
         <p className="mt-1 text-[11px] text-muted-foreground">
-          {formatMoney(approvedTotal)} deposited in total
+          {formatMoney(approvedTotal)} topped up in total
         </p>
         <Button asChild size="sm" className="mt-3">
           <Link to="/deposit">
-            <Plus className="mr-1.5 h-4 w-4" /> Deposit USDT
+            <Plus className="mr-1.5 h-4 w-4" /> Top Up USDT
           </Link>
         </Button>
       </div>
@@ -68,14 +68,14 @@ export default function Home() {
         <div className="rounded-xl border border-border/60 bg-card p-3 text-center">
           <Wallet className="mx-auto h-4 w-4 text-primary" />
           <p className="mt-1 font-heading text-lg font-bold">{deposits.length}</p>
-          <p className="text-[11px] text-muted-foreground">Deposits</p>
+          <p className="text-[11px] text-muted-foreground">Top-Ups</p>
         </div>
       </div>
 
       <section className="space-y-3">
-        <h2 className="font-heading text-base font-semibold">Recent Deposits</h2>
+        <h2 className="font-heading text-base font-semibold">Recent Top-Ups</h2>
         {deposits.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No deposits yet.</p>
+          <p className="text-sm text-muted-foreground">No top-ups yet.</p>
         ) : (
           <div className="space-y-3">
             {deposits.slice(0, 3).map((d) => (
