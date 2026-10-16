@@ -5,6 +5,7 @@ export const LOGOS = {
   TRC20: "https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/svg/color/trx.svg",
   ERC20: "https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/svg/color/eth.svg",
   BEP20: "https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/svg/color/bnb.svg",
+  POLYGON: "https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/svg/color/matic.svg",
   keeper: "https://keeperwallet.com/favicon.svg",
   TON: "https://keeperwallet.com/favicon.svg",
 };

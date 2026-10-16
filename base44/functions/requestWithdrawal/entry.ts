@@ -17,7 +17,7 @@ export default async function(req) {
     if (!walletAddress || walletAddress.length < 10) {
       return Response.json({ error: 'Please enter a valid wallet address' }, { status: 400 });
     }
-    if (!['TRC20', 'ERC20', 'BEP20'].includes(network)) {
+    if (!['BEP20', 'POLYGON', 'TON'].includes(network)) {
       return Response.json({ error: 'Invalid network' }, { status: 400 });
     }
 
@@ -27,7 +27,7 @@ export default async function(req) {
       wallet_address: walletAddress,
       address: walletAddress,
       network,
-      coin: 'USDT',
+      coin: network === 'TON' ? 'TON' : 'USDT',
     });
     const withdrawal = res.withdrawal || res.request || res.data || {};
     let balance = res.balance;
