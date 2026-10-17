@@ -65,7 +65,7 @@ export async function callB44(fn, body, timeoutMs = 25000) {
     signal: AbortSignal.timeout(timeoutMs),
   });
   const data = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(data.error || `Supabase function ${fn} failed (${r.status})`);
+  if (!r.ok) throw new Error(data.error || data.message || `Supabase function ${fn} failed (${r.status})`);
   return data;
 }
 

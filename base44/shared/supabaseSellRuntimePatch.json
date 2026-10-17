@@ -1,0 +1,60 @@
+{
+  "function_slug": "b44fn",
+  "base_version": 61,
+  "entrypoint_path": "source/index.ts",
+  "additional_files": {
+    "source/_shared/telegramSessionCodec.js": "base44/shared/telegramSessionCodec.js"
+  },
+  "patches": [
+    {
+      "path": "source/_shared/mtproto.js",
+      "find": "import { StringSession } from 'npm:telegram@2.26.22/sessions/index.js';\nimport { AuthKey } from 'npm:telegram@2.26.22/crypto/AuthKey.js';",
+      "replace": "import { encodeSession, parseSessionString } from './telegramSessionCodec.js';"
+    },
+    {
+      "path": "source/_shared/mtproto.js",
+      "find": "    const bytes = Buffer.from(JSON.parse(raw));\n    const session = new StringSession('');\n    session.setDC(this.dcId, DC_IP[this.dcId] || DC_IP[2], 443);\n    const key = new AuthKey();\n    await key.setKey(bytes);\n    session.setAuthKey(key);\n    return session.save();",
+      "replace": "    const bytes = Buffer.from(JSON.parse(raw));\n    return encodeSession(this.dcId, DC_IP[this.dcId] || DC_IP[2], 443, bytes);"
+    },
+    {
+      "path": "source/_shared/mtproto.js",
+      "find": "  close() { /* WebSocket is closed by the library on idle; nothing to do */ }",
+      "replace": "  close() {\n    for (const rpc of this.client.rpcs.values()) {\n      rpc.sendAcks?.cancel?.();\n      const transport = rpc.transport;\n      transport.connect = () => {};\n      transport.removeAllListeners();\n      if (transport.socket && transport.socket.readyState < 2) transport.socket.close();\n    }\n    this.client.rpcs.clear();\n  }"
+    },
+    {
+      "path": "source/_shared/mtproto.js",
+      "find": "export function parseSessionString(str) {\n  try {\n    const s = new StringSession(String(str).trim());\n    const key = s._key;\n    if (!key || !key.length) return null;\n    return { dcId: s.dcId || 2, authKey: Buffer.from(key) };\n  } catch {\n    return null;\n  }\n}",
+      "replace": "export { parseSessionString };"
+    },
+    {
+      "path": "source/fns/sendLoginCode.ts",
+      "find": "export default async function(req) {\n  try {",
+      "replace": "export default async function(req) {\n  let mt;\n  try {"
+    },
+    {
+      "path": "source/fns/sendLoginCode.ts",
+      "find": "    const mt = new Mt();",
+      "replace": "    mt = new Mt();"
+    },
+    {
+      "path": "source/fns/sendLoginCode.ts",
+      "find": "  } catch (error) {\n    return Response.json({\n      error: error.message || String(error)\n    }, {\n      status: 500\n    });\n  }\n}",
+      "replace": "  } catch (error) {\n    return Response.json({\n      error: error.message || String(error)\n    }, {\n      status: 500\n    });\n  } finally {\n    mt?.close();\n  }\n}"
+    },
+    {
+      "path": "source/fns/verifyLoginCode.ts",
+      "find": "export default async function(req) {\n  try {",
+      "replace": "export default async function(req) {\n  let mt;\n  try {"
+    },
+    {
+      "path": "source/fns/verifyLoginCode.ts",
+      "find": "    const mt = new Mt(sr.session_string || '');",
+      "replace": "    mt = new Mt(sr.session_string || '');"
+    },
+    {
+      "path": "source/fns/verifyLoginCode.ts",
+      "find": "  } catch (error) {\n    return Response.json({\n      error: error.message || String(error)\n    }, {\n      status: 500\n    });\n  }\n}",
+      "replace": "  } catch (error) {\n    return Response.json({\n      error: error.message || String(error)\n    }, {\n      status: 500\n    });\n  } finally {\n    mt?.close();\n  }\n}"
+    }
+  ]
+}
