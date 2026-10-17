@@ -49,7 +49,7 @@ export default function Account() {
       <StatsLedger orders={data?.orders?.length ?? 0} sales={data?.account_sales?.length ?? 0} />
 
       <section className="og-rise flex flex-col gap-2.5 [animation-delay:550ms]">
-        <SectionHeader icon={<Wallet className="h-3.5 w-3.5 text-[#C48B68]" strokeWidth={1.4} />}>
+        <SectionHeader icon={<Wallet className="h-3.5 w-3.5 text-primary" strokeWidth={1.4} />}>
           My Withdrawals
         </SectionHeader>
         <WithdrawList withdrawals={data?.withdrawals || []} />
@@ -59,7 +59,7 @@ export default function Account() {
 
       {data?.role === "admin" && (
         <section className="og-rise flex flex-col gap-2.5 [animation-delay:550ms]">
-          <SectionHeader icon={<ShieldCheck className="h-3.5 w-3.5 text-[#C48B68]" strokeWidth={1.4} />}>
+          <SectionHeader icon={<ShieldCheck className="h-3.5 w-3.5 text-primary" strokeWidth={1.4} />}>
             Pending Withdrawals — All Users
           </SectionHeader>
           <AdminWithdrawals pending={data?.pending_withdrawals || []} onChanged={() => load(true)} />

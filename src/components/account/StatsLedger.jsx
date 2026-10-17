@@ -1,6 +1,6 @@
 import React from "react";
 
-// Copper Atelier — compact two-column Orders / Sales ledger.
+// Vault Card — engraved two-column Orders / Sales strip with hairline divider.
 export default function StatsLedger({ orders, sales }) {
   const items = [
     { label: "Orders", value: orders },
@@ -8,13 +8,13 @@ export default function StatsLedger({ orders, sales }) {
   ];
 
   return (
-    <section className="og-rise grid grid-cols-2 rounded-[14px] bg-[#3a271e] shadow-[inset_0_2px_8px_rgba(0,0,0,0.45)] [animation-delay:400ms]">
-      {items.map((s, i) => (
-        <div key={s.label} className={`px-4 py-3.5 ${i > 0 ? "border-l border-[#75513E]" : ""}`}>
-          <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-[#C48B68]">
+    <section className="og-rise grid grid-cols-2 divide-x divide-border/40 rounded-xl border border-border/50 bg-card/80 [animation-delay:400ms]">
+      {items.map((s) => (
+        <div key={s.label} className="px-5 py-4">
+          <div className="text-[10px] font-semibold uppercase tracking-[0.25em] text-muted-foreground">
             {s.label}
           </div>
-          <div className="mt-0.5 font-mono text-[30px] font-medium text-[#F1E3D4]">{s.value}</div>
+          <div className="mt-1 font-display text-3xl font-bold leading-none text-primary">{s.value}</div>
         </div>
       ))}
     </section>
