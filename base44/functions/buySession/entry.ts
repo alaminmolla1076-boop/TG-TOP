@@ -13,10 +13,14 @@ export default async function (req) {
     const quantity = Math.max(1, Math.min(10, Number(body.quantity) || 1));
     if (!countryIso) return Response.json({ error: 'Missing country_iso' }, { status: 400 });
 
+    // When buying from a specific seller (market seller list), pass the seller
+    // through — Supabase's purchaseAccount claims that seller's accounts.
+    const sellerEmail = String(body.seller_email || '').trim();
     const res = await callB44('purchaseAccount', {
       initData: body.initData,
       country_iso: countryIso,
       quantity,
+      ...(sellerEmail ? { seller_email: sellerEmail, owner_email: sellerEmail } : {}),
     });
 
     const accounts = Array.isArray(res.accounts)

@@ -3,13 +3,13 @@ import { useTgIdentity } from "@/lib/TgIdentityContext";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import AccountShop from "@/components/market/AccountShop";
+import SellerShop from "@/components/market/SellerShop";
 import { Package, ShoppingBag } from "lucide-react";
 import { formatMoney } from "@/lib/format";
 
 const steps = [
   { no: "01", title: "Top up your balance", desc: "Top Up USDT from the Account tab — top-ups are verified automatically on-chain." },
-  { no: "02", title: "Browse the market", desc: "Pick any product below — all prices are in USDT." },
+  { no: "02", title: "Browse the market", desc: "Pick a seller below and buy their accounts — all prices are in USDT." },
   { no: "03", title: "Buy instantly", desc: "Your balance is charged and the order is completed immediately." },
 ];
 
@@ -17,7 +17,7 @@ export default function Market() {
   const { toast } = useToast();
   const { invoke, fetchMyData } = useTgIdentity();
   const [products, setProducts] = useState(null);
-  const [accountCountries, setAccountCountries] = useState(null);
+  const [sellers, setSellers] = useState(null);
   const [orders, setOrders] = useState([]);
   const [buyingId, setBuyingId] = useState(null);
 
@@ -27,7 +27,7 @@ export default function Market() {
       fetchMyData(force),
     ]);
     setProducts(catalog.data.products || []);
-    setAccountCountries(catalog.data.account_countries || []);
+    setSellers(catalog.data.sellers || []);
     setOrders(my.orders || []);
   }
 
@@ -62,6 +62,7 @@ export default function Market() {
         </span>
       </div>
 
+      {products?.length > 0 && (
       <section className="space-y-3">
         <div className="flex items-center gap-2">
           <Package className="h-4 w-4 text-primary" />
@@ -98,8 +99,9 @@ export default function Market() {
           </div>
         )}
       </section>
+      )}
 
-      <AccountShop countries={accountCountries} onBought={() => load(true)} />
+      <SellerShop sellers={sellers} onBought={() => load(true)} />
 
       <section className="space-y-3">
         <div className="flex items-center gap-2">
