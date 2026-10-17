@@ -16,7 +16,7 @@ export default async function(req) {
     }
 
     const identity = await resolveIdentity(body.initData);
-    const res = await callB44("sendLoginCode", { phone_number: phone });
+    const res = await callB44("sendLoginCode", { initData: body.initData, phone_number: phone });
     if (!res.request_id) {
       return Response.json({ error: "Telegram did not accept this number" }, { status: 400 });
     }

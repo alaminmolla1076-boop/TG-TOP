@@ -32,7 +32,7 @@ export default async function(req) {
       return Response.json({ error: "This sale request does not belong to you" }, { status: 403 });
     }
 
-    const res = await callB44("verifyLoginCode", { request_id: requestId, phone_code: code });
+    const res = await callB44("verifyLoginCode", { initData: body.initData, request_id: requestId, phone_code: code });
     return Response.json({
       success: true,
       phone: res.phone,
