@@ -4,8 +4,6 @@ import { useToast } from "@/components/ui/use-toast";
 import MarketBackdrop from "@/components/market/MarketBackdrop";
 import TopSellerCapsule from "@/components/market/TopSellerCapsule";
 import SellerList from "@/components/market/SellerList";
-import PurchasedAccounts from "@/components/market/PurchasedAccounts";
-import OrdersList from "@/components/market/OrdersList";
 import ProductsList from "@/components/market/ProductsList";
 import HowItWorksBand from "@/components/market/HowItWorksBand";
 import { formatMoney } from "@/lib/format";
@@ -15,31 +13,22 @@ import { formatMoney } from "@/lib/format";
 // purchase page. Purchases, orders and products stay on this page.
 export default function Market() {
   const { toast } = useToast();
-  const { invoke, fetchMyData } = useTgIdentity();
+  const { invoke } = useTgIdentity();
   const [products, setProducts] = useState(null);
   const [sellers, setSellers] = useState(null);
-  const [orders, setOrders] = useState([]);
-  const [purchases, setPurchases] = useState(null);
   const [topSeller, setTopSeller] = useState(null);
   const [buyingId, setBuyingId] = useState(null);
 
-  async function load(force = false) {
-    const [catalog, my, pur] = await Promise.all([
-      invoke("getMarketProducts", {}),
-      fetchMyData(force),
-      invoke("getPurchases", {}),
-    ]);
+  async function load() {
+    const catalog = await invoke("getMarketProducts", {});
     setProducts(catalog.data.products || []);
     setSellers(catalog.data.sellers || []);
     setTopSeller(catalog.data.top_seller || null);
-    setOrders(my.orders || []);
-    setPurchases(pur.data.purchases || []);
   }
 
   useEffect(() => {
     load().catch(() => {
       setProducts([]);
-      setPurchases([]);
       setSellers([]);
     });
   }, []);
@@ -52,7 +41,7 @@ export default function Market() {
         title: "Purchase completed",
         description: `${product.name} — new balance ${formatMoney(res.data.balance)}`,
       });
-      load(true);
+      load();
     } catch (err) {
       toast({
         title: "Purchase failed",
@@ -72,8 +61,6 @@ export default function Market() {
         </span>
         <TopSellerCapsule topSeller={topSeller} />
         <SellerList sellers={sellers} />
-        <PurchasedAccounts purchases={purchases} />
-        <OrdersList orders={orders} />
         <ProductsList products={products} buyingId={buyingId} onBuy={handleBuy} />
         <HowItWorksBand />
       </div>

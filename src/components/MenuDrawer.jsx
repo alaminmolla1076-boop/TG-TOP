@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -34,20 +35,21 @@ export default function MenuDrawer() {
         <Menu className="h-5 w-5" strokeWidth={1.5} />
       </button>
 
-      <AnimatePresence>
-        {open && (
-          <>
-            <motion.div
-              key="overlay"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              onClick={() => setOpen(false)}
-              className="fixed inset-0 z-50 bg-obsidian/70 backdrop-blur-sm"
-            />
-            <motion.aside
-              key="panel"
+      {createPortal(
+        <AnimatePresence>
+          {open && (
+            <>
+              <motion.div
+                key="overlay"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                onClick={() => setOpen(false)}
+                className="fixed inset-0 z-50 bg-obsidian/70 backdrop-blur-sm"
+              />
+              <motion.aside
+                key="panel"
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
@@ -82,7 +84,9 @@ export default function MenuDrawer() {
             </motion.aside>
           </>
         )}
-      </AnimatePresence>
+      </AnimatePresence>,
+        document.body
+      )}
     </>
   );
 }
