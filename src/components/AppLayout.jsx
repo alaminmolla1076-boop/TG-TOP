@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
-import { Gem } from "lucide-react";
+import { Wallet } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import MenuDrawer from "@/components/MenuDrawer";
 import { Image } from "@/components/ui/image";
@@ -40,7 +40,7 @@ export default function AppLayout() {
       <div className="nf-pod sticky top-[60px] z-30 mx-auto flex max-w-md items-center justify-between px-4 py-3">
         <MenuDrawer />
         <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-card/75 px-3 py-[5px] font-mono text-[13px] font-semibold text-ring shadow-[0_8px_20px_rgba(0,0,0,.35),inset_0_1px_0_rgba(255,255,255,.08)] backdrop-blur-md">
-          <Gem className="h-3.5 w-3.5" strokeWidth={1.5} />
+          <Wallet className="h-3.5 w-3.5" strokeWidth={1.5} />
           {balance === null ? "…" : formatMoney(balance)}
         </span>
       </div>
