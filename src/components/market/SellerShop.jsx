@@ -24,7 +24,7 @@ export default function SellerShop({ sellers, onBought }) {
       });
       toast({
         title: "Session purchased",
-        description: `${c.country_name} account from ${seller.name} — new balance ${formatMoney(res.data.balance)}`,
+        description: `Account sessions were sent to your Telegram chat — new balance ${formatMoney(res.data.balance)}`,
       });
       onBought && onBought();
     } catch (err) {
