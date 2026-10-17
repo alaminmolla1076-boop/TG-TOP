@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, ShoppingBag, Smartphone, Wallet } from "lucide-react";
 import { formatDate, formatMoney } from "@/lib/format";
 import { useTgIdentity } from "@/lib/TgIdentityContext";
+import Sell from "@/pages/Sell";
 
 const depositStatusStyle = {
   approved: "border-green-500/30 bg-green-500/10 text-green-400 hover:bg-green-500/10",
@@ -36,6 +37,8 @@ export default function Home() {
 
   return (
     <div className="space-y-6">
+      {/* Temporary: Sell page design preview — remove after a design is chosen */}
+      <Sell />
       <div>
         <h1 className="font-heading text-2xl font-semibold">Welcome back, {firstName}</h1>
         <p className="text-sm text-muted-foreground">Here's your TG TOP wallet summary.</p>
