@@ -82,6 +82,23 @@
   }
 }
 
+/* Midnight Platinum — per-page theme override (Account) */
+.theme-platinum {
+  --background: 219 42% 9%;
+  --obsidian: 221 45% 6%;
+  --card: 219 37% 15%;
+  --popover: 219 37% 15%;
+  --primary: 207 100% 79%;
+  --primary-foreground: 220 45% 9%;
+  --secondary: 218 26% 13%;
+  --accent: 218 26% 13%;
+  --muted: 218 26% 13%;
+  --muted-foreground: 214 18% 62%;
+  --border: 217 25% 22%;
+  --input: 217 25% 22%;
+  --ring: 207 100% 79%;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

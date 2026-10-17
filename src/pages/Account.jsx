@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Wallet, ShieldCheck } from "lucide-react";
-import IdentityRail from "@/components/account/IdentityRail";
-import BalancePanel from "@/components/account/BalancePanel";
+import AccountHero from "@/components/account/AccountHero";
 import StatsLedger from "@/components/account/StatsLedger";
 import ServiceBand from "@/components/account/ServiceBand";
 import SectionHeader from "@/components/account/SectionHeader";
@@ -27,6 +26,12 @@ export default function Account() {
     load();
   }, []);
 
+  // Midnight Platinum theme — applied to the Account page only
+  useEffect(() => {
+    document.body.classList.add("theme-platinum");
+    return () => document.body.classList.remove("theme-platinum");
+  }, []);
+
   const referralLink = identity?.telegram_id
     ? `https://t.me/tgtopsbot?startapp=${identity.telegram_id}`
     : "";
@@ -44,8 +49,7 @@ export default function Account() {
 
   return (
     <div className="flex flex-col gap-[18px]">
-      <IdentityRail identity={identity} />
-      <BalancePanel data={data} onWithdraw={() => setWizardOpen(true)} />
+      <AccountHero identity={identity} data={data} onWithdraw={() => setWizardOpen(true)} />
       <StatsLedger orders={data?.orders?.length ?? 0} sales={data?.account_sales?.length ?? 0} />
 
       <section className="og-rise flex flex-col gap-2.5 [animation-delay:550ms]">

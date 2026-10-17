@@ -5,16 +5,16 @@ import { Check, X } from "lucide-react";
 import { formatDate, formatMoney } from "@/lib/format";
 
 const panelClass =
-  "rounded-xl bg-[#22150f] px-4 py-3.5 text-[13px] text-[#C48B68] shadow-[inset_0_2px_8px_rgba(0,0,0,0.55)]";
+  "rounded-xl border border-border/50 bg-card/80 px-4 py-3.5 text-sm text-muted-foreground";
 
 const approveBtn =
-  "flex flex-1 cursor-pointer items-center justify-center gap-[5px] rounded-full border border-[#C48B68] bg-[#C48B68] px-2.5 py-[9px] font-mono text-xs font-semibold tracking-[0.06em] text-[#2B1C16] " +
-  "transition-[background,box-shadow] duration-200 hover:shadow-[0_0_12px_rgba(196,139,104,0.6)] active:opacity-85 " +
-  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F1E3D4] disabled:opacity-50";
+  "flex flex-1 cursor-pointer items-center justify-center gap-[5px] rounded-full bg-primary px-2.5 py-[9px] text-xs font-semibold tracking-[0.06em] text-primary-foreground " +
+  "transition-opacity duration-200 hover:opacity-90 active:opacity-85 " +
+  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:opacity-50";
 const rejectBtn =
-  "flex flex-1 cursor-pointer items-center justify-center gap-[5px] rounded-full border border-[#C48B68] bg-transparent px-2.5 py-[9px] font-mono text-xs font-semibold tracking-[0.06em] text-[#C48B68] " +
-  "transition-[background,box-shadow] duration-200 hover:bg-[rgba(196,139,104,0.15)] active:opacity-85 " +
-  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F1E3D4] disabled:opacity-50";
+  "flex flex-1 cursor-pointer items-center justify-center gap-[5px] rounded-full border border-border px-2.5 py-[9px] text-xs font-semibold tracking-[0.06em] text-primary " +
+  "transition-colors duration-200 hover:bg-secondary active:opacity-85 " +
+  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:opacity-50";
 
 export default function AdminWithdrawals({ pending, onChanged }) {
   const { toast } = useToast();
@@ -43,7 +43,7 @@ export default function AdminWithdrawals({ pending, onChanged }) {
   if (!pending || pending.length === 0) {
     return (
       <div className={`${panelClass} flex items-center gap-2.5`}>
-        <span className="h-[5px] w-[5px] shrink-0 rounded-full bg-[#C48B68] shadow-[0_0_6px_#C48B68]" />
+        <span className="h-[5px] w-[5px] shrink-0 rounded-full bg-primary" />
         No pending withdrawals.
       </div>
     );
@@ -54,15 +54,15 @@ export default function AdminWithdrawals({ pending, onChanged }) {
       {pending.map((w) => (
         <div key={w.id} className={`${panelClass} flex flex-col gap-2`}>
           <div className="flex items-center gap-2.5">
-            <span className="h-[5px] w-[5px] shrink-0 rounded-full bg-[#C48B68] shadow-[0_0_6px_#C48B68]" />
-            <p className="flex-1 font-mono text-base font-medium text-[#C48B68]">
+            <span className="h-[5px] w-[5px] shrink-0 rounded-full bg-primary shadow-[0_0_6px_hsl(var(--primary))]" />
+            <p className="flex-1 font-display text-lg font-bold text-primary">
               {formatMoney(Number(w.amount))}
             </p>
           </div>
-          <p className="text-xs text-[#b69880]">
+          <p className="text-xs text-muted-foreground">
             {w.network} · {w.user_email} · {formatDate(w.created_date)}
           </p>
-          <p className="break-all font-mono text-[11px] text-[#b69880]">{w.wallet_address}</p>
+          <p className="break-all font-mono text-[11px] text-muted-foreground">{w.wallet_address}</p>
           <div className="flex gap-2">
             <button
               type="button"
