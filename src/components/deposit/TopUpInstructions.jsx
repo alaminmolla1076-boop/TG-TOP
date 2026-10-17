@@ -23,11 +23,11 @@ export default function TopUpInstructions({ network }) {
 
   return (
     <div className="grid gap-3 rounded-2xl border border-border/50 bg-card p-4">
-      <p className="text-xs font-bold uppercase tracking-wider text-emerald-300">How to top up</p>
+      <p className="text-xs font-bold uppercase tracking-wider text-primary">How to top up</p>
       <ol className="grid gap-3">
         {steps.map((s, i) => (
           <li key={i} className="flex items-start gap-3">
-            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 text-[11px] font-bold text-white">
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-[11px] font-bold text-primary-foreground">
               {i + 1}
             </span>
             <div>

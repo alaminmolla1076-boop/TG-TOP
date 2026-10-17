@@ -26,12 +26,6 @@ export default function Account() {
     load();
   }, []);
 
-  // Midnight Platinum theme — applied to the Account page only
-  useEffect(() => {
-    document.body.classList.add("theme-platinum");
-    return () => document.body.classList.remove("theme-platinum");
-  }, []);
-
   const referralLink = identity?.telegram_id
     ? `https://t.me/tgtopsbot?startapp=${identity.telegram_id}`
     : "";

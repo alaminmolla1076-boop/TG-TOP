@@ -2,7 +2,7 @@ import React from "react";
 import { formatDate, formatMoney } from "@/lib/format";
 
 const statusStyle = {
-  pending: { dot: "bg-amber-400", label: "text-amber-400" },
+  pending: { dot: "bg-primary", label: "text-primary" },
   approved: { dot: "bg-emerald-400", label: "text-emerald-400" },
   rejected: { dot: "bg-red-400", label: "text-red-400" },
 };

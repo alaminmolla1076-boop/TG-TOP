@@ -15,11 +15,11 @@ export default function WithdrawAddressStep({ amount, network, address, submitti
       <div className="grid gap-1">
         <h2 className="font-heading text-2xl font-bold">Your {meta.label} Address</h2>
         <p className="text-xs text-muted-foreground">
-          <span className="font-bold text-emerald-300">${amount}</span>{network === "TON" ? " USD equivalent in TON" : " USDT"} will be sent to this address after admin approval.
+          <span className="font-bold text-primary">${amount}</span>{network === "TON" ? " USD equivalent in TON" : " USDT"} will be sent to this address after admin approval.
         </p>
       </div>
 
-      <div className="flex items-center gap-3 rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-4">
+      <div className="flex items-center gap-3 rounded-2xl border border-primary/40 bg-primary/10 p-4">
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-secondary/60 p-2">
           <img src={meta.logo} alt={meta.label} className="h-7 w-7" />
         </span>
@@ -35,7 +35,7 @@ export default function WithdrawAddressStep({ amount, network, address, submitti
           onChange={(e) => onAddress(e.target.value)}
           placeholder={meta.placeholder}
           autoComplete="off"
-          className="h-12 rounded-2xl border-border/50 bg-card font-mono text-sm focus-visible:ring-emerald-500/50"
+          className="h-12 rounded-2xl border-border/50 bg-card font-mono text-sm focus-visible:ring-ring/50"
         />
         {error ? (
           <p className="flex items-center gap-1.5 text-[11px] font-semibold text-red-400">
@@ -52,7 +52,7 @@ export default function WithdrawAddressStep({ amount, network, address, submitti
         type="button"
         onClick={onSubmit}
         disabled={submitting || !trimmed || !!error}
-        className="h-12 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 text-base font-semibold text-white shadow-[0_0_30px_-8px_rgba(16,185,129,0.6)] hover:from-emerald-600 hover:to-teal-600"
+        className="h-12 rounded-full bg-primary text-base font-semibold text-primary-foreground shadow-lg hover:bg-primary/90"
       >
         {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : `Submit Withdrawal Request`}
       </Button>

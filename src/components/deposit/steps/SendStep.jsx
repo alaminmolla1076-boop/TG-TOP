@@ -18,11 +18,11 @@ export default function SendStep({ request, status, checking, onCheck, onCancel 
 
   return (
     <div className="grid gap-4">
-      <div className="grid gap-4 rounded-2xl border border-emerald-500/25 bg-card p-4">
-        <div className="flex items-center gap-3 rounded-xl bg-emerald-500/10 p-3">
+      <div className="grid gap-4 rounded-2xl border border-primary/25 bg-card p-4">
+        <div className="flex items-center gap-3 rounded-xl bg-primary/10 p-3">
           <img src={LOGOS[request.network]} alt={request.network} className="h-9 w-9" />
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-bold text-emerald-300">Send USDT ({request.network})</p>
+            <p className="text-sm font-bold text-primary">Send USDT ({request.network})</p>
             <p className="text-[11px] text-muted-foreground">manual transfer</p>
           </div>
           <Zap className="h-4 w-4 shrink-0 text-emerald-400" />
@@ -30,7 +30,7 @@ export default function SendStep({ request, status, checking, onCheck, onCancel 
 
         <div className="grid gap-1.5">
           <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Top-Up Address</p>
-          <div className="flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3">
+          <div className="flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/10 p-3">
             <p className="min-w-0 flex-1 break-all font-mono text-xs">{request.wallet_address}</p>
             <Button type="button" size="icon" variant="ghost" onClick={() => copy(request.wallet_address, "addr")} aria-label="Copy address">
               {copied === "addr" ? <Check className="text-emerald-400" /> : <Copy />}
@@ -38,7 +38,7 @@ export default function SendStep({ request, status, checking, onCheck, onCancel 
           </div>
         </div>
 
-        <div className="flex flex-col items-center gap-3 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4">
+        <div className="flex flex-col items-center gap-3 rounded-xl border border-primary/30 bg-primary/10 p-4">
           <span className="flex h-[188px] w-[188px] items-center justify-center rounded-2xl bg-white p-2 shadow-[0_0_30px_-10px_rgba(16,185,129,0.4)]">
             <img src={qrUrl} alt="Top-up address QR code" className="h-full w-full" />
           </span>
@@ -49,8 +49,8 @@ export default function SendStep({ request, status, checking, onCheck, onCancel 
 
         <div className="grid gap-1.5">
           <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Exact Amount to Send</p>
-          <div className="flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3">
-            <p className="flex-1 font-heading text-lg font-bold text-emerald-300">
+          <div className="flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/10 p-3">
+            <p className="flex-1 font-heading text-lg font-bold text-primary">
               {formatMoney(request.identify_amount)}
             </p>
             <Button type="button" size="icon" variant="ghost" onClick={() => copy(String(request.identify_amount), "amt")} aria-label="Copy amount">
@@ -78,7 +78,7 @@ export default function SendStep({ request, status, checking, onCheck, onCancel 
         type="button"
         onClick={onCheck}
         disabled={checking}
-        className="h-12 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 text-base font-semibold text-white shadow-[0_0_30px_-8px_rgba(16,185,129,0.6)] hover:from-emerald-600 hover:to-teal-600"
+        className="h-12 rounded-full bg-primary text-base font-semibold text-primary-foreground shadow-lg hover:bg-primary/90"
       >
         {checking ? "Checking…" : "Check Status"}
       </Button>

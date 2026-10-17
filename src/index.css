@@ -1,102 +1,84 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 15 8% 13%;
-    --obsidian: 20 12% 6%;
-    --foreground: 0 0% 100%;
-    --card: 18 7% 17%;
-    --card-foreground: 0 0% 100%;
-    --popover: 18 7% 17%;
-    --popover-foreground: 0 0% 100%;
-    --primary: 35 100% 60%;
-    --primary-foreground: 20 12% 10%;
-    --secondary: 16 7% 22%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 16 7% 22%;
-    --muted-foreground: 30 5% 58%;
-    --accent: 16 7% 22%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 72% 55%;
+    --background: 212 21% 14%;
+    --obsidian: 212 22% 10%;
+    --foreground: 214 14% 88%;
+    --card: 212 16% 18%;
+    --card-foreground: 214 14% 88%;
+    --popover: 212 16% 17%;
+    --popover-foreground: 214 14% 88%;
+    --primary: 209 15% 71%;
+    --primary-foreground: 212 30% 10%;
+    --secondary: 213 14% 25%;
+    --secondary-foreground: 214 14% 88%;
+    --muted: 213 14% 25%;
+    --muted-foreground: 212 9% 62%;
+    --accent: 213 14% 25%;
+    --accent-foreground: 214 14% 88%;
+    --destructive: 0 62% 52%;
     --destructive-foreground: 0 0% 100%;
-    --border: 20 10% 26%;
-    --input: 20 10% 26%;
-    --ring: 35 100% 60%;
-    --chart-1: 35 100% 60%;
-    --chart-2: 0 65% 58%;
-    --chart-3: 30 6% 55%;
-    --chart-4: 150 55% 45%;
-    --chart-5: 275 45% 60%;
+    --border: 213 12% 30%;
+    --input: 213 12% 30%;
+    --ring: 209 15% 71%;
+    --chart-1: 209 15% 71%;
+    --chart-2: 213 10% 45%;
+    --chart-3: 212 9% 62%;
+    --chart-4: 213 14% 25%;
+    --chart-5: 214 14% 88%;
     --radius: 0.75rem;
     --font-heading: ui-sans-serif, system-ui, sans-serif;
     --font-body: ui-sans-serif, system-ui, sans-serif;
-    --font-display: "Playfair Display", "Didot", Georgia, serif;
+    --font-display: ui-sans-serif, system-ui, sans-serif;
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    --sidebar-background: 18 8% 15%;
-    --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 35 100% 60%;
-    --sidebar-primary-foreground: 20 12% 10%;
-    --sidebar-accent: 16 7% 22%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 20 10% 26%;
-    --sidebar-ring: 35 100% 60%;
+    --sidebar-background: 212 20% 12%;
+    --sidebar-foreground: 214 14% 88%;
+    --sidebar-primary: 209 15% 71%;
+    --sidebar-primary-foreground: 212 30% 10%;
+    --sidebar-accent: 213 14% 25%;
+    --sidebar-accent-foreground: 214 14% 88%;
+    --sidebar-border: 213 12% 30%;
+    --sidebar-ring: 209 15% 71%;
   }
 
   .dark {
-    --background: 15 8% 13%;
-    --obsidian: 20 12% 6%;
-    --foreground: 0 0% 100%;
-    --card: 18 7% 17%;
-    --card-foreground: 0 0% 100%;
-    --popover: 18 7% 17%;
-    --popover-foreground: 0 0% 100%;
-    --primary: 35 100% 60%;
-    --primary-foreground: 20 12% 10%;
-    --secondary: 16 7% 22%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 16 7% 22%;
-    --muted-foreground: 30 5% 58%;
-    --accent: 16 7% 22%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 72% 55%;
+    --background: 212 21% 14%;
+    --obsidian: 212 22% 10%;
+    --foreground: 214 14% 88%;
+    --card: 212 16% 18%;
+    --card-foreground: 214 14% 88%;
+    --popover: 212 16% 17%;
+    --popover-foreground: 214 14% 88%;
+    --primary: 209 15% 71%;
+    --primary-foreground: 212 30% 10%;
+    --secondary: 213 14% 25%;
+    --secondary-foreground: 214 14% 88%;
+    --muted: 213 14% 25%;
+    --muted-foreground: 212 9% 62%;
+    --accent: 213 14% 25%;
+    --accent-foreground: 214 14% 88%;
+    --destructive: 0 62% 52%;
     --destructive-foreground: 0 0% 100%;
-    --border: 20 10% 26%;
-    --input: 20 10% 26%;
-    --ring: 35 100% 60%;
-    --chart-1: 35 100% 60%;
-    --chart-2: 0 65% 58%;
-    --chart-3: 30 6% 55%;
-    --chart-4: 150 55% 45%;
-    --chart-5: 275 45% 60%;
-    --sidebar-background: 18 8% 15%;
-    --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 35 100% 60%;
-    --sidebar-primary-foreground: 20 12% 10%;
-    --sidebar-accent: 16 7% 22%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 20 10% 26%;
-    --sidebar-ring: 35 100% 60%;
+    --border: 213 12% 30%;
+    --input: 213 12% 30%;
+    --ring: 209 15% 71%;
+    --chart-1: 209 15% 71%;
+    --chart-2: 213 10% 45%;
+    --chart-3: 212 9% 62%;
+    --chart-4: 213 14% 25%;
+    --chart-5: 214 14% 88%;
+    --sidebar-background: 212 20% 12%;
+    --sidebar-foreground: 214 14% 88%;
+    --sidebar-primary: 209 15% 71%;
+    --sidebar-primary-foreground: 212 30% 10%;
+    --sidebar-accent: 213 14% 25%;
+    --sidebar-accent-foreground: 214 14% 88%;
+    --sidebar-border: 213 12% 30%;
+    --sidebar-ring: 209 15% 71%;
   }
-}
-
-/* Midnight Platinum — per-page theme override (Account) */
-.theme-platinum {
-  --background: 219 42% 9%;
-  --obsidian: 221 45% 6%;
-  --card: 219 37% 15%;
-  --popover: 219 37% 15%;
-  --primary: 207 100% 79%;
-  --primary-foreground: 220 45% 9%;
-  --secondary: 218 26% 13%;
-  --accent: 218 26% 13%;
-  --muted: 218 26% 13%;
-  --muted-foreground: 214 18% 62%;
-  --border: 217 25% 22%;
-  --input: 217 25% 22%;
-  --ring: 207 100% 79%;
 }
 
 @layer base {
@@ -134,21 +116,13 @@
   .og-rise-4 {
     animation: og-rise 0.7s ease-out 0.7s both;
   }
-  /* Sell step indicator — active bar breathes between dim and full amber */
+  /* Sell step indicator — active bar breathes between dim and full accent */
   @keyframes sf-amber {
     0%, 100% { opacity: 0.68; }
     50% { opacity: 1; }
   }
   .sf-bar-active {
     animation: sf-amber 2.8s ease-in-out infinite;
-  }
-  /* Copper Atelier — ambient highlight on the brushed-copper balance surface */
-  @keyframes ca-glow {
-    0%, 100% { opacity: 0.78; }
-    50% { opacity: 1; }
-  }
-  .ca-glow {
-    animation: ca-glow 9s ease-in-out infinite;
   }
   /* Vault Card — soft light sweep drifting across the hero surface */
   @keyframes vg-sweep {

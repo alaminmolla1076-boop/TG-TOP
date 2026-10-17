@@ -42,7 +42,7 @@ export default function AdminDeposits({ pending, onChanged }) {
                 size="sm"
                 onClick={() => review(d, "approve")}
                 disabled={busyId === d.id}
-                className="rounded-full bg-emerald-500 font-semibold text-white hover:bg-emerald-600"
+                className="rounded-full bg-primary font-semibold text-primary-foreground hover:bg-primary/90"
               >
                 <Check className="h-4 w-4" /> Approve
               </Button>

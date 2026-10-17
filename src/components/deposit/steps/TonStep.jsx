@@ -8,13 +8,13 @@ import TonWalletControls from "@/components/deposit/TonWalletControls";
 export default function TonStep({ request, status, checking, onCheck, onCancel }) {
   return (
     <div className="grid gap-4">
-      <div className="grid gap-4 rounded-2xl border border-emerald-500/25 bg-card p-4">
-        <div className="flex items-center gap-3 rounded-xl bg-emerald-500/10 p-3">
+      <div className="grid gap-4 rounded-2xl border border-primary/25 bg-card p-4">
+        <div className="flex items-center gap-3 rounded-xl bg-primary/10 p-3">
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary/60 p-1.5">
               <img src={LOGOS.keeper} alt="Keeper Wallet" className="h-full w-full" />
             </span>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-bold text-emerald-300">Pay {request.amount_ton} TON</p>
+            <p className="text-sm font-bold text-primary">Pay {request.amount_ton} TON</p>
             <p className="text-[11px] text-muted-foreground">
               via Keeper Wallet · credited ≈ {formatMoney(request.amount_usd)}
             </p>
@@ -34,7 +34,7 @@ export default function TonStep({ request, status, checking, onCheck, onCancel }
         type="button"
         onClick={onCheck}
         disabled={checking}
-        className="h-12 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 text-base font-semibold text-white shadow-[0_0_30px_-8px_rgba(16,185,129,0.6)] hover:from-emerald-600 hover:to-teal-600"
+        className="h-12 rounded-full bg-primary text-base font-semibold text-primary-foreground shadow-lg hover:bg-primary/90"
       >
         {checking ? "Checking…" : "Check Status"}
       </Button>

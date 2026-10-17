@@ -120,7 +120,7 @@ export default function TopUpWizard({ onDone, onClose }) {
           </Button>
         )}
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-300">Top Up USDT</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-primary">Top Up USDT</p>
           <h1 className="font-heading text-lg font-bold leading-tight">{stepTitle}</h1>
         </div>
         <div className="flex gap-1.5">
@@ -128,7 +128,7 @@ export default function TopUpWizard({ onDone, onClose }) {
             <span
               key={s}
               className={`h-1.5 rounded-full transition-all ${
-                i <= stepIndex ? "w-6 bg-gradient-to-r from-emerald-500 to-teal-500" : "w-1.5 bg-border"
+                i <= stepIndex ? "w-6 bg-primary" : "w-1.5 bg-border"
               }`}
             />
           ))}

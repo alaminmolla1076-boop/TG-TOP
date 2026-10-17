@@ -29,8 +29,8 @@ export default function AmountStep({ amount, preset, onPick, onCustom, onNext })
             onClick={() => onPick(v)}
             className={`rounded-2xl border py-3.5 text-center text-base font-bold transition-all ${
               preset === v
-                ? "border-transparent bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-[0_0_30px_-8px_rgba(16,185,129,0.6)]"
-                : "border-border/50 bg-card hover:border-emerald-500/40"
+                ? "border-transparent bg-primary text-primary-foreground"
+                : "border-border/50 bg-card hover:border-primary/40"
             }`}
           >
             ${v}
@@ -41,7 +41,7 @@ export default function AmountStep({ amount, preset, onPick, onCustom, onNext })
       <div className="grid gap-1.5">
         <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Custom amount</p>
         <div className="relative">
-          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold text-emerald-300">$</span>
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold text-primary">$</span>
           <Input
             type="number"
             min="1"
@@ -49,7 +49,7 @@ export default function AmountStep({ amount, preset, onPick, onCustom, onNext })
             placeholder="0.00"
             value={amount}
             onChange={(e) => onCustom(e.target.value)}
-            className="h-12 rounded-2xl border-border/50 bg-card pl-9 pr-4 text-lg font-bold focus-visible:ring-emerald-500/50"
+            className="h-12 rounded-2xl border-border/50 bg-card pl-9 pr-4 text-lg font-bold focus-visible:ring-ring/50"
           />
         </div>
       </div>
@@ -58,7 +58,7 @@ export default function AmountStep({ amount, preset, onPick, onCustom, onNext })
         type="button"
         onClick={onNext}
         disabled={!amount}
-        className="h-12 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 text-base font-semibold text-white shadow-[0_0_30px_-8px_rgba(16,185,129,0.6)] hover:from-emerald-600 hover:to-teal-600"
+        className="h-12 rounded-full bg-primary text-base font-semibold text-primary-foreground shadow-lg hover:bg-primary/90"
       >
         Continue <ArrowRight className="h-4 w-4" />
       </Button>

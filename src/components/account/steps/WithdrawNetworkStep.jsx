@@ -14,7 +14,7 @@ export default function WithdrawNetworkStep({ amount, network, onSelect }) {
       <div className="grid gap-1">
         <h2 className="font-heading text-2xl font-bold">Select Network</h2>
         <p className="text-xs text-muted-foreground">
-          You&apos;re withdrawing <span className="font-bold text-emerald-300">${amount}</span> — pick where to receive it.
+          You&apos;re withdrawing <span className="font-bold text-primary">${amount}</span> — pick where to receive it.
         </p>
       </div>
 
@@ -26,8 +26,8 @@ export default function WithdrawNetworkStep({ amount, network, onSelect }) {
             onClick={() => onSelect(c.value)}
             className={`flex w-full items-center gap-3 rounded-2xl border p-4 text-left transition-all ${
               network === c.value
-                ? "border-emerald-500/60 bg-emerald-500/10 shadow-[0_0_30px_-10px_rgba(16,185,129,0.5)]"
-                : "border-border/50 bg-card hover:border-emerald-500/40"
+                ? "border-primary/60 bg-primary/10"
+                : "border-border/50 bg-card hover:border-primary/40"
             }`}
           >
             <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-secondary/60 p-2">

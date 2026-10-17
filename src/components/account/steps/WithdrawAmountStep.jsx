@@ -20,7 +20,7 @@ export default function WithdrawAmountStep({ amount, preset, balance, onPick, on
         <p className="max-w-[270px] text-xs text-muted-foreground">
           Choose a preset amount or enter a custom one — you&apos;ll select the network next.
         </p>
-        <p className="rounded-full bg-secondary/60 px-3 py-1 text-[11px] font-bold text-emerald-300">
+        <p className="rounded-full bg-secondary/60 px-3 py-1 text-[11px] font-bold text-primary">
           Available balance: {formatMoney(balance)}
         </p>
       </div>
@@ -33,8 +33,8 @@ export default function WithdrawAmountStep({ amount, preset, balance, onPick, on
             onClick={() => onPick(v)}
             className={`rounded-2xl border py-3.5 text-center text-base font-bold transition-all ${
               preset === v
-                ? "border-transparent bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-[0_0_30px_-8px_rgba(16,185,129,0.6)]"
-                : "border-border/50 bg-card hover:border-emerald-500/40"
+                ? "border-transparent bg-primary text-primary-foreground"
+                : "border-border/50 bg-card hover:border-primary/40"
             }`}
           >
             ${v}
@@ -45,7 +45,7 @@ export default function WithdrawAmountStep({ amount, preset, balance, onPick, on
       <div className="grid gap-1.5">
         <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Custom amount</p>
         <div className="relative">
-          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold text-emerald-300">$</span>
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold text-primary">$</span>
           <Input
             type="number"
             min="3"
@@ -53,12 +53,12 @@ export default function WithdrawAmountStep({ amount, preset, balance, onPick, on
             placeholder="0.00"
             value={amount}
             onChange={(e) => onCustom(e.target.value)}
-            className="h-12 rounded-2xl border-border/50 bg-card pl-9 pr-24 text-lg font-bold focus-visible:ring-emerald-500/50"
+            className="h-12 rounded-2xl border-border/50 bg-card pl-9 pr-24 text-lg font-bold focus-visible:ring-ring/50"
           />
           <button
             type="button"
             onClick={onMax}
-            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-emerald-500/15 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-emerald-300 hover:bg-emerald-500/25"
+            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-primary/15 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-primary hover:bg-primary/25"
           >
             Max
           </button>
@@ -69,7 +69,7 @@ export default function WithdrawAmountStep({ amount, preset, balance, onPick, on
         type="button"
         onClick={onNext}
         disabled={!amount}
-        className="h-12 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 text-base font-semibold text-white shadow-[0_0_30px_-8px_rgba(16,185,129,0.6)] hover:from-emerald-600 hover:to-teal-600"
+        className="h-12 rounded-full bg-primary text-base font-semibold text-primary-foreground shadow-lg hover:bg-primary/90"
       >
         Continue <ArrowRight className="h-4 w-4" />
       </Button>
