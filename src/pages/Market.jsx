@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import SellerShop from "@/components/market/SellerShop";
+import PurchasedAccounts from "@/components/market/PurchasedAccounts";
 import { Package, ShoppingBag } from "lucide-react";
 import { formatMoney } from "@/lib/format";
 
@@ -19,20 +20,26 @@ export default function Market() {
   const [products, setProducts] = useState(null);
   const [sellers, setSellers] = useState(null);
   const [orders, setOrders] = useState([]);
+  const [purchases, setPurchases] = useState(null);
   const [buyingId, setBuyingId] = useState(null);
 
   async function load(force = false) {
-    const [catalog, my] = await Promise.all([
+    const [catalog, my, pur] = await Promise.all([
       invoke("getMarketProducts", {}),
       fetchMyData(force),
+      invoke("getPurchases", {}),
     ]);
     setProducts(catalog.data.products || []);
     setSellers(catalog.data.sellers || []);
     setOrders(my.orders || []);
+    setPurchases(pur.data.purchases || []);
   }
 
   useEffect(() => {
-    load().catch(() => setProducts([]));
+    load().catch(() => {
+      setProducts([]);
+      setPurchases([]);
+    });
   }, []);
 
   async function handleBuy(product) {
@@ -102,6 +109,8 @@ export default function Market() {
       )}
 
       <SellerShop sellers={sellers} onBought={() => load(true)} />
+
+      <PurchasedAccounts purchases={purchases} />
 
       <section className="space-y-3">
         <div className="flex items-center gap-2">
