@@ -5,16 +5,16 @@ import { useToast } from "@/components/ui/use-toast";
 
 const CHANNEL_URL = "https://t.me/tgtops";
 
-const actClass =
-  "flex flex-col items-center gap-1.5 rounded-[14px] px-[3px] py-1.5 text-center text-white no-underline " +
-  "transition-[background,box-shadow] duration-200 hover:bg-white/15 active:bg-white/25 " +
-  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-1";
-const iconTile = "flex h-[38px] w-[38px] items-center justify-center rounded-[12px] bg-white text-[#2453E6]";
-const actTitle = "text-xs font-semibold leading-tight";
-const actSub = "text-[9.5px] leading-[1.25] opacity-85";
+const tileClass =
+  "flex flex-col items-center gap-1.5 rounded-2xl border border-[#2a3036] bg-[#1B1F23] px-1 py-3 text-center text-white no-underline " +
+  "transition-[border-color,box-shadow,background] duration-200 hover:border-[#F39C12] hover:shadow-[0_0_14px_-4px_rgba(243,156,18,0.5)] active:bg-[#23282d] " +
+  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F39C12]";
+const actIcon = "h-6 w-6 text-[#F39C12]";
+const actTitle = "text-[11.5px] font-semibold leading-tight";
+const actSub = "text-[9px] leading-[1.3] text-[#9aa3ab]";
 
-// Cobalt action dock — Top Up, Withdraw, Follow Channel, Refer & Earn.
-export function ActionCards({ referralLink, onWithdraw }) {
+// Obsidian tile row — Top Up, Withdraw, Follow Channel, Refer & Earn.
+export default function ActionCards({ referralLink, onWithdraw }) {
   const { toast } = useToast();
 
   function copyReferral() {
@@ -24,49 +24,27 @@ export function ActionCards({ referralLink, onWithdraw }) {
   }
 
   return (
-    <nav className="pc-rise-3 grid grid-cols-4 rounded-[20px] bg-[#2453E6] px-1 py-2.5 shadow-[0_14px_28px_-14px_rgba(36,83,230,0.7)]">
-      <Link to="/deposit" className={actClass}>
-        <span className={iconTile}><Coins className="h-5 w-5" /></span>
+    <nav className="og-rise-4 grid grid-cols-4 gap-2.5">
+      <Link to="/deposit" className={tileClass}>
+        <Coins className={actIcon} strokeWidth={1.2} />
         <span className={actTitle}>Top Up</span>
         <span className={actSub}>USDT, TON &amp; more</span>
       </Link>
-      <button type="button" onClick={onWithdraw} className={actClass}>
-        <span className={iconTile}><Wallet className="h-5 w-5" /></span>
+      <button type="button" onClick={onWithdraw} className={tileClass}>
+        <Wallet className={actIcon} strokeWidth={1.2} />
         <span className={actTitle}>Withdraw</span>
         <span className={actSub}>BEP20 · Polygon · TON</span>
       </button>
-      <a href={CHANNEL_URL} target="_blank" rel="noreferrer" className={actClass}>
-        <span className={iconTile}><Send className="h-5 w-5" /></span>
+      <a href={CHANNEL_URL} target="_blank" rel="noreferrer" className={tileClass}>
+        <Send className={actIcon} strokeWidth={1.2} />
         <span className={actTitle}>Follow Channel</span>
         <span className={actSub}>Updates &amp; offers</span>
       </a>
-      <button type="button" onClick={copyReferral} className={actClass}>
-        <span className={iconTile}><Gift className="h-5 w-5" /></span>
+      <button type="button" onClick={copyReferral} className={tileClass}>
+        <Gift className={actIcon} strokeWidth={1.2} />
         <span className={actTitle}>Refer &amp; Earn</span>
         <span className={actSub}>Copy invite link</span>
       </button>
     </nav>
-  );
-}
-
-// Slim vertical Orders / Sales rail.
-export function StatsCard({ data }) {
-  const tiles = [
-    { label: "Orders", value: data?.orders?.length ?? 0 },
-    { label: "Sales", value: data?.account_sales?.length ?? 0 },
-  ];
-
-  return (
-    <div className="flex flex-col gap-2.5">
-      {tiles.map((t) => (
-        <div
-          key={t.label}
-          className="rounded-2xl border border-[#E6E1D6] bg-white px-2.5 py-3 shadow-[0_8px_20px_-14px_rgba(24,35,60,0.3)]"
-        >
-          <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#5C6781]">{t.label}</p>
-          <p className="mt-0.5 text-[26px] font-semibold tracking-[-0.03em] text-[#2453E6]">{t.value}</p>
-        </div>
-      ))}
-    </div>
   );
 }

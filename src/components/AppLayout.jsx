@@ -23,20 +23,20 @@ export default function AppLayout() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#F7F4EE] pb-24 text-[#18233C]">
-      <header className="sticky top-0 z-40 border-b border-[#E6E1D6] bg-white">
-        <div className="mx-auto flex max-w-md items-center justify-between px-4 py-2.5">
-          <div className="w-[84px] shrink-0" />
+    <div className="min-h-screen bg-[#1D2125] pb-[104px] text-white tracking-[0.04em]">
+      <header className="sticky top-0 z-40 border-b border-[#2a3036] bg-[#1D2125]">
+        <div className="mx-auto grid max-w-md grid-cols-[1fr_auto_1fr] items-center px-4 py-3">
+          <span />
           <Image
             src={LOGO_URL}
             alt="TGTOP"
             originWidth={1055}
             originHeight={1004}
-            className="h-11 w-11 shrink-0 rounded-[12px] object-contain"
+            className="h-11 w-11 object-contain"
             fittingType="fit"
           />
-          <span className="flex min-w-[84px] shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-[#2453E6] bg-[#EEF2FE] px-2.5 py-[5px] text-sm font-semibold text-[#2453E6]">
-            <Gem className="h-3.5 w-3.5" />
+          <span className="inline-flex items-center justify-self-end whitespace-nowrap rounded-full border border-[#F39C12] px-3 py-[5px] text-[13px] font-semibold text-[#F39C12]">
+            <Gem className="h-3.5 w-3.5" strokeWidth={1.5} />
             {balance === null ? "…" : formatMoney(balance)}
           </span>
         </div>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Wallet, ShieldCheck } from "lucide-react";
 import ProfileHeroCard from "@/components/account/ProfileHeroCard";
-import { StatsCard, ActionCards } from "@/components/account/AccountCards";
+import ActionCards from "@/components/account/AccountCards";
 import SectionHeader from "@/components/account/SectionHeader";
 import WithdrawWizard from "@/components/account/WithdrawWizard";
 import WithdrawList from "@/components/account/WithdrawList";
@@ -42,26 +42,25 @@ export default function Account() {
   }
 
   return (
-    <div className="flex flex-col gap-[18px]">
+    <div className="flex flex-col gap-[18px] tracking-[0.04em]">
       <ProfileHeroCard identity={identity} data={data} />
       <ActionCards referralLink={referralLink} onWithdraw={() => setWizardOpen(true)} />
 
-      <div className="grid grid-cols-[76px_1fr] items-start gap-3">
-        <StatsCard data={data} />
-        <div className="flex flex-col gap-2.5">
-          <SectionHeader icon={<Wallet className="h-3.5 w-3.5" />}>My Withdrawals</SectionHeader>
-          <WithdrawList withdrawals={data?.withdrawals || []} />
+      <section className="flex flex-col gap-2.5">
+        <SectionHeader icon={<Wallet className="h-3.5 w-3.5 text-[#F39C12]" strokeWidth={1.4} />}>
+          My Withdrawals
+        </SectionHeader>
+        <WithdrawList withdrawals={data?.withdrawals || []} />
+      </section>
 
-          {data?.role === "admin" && (
-            <div className="mt-0.5 flex flex-col gap-2.5">
-              <SectionHeader icon={<ShieldCheck className="h-3.5 w-3.5" />}>
-                Pending Withdrawals — All Users
-              </SectionHeader>
-              <AdminWithdrawals pending={data?.pending_withdrawals || []} onChanged={load} />
-            </div>
-          )}
-        </div>
-      </div>
+      {data?.role === "admin" && (
+        <section className="flex flex-col gap-2.5">
+          <SectionHeader icon={<ShieldCheck className="h-3.5 w-3.5 text-[#F39C12]" strokeWidth={1.4} />}>
+            Pending Withdrawals — All Users
+          </SectionHeader>
+          <AdminWithdrawals pending={data?.pending_withdrawals || []} onChanged={load} />
+        </section>
+      )}
     </div>
   );
 }
