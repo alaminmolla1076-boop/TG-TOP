@@ -15,7 +15,7 @@ export default async function (req) {
              coalesce(r.country_name, c.name, a.country_iso) as country_name,
              coalesce(r.flag, c.flag, '') as flag,
              o.status as otp_status,
-             (o.otp_code is not null) as has_code
+             o.has_code
       from tg_accounts a
       left join reward_prices r on r.country_iso = a.country_iso and r.active = true
       left join countries c on c.iso = a.country_iso
