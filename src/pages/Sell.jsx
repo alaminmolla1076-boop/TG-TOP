@@ -27,8 +27,6 @@ export default function Sell() {
 
   return (
     <div className="mx-auto max-w-md space-y-6">
-      <h1 className="font-heading text-2xl font-semibold">Sell Account</h1>
-
       <SellWizard onDone={() => load(true)} />
 
       <section className="space-y-3">

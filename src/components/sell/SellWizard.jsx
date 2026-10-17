@@ -1,32 +1,34 @@
 import React, { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ChevronLeft, KeyRound, Loader2, PackageCheck, ShieldCheck, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/ui/use-toast";
 import { useTgIdentity } from "@/lib/TgIdentityContext";
-import { CheckCircle2, Loader2, PackageCheck, ShieldCheck, Smartphone } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
+import SellPhoneStep from "./steps/SellPhoneStep";
+import SellCodeStep from "./steps/SellCodeStep";
+import SellProcessStep from "./steps/SellProcessStep";
+import SellDoneStep from "./steps/SellDoneStep";
 
 const STEPS = [
-  { label: "Number", icon: Smartphone },
-  { label: "Login code", icon: Loader2 },
-  { label: "Login + 2FA", icon: ShieldCheck },
-  { label: "In your stock", icon: PackageCheck },
+  { key: "phone", label: "Number", icon: Smartphone },
+  { key: "code", label: "Login code", icon: KeyRound },
+  { key: "secure", label: "Login + 2FA", icon: ShieldCheck },
+  { key: "stock", label: "In your stock", icon: PackageCheck },
 ];
 
-// Step-by-step sell flow, matching the Supabase system: send a Telegram login
-// code to the seller's number → seller enters the code → the system signs in,
-// adds a 2FA password and puts the account into the seller's stock.
+// Step-by-step sell flow: the number → login code → system login + 2FA →
+// stock steps appear one at a time, like the Top Up and Withdraw wizards.
 export default function SellWizard({ onDone }) {
   const { toast } = useToast();
   const { invoke } = useTgIdentity();
-  const [step, setStep] = useState("phone"); // phone | code | done
+  const [step, setStep] = useState("phone"); // phone | code | secure | stock
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
   const [requestId, setRequestId] = useState("");
   const [result, setResult] = useState(null);
   const [busy, setBusy] = useState(false);
 
-  const activeIndex = step === "phone" ? 0 : step === "code" ? 1 : 4;
+  const stepIndex = STEPS.findIndex((s) => s.key === step);
 
   async function sendCode(e) {
     e.preventDefault();
@@ -57,11 +59,11 @@ export default function SellWizard({ onDone }) {
   async function verifyCode(e) {
     e.preventDefault();
     if (!code.trim()) return;
-    setBusy(true);
+    setStep("secure");
     try {
       const res = await invoke("sellVerifyCode", { request_id: requestId, phone_code: code.trim() });
       setResult(res.data);
-      setStep("done");
+      setStep("stock");
       onDone();
     } catch (err) {
       toast({
@@ -69,8 +71,8 @@ export default function SellWizard({ onDone }) {
         description: err.response?.data?.error || err.message,
         variant: "destructive",
       });
+      setStep("code");
     }
-    setBusy(false);
   }
 
   function reset() {
@@ -82,27 +84,47 @@ export default function SellWizard({ onDone }) {
   }
 
   return (
-    <div className="grid gap-4 rounded-xl border border-border/60 bg-card p-4">
+    <div className="grid gap-6">
+      <div className="flex items-center gap-3">
+        {step === "code" && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => setStep("phone")}
+            aria-label="Back"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </Button>
+        )}
+        <div className="min-w-0 flex-1">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-primary">Sell Account</p>
+          <h1 className="font-heading text-lg font-bold leading-tight">
+            Step {stepIndex + 1} of {STEPS.length}
+          </h1>
+        </div>
+      </div>
+
       <ol className="grid grid-cols-4 gap-1.5">
         {STEPS.map((s, i) => {
-          const done = i < activeIndex;
-          const active = i === activeIndex;
+          const done = i < stepIndex;
+          const active = i === stepIndex;
           const Icon = s.icon;
           return (
             <li
-              key={s.label}
+              key={s.key}
               className={`grid gap-1 rounded-lg border px-1.5 py-2 text-center ${
                 done
                   ? "border-green-500/30 bg-green-500/10"
                   : active
-                    ? "border-primary/40 bg-primary/10"
+                    ? "border-primary/50 bg-primary/10"
                     : "border-border/50 bg-muted/30"
               }`}
             >
               <Icon
                 className={`mx-auto h-4 w-4 ${
                   done ? "text-green-400" : active ? "text-primary" : "text-muted-foreground"
-                }`}
+                } ${step === "secure" && s.key === "secure" ? "animate-pulse" : ""}`}
               />
               <span
                 className={`text-[10px] leading-tight ${
@@ -116,74 +138,22 @@ export default function SellWizard({ onDone }) {
         })}
       </ol>
 
-      {step === "phone" && (
-        <form onSubmit={sendCode} className="grid gap-3">
-          <div className="grid gap-1.5">
-            <Label htmlFor="s-phone">Telegram Phone Number</Label>
-            <Input
-              id="s-phone"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="+8801XXXXXXXXX"
-              inputMode="tel"
-              disabled={busy}
-              required
-            />
-          </div>
-          <p className="text-[11px] text-muted-foreground">
-            We will send a Telegram login code to this number. Open that Telegram app to read it.
-          </p>
-          <Button type="submit" disabled={busy}>
-            {busy ? "Sending code…" : "Send login code"}
-          </Button>
-        </form>
-      )}
-
-      {step === "code" && (
-        <form onSubmit={verifyCode} className="grid gap-3">
-          <div className="flex items-center justify-between gap-2">
-            <p className="min-w-0 truncate text-sm font-medium">{phone}</p>
-            <button type="button" onClick={reset} className="text-[11px] text-primary underline-offset-2 hover:underline">
-              Change number
-            </button>
-          </div>
-          <div className="grid gap-1.5">
-            <Label htmlFor="s-code">Login Code</Label>
-            <Input
-              id="s-code"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              placeholder="The code from that Telegram app"
-              inputMode="numeric"
-              autoFocus
-              disabled={busy}
-              required
-            />
-          </div>
-          <p className="text-[11px] text-muted-foreground">
-            After verifying, the system signs in, adds a secure 2FA password and puts the account into your stock.
-          </p>
-          <Button type="submit" disabled={busy || !code.trim()}>
-            {busy ? "Verifying — login, 2FA & stock…" : "Verify & add to stock"}
-          </Button>
-        </form>
-      )}
-
-      {step === "done" && result && (
-        <div className="grid gap-3">
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-5 w-5 text-green-400" />
-            <p className="font-medium">Account added to your stock</p>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            {result.country ? `${result.country} · ` : ""}
-            {result.phone} is now in your stock with a system 2FA password.
-          </p>
-          <Button variant="secondary" onClick={reset}>
-            Sell another account
-          </Button>
-        </div>
-      )}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={step}
+          initial={{ opacity: 0, x: 24 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -24 }}
+          transition={{ duration: 0.22 }}
+        >
+          {step === "phone" && (
+            <SellPhoneStep phone={phone} onPhone={setPhone} onSubmit={sendCode} busy={busy} />
+          )}
+          {step === "code" && <SellCodeStep phone={phone} code={code} onCode={setCode} onSubmit={verifyCode} />}
+          {step === "secure" && <SellProcessStep phone={phone} />}
+          {step === "stock" && <SellDoneStep result={result} onReset={reset} />}
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }
