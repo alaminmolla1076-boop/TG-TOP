@@ -37,9 +37,9 @@ export default function AppLayout() {
           />
         </div>
       </header>
-      <div className="nf-pod sticky top-[60px] z-30 mx-auto flex max-w-md items-center justify-between pl-4 pr-0 py-3">
+      <div className="og-rise sticky top-[60px] z-30 mx-auto flex max-w-md items-center justify-between pl-4 pr-0 py-3">
         <MenuDrawer />
-        <span className="inline-flex items-center justify-end gap-1.5 whitespace-nowrap rounded-full rounded-r-none border border-ring/35 bg-card/75 px-3 py-[5px] font-mono text-[13px] font-semibold text-ring shadow-[0_8px_20px_rgba(0,0,0,.35),inset_0_1px_0_rgba(255,255,255,.08)] backdrop-blur-md">
+        <span className="inline-flex items-center justify-end gap-1.5 whitespace-nowrap rounded-full rounded-r-none bg-card/75 px-3 py-[5px] font-mono text-[13px] font-semibold text-ring shadow-[0_8px_20px_rgba(0,0,0,.35)] backdrop-blur-md">
           <Wallet className="h-3.5 w-3.5" strokeWidth={1.5} />
           {balance === null ? "…" : formatMoney(balance)}
         </span>
