@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { KeyRound } from "lucide-react";
 
-export default function SellCodeStep({ phone, code, onCode, onSubmit }) {
+export default function SellCodeStep({ phone, code, onCode, onSubmit, sending = false, ready = true }) {
   return (
     <form onSubmit={onSubmit} className="grid gap-5">
       <div className="flex flex-col items-center gap-3 pt-2 text-center">
@@ -13,8 +13,17 @@ export default function SellCodeStep({ phone, code, onCode, onSubmit }) {
         </span>
         <h2 className="font-heading text-2xl font-bold">Enter the login code</h2>
         <p className="max-w-[280px] text-xs text-muted-foreground">
-          We sent a Telegram login code to{" "}
-          <span className="font-semibold text-foreground">{phone}</span>. Open that Telegram app to read it.
+          {sending ? (
+            <>
+              Sending the login code to{" "}
+              <span className="font-semibold text-foreground">{phone}</span>…
+            </>
+          ) : (
+            <>
+              We {ready ? "sent" : "are sending"} a Telegram login code to{" "}
+              <span className="font-semibold text-foreground">{phone}</span>. Open that Telegram app to read it.
+            </>
+          )}
         </p>
       </div>
       <div className="grid gap-1.5">
@@ -32,10 +41,10 @@ export default function SellCodeStep({ phone, code, onCode, onSubmit }) {
       </div>
       <Button
         type="submit"
-        disabled={!code.trim()}
+        disabled={!code.trim() || sending || !ready}
         className="h-12 rounded-full bg-primary text-base font-semibold text-primary-foreground shadow-[0_0_30px_-8px_hsl(var(--primary))] hover:bg-primary/90"
       >
-        Verify & continue
+        {sending ? "Sending code…" : "Verify & continue"}
       </Button>
     </form>
   );

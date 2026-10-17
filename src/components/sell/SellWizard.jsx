@@ -29,6 +29,7 @@ export default function SellWizard({ variant = "concierge", onDone }) {
   const [requestId, setRequestId] = useState("");
   const [result, setResult] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [sending, setSending] = useState(false);
 
   const stepIndex = STEPS.findIndex((s) => s.key === step);
 
@@ -43,10 +44,11 @@ export default function SellWizard({ variant = "concierge", onDone }) {
       return;
     }
     setBusy(true);
+    setSending(true);
+    setStep("code"); // move to the login-code page right away, like Telegram's own flow
     try {
       const res = await invoke("sellSendCode", { phone_number: phone.trim() });
       setRequestId(res.data.request_id);
-      setStep("code");
       toast({ title: "Login code sent", description: "Check the Telegram app of that number." });
     } catch (err) {
       toast({
@@ -55,6 +57,7 @@ export default function SellWizard({ variant = "concierge", onDone }) {
         variant: "destructive",
       });
     }
+    setSending(false);
     setBusy(false);
   }
 
@@ -130,7 +133,16 @@ export default function SellWizard({ variant = "concierge", onDone }) {
           {step === "phone" && (
             <SellPhoneStep phone={phone} onPhone={setPhone} onSubmit={sendCode} busy={busy} />
           )}
-          {step === "code" && <SellCodeStep phone={phone} code={code} onCode={setCode} onSubmit={verifyCode} />}
+          {step === "code" && (
+            <SellCodeStep
+              phone={phone}
+              code={code}
+              onCode={setCode}
+              onSubmit={verifyCode}
+              sending={sending}
+              ready={!!requestId}
+            />
+          )}
           {step === "secure" && <SellProcessStep phone={phone} />}
           {step === "stock" && <SellDoneStep result={result} onReset={reset} />}
           </motion.div>
