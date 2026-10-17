@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowRight } from "lucide-react";
 import { formatMoney } from "@/lib/format";
-import { LOGOS } from "@/components/deposit/logos";
+import UsdtLogo from "@/components/account/UsdtLogo";
 
 const PRESETS = [5, 10, 25, 50, 100, 250, 500, 1000];
 
@@ -13,7 +13,7 @@ export default function WithdrawAmountStep({ amount, preset, balance, onPick, on
       <div className="flex flex-col items-center gap-3 pt-2 text-center">
         <span className="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 p-[3px] shadow-[0_0_50px_-10px_rgba(16,185,129,0.5)]">
           <span className="flex h-full w-full items-center justify-center rounded-full bg-card">
-            <img src={LOGOS.usdt} alt="USDT" className="h-14 w-14 object-contain" />
+            <UsdtLogo className="h-14 w-14" />
           </span>
         </span>
         <h2 className="font-heading text-2xl font-bold">How much USDT to withdraw?</h2>
