@@ -7,7 +7,7 @@ import SectionHead from "./SectionHead";
 // Capsule List — purchased accounts. Single purchases fetch their captured
 // login code (Get Code), batch purchases received session formats in the
 // Telegram chat.
-export default function PurchasedAccounts({ purchases }) {
+export default function PurchasedAccounts({ purchases, emptyText }) {
   const { toast } = useToast();
   const { invoke } = useTgIdentity();
   const [codes, setCodes] = useState({}); // { [accountId]: { loading, code, error } }
@@ -49,7 +49,7 @@ export default function PurchasedAccounts({ purchases }) {
         <p className="text-[13px] text-[#a8a3cf]">Loading…</p>
       ) : purchases.length === 0 ? (
         <div className="rounded-[22px] border border-dashed border-[#A29BFE]/30 bg-[rgba(45,38,78,.3)] p-[18px] text-[13px] text-[#a8a3cf]">
-          No purchases yet — buy an account from a seller above.
+          {emptyText || "No purchases yet — buy an account from a seller above."}
         </div>
       ) : (
         purchases.map((p) => {

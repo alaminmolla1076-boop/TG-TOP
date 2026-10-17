@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import { Gem } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
+import MenuDrawer from "@/components/MenuDrawer";
 import { Image } from "@/components/ui/image";
 import { formatMoney } from "@/lib/format";
 import { LOGO_URL } from "@/lib/brand";
@@ -26,7 +27,7 @@ export default function AppLayout() {
     <div className="min-h-screen bg-background pb-[128px] tracking-[0.04em] text-foreground">
       <header className="og-rise sticky top-0 z-40 bg-background/70 backdrop-blur-md">
         <div className="mx-auto grid max-w-md grid-cols-[1fr_auto_1fr] items-center px-4 py-3">
-          <span />
+          <MenuDrawer />
           <Image
             src={LOGO_URL}
             alt="TGTOP"

@@ -15,6 +15,10 @@ import MarketBuy from '@/pages/MarketBuy';
 import Sell from '@/pages/Sell';
 import Account from '@/pages/Account';
 import Deposit from '@/pages/Deposit';
+import Withdraw from '@/pages/Withdraw';
+import Support from '@/pages/Support';
+import Language from '@/pages/Language';
+import Refer from '@/pages/Refer';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import ForgotPassword from '@/pages/ForgotPassword';
@@ -59,6 +63,10 @@ const AuthenticatedApp = () => {
           <Route path="/sell" element={<Sell />} />
           <Route path="/account" element={<Account />} />
           <Route path="/deposit" element={<Deposit />} />
+          <Route path="/withdraw" element={<Withdraw />} />
+          <Route path="/support" element={<Support />} />
+          <Route path="/language" element={<Language />} />
+          <Route path="/refer" element={<Refer />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />
