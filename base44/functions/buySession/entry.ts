@@ -65,12 +65,15 @@ export default async function (req) {
 
       for (const a of withSessions) {
         if (!a.session_string) continue;
+        // The session string is delivered exactly as stored (Telethon string
+        // session) — same format the sell flow generated.
+        const twoFa = a.two_fa_password || a.password || '';
         const text =
           'Your purchased Telegram account:\n\n' +
           (a.phone_number ? `Phone: ${a.phone_number}\n` : '') +
           (a.country_iso ? `Country: ${a.country_iso}\n` : '') +
-          (a.two_fa_password
-            ? `2FA password: ${a.two_fa_password}\n`
+          (twoFa
+            ? `2FA password: ${twoFa}\n`
             : '2FA: removed — use the session string directly\n') +
           '\nSession string:\n' +
           a.session_string;
