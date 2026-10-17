@@ -29,7 +29,7 @@ export default function MenuDrawer() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Open menu"
-        className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-card/75 text-foreground shadow-[0_8px_20px_rgba(0,0,0,.35),inset_0_1px_0_rgba(255,255,255,.08)] backdrop-blur-md transition-colors duration-200 hover:bg-accent/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-card/75 text-foreground shadow-[0_8px_20px_rgba(0,0,0,.35)] backdrop-blur-md transition-colors duration-200 hover:bg-accent/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
       >
         <Menu className="h-5 w-5" strokeWidth={1.5} />
       </button>
