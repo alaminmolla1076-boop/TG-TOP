@@ -13,19 +13,10 @@ const saleStatusStyle = {
   failed: "border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/10",
 };
 
-const salesListStyles = {
-  concierge: { list: "divide-y divide-dotted divide-border/60", row: "py-3" },
-  ribbon: { list: "space-y-3", row: "rounded-xl border border-l-2 border-l-primary/60 border-border/60 bg-card/80 p-4" },
-  focus: { list: "space-y-2.5", row: "rounded-2xl border border-border/40 bg-muted/30 p-4" },
-  vault: { list: "space-y-2 rounded-xl border-2 border-primary/40 p-1.5", row: "rounded-lg border border-border/70 bg-card p-3" },
-};
-
 export default function Sell() {
   const { fetchMyData } = useTgIdentity();
   const [sales, setSales] = useState(null);
   const [stock, setStock] = useState(null);
-  const variant = "concierge";
-  const listStyle = salesListStyles[variant];
 
   async function load(force = false) {
     const data = await fetchMyData(force);
@@ -42,31 +33,31 @@ export default function Sell() {
 
   return (
     <div className="mx-auto max-w-md space-y-6">
-      <StockPricesPanel stock={stock} variant={variant} onSaved={() => load(true)} />
+      <StockPricesPanel stock={stock} onSaved={() => load(true)} />
 
-      <SellWizard variant={variant} onDone={() => load(true)} />
+      <SellWizard onDone={() => load(true)} />
 
       <section className="space-y-3">
         <h2 className="font-heading text-base font-semibold">
-          {variant === "concierge" && <span className="mr-1 font-display text-primary/80">02 ·</span>} My Account Sales
+          <span className="mr-1 font-display text-primary/80">03 ·</span> My Account Sales
         </h2>
         {sales === null ? (
-          <p className="text-sm text-muted-foreground">Loading…</p>
+          <p className="text-sm text-[#9C9186]">Loading…</p>
         ) : sales.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No accounts submitted yet.</p>
+          <p className="text-[11px] leading-[1.55] text-[#B8ADA2]">No accounts submitted yet.</p>
         ) : (
-          <div className={listStyle.list}>
+          <div className="divide-y divide-dotted divide-[#4A423B]">
             {sales.map((s) => (
-              <div key={s.id} className={listStyle.row}>
+              <div key={s.id} className="border-b border-dotted border-[#4A423B] py-3 first:pt-0 last:border-0">
                 <div className="flex items-center justify-between gap-2">
-                  <p className="min-w-0 truncate font-medium">
+                  <p className="min-w-0 truncate text-sm font-semibold text-[#E8DFD6]">
                     {s.country_iso} · {s.phone_number}
                   </p>
                   <Badge className={saleStatusStyle[s.status] || saleStatusStyle.pending}>
                     {s.status}
                   </Badge>
                 </div>
-                <p className="mt-1 text-xs text-muted-foreground">
+                <p className="mt-1 text-[11px] text-[#B8ADA2]">
                   Reward: {formatMoney(Number(s.reward_amount))} · {s.reward_status}
                 </p>
               </div>

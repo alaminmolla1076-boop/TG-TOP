@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronLeft, KeyRound, Loader2, PackageCheck, ShieldCheck, Smartphone } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ChevronLeft } from "lucide-react";
 import { useTgIdentity } from "@/lib/TgIdentityContext";
 import { useToast } from "@/components/ui/use-toast";
 import SellPhoneStep from "./steps/SellPhoneStep";
@@ -12,15 +11,15 @@ import DesignStepTabs from "./DesignStepTabs";
 import DesignStepWrap from "./DesignStepWrap";
 
 const STEPS = [
-  { key: "phone", label: "Number", icon: Smartphone },
-  { key: "code", label: "Login code", icon: KeyRound },
-  { key: "secure", label: "Login + 2FA", icon: ShieldCheck },
-  { key: "stock", label: "In your stock", icon: PackageCheck },
+  { key: "phone", label: "Number" },
+  { key: "code", label: "Login code" },
+  { key: "secure", label: "Login + 2FA" },
+  { key: "stock", label: "In your stock" },
 ];
 
 // Step-by-step sell flow: the number → login code → system login + 2FA →
 // stock steps appear one at a time, like the Top Up and Withdraw wizards.
-export default function SellWizard({ variant = "concierge", onDone }) {
+export default function SellWizard({ onDone }) {
   const { toast } = useToast();
   const { invoke } = useTgIdentity();
   const [step, setStep] = useState("phone"); // phone | code | secure | stock
@@ -89,65 +88,58 @@ export default function SellWizard({ variant = "concierge", onDone }) {
   }
 
   return (
-    <div className="grid gap-6">
-      <div className="flex items-center gap-3">
+    <section>
+      <header className="flex items-center gap-3">
         {step === "code" && (
-          <Button
+          <button
             type="button"
-            variant="ghost"
-            size="icon"
-            onClick={() => setStep("phone")}
             aria-label="Back"
+            onClick={() => setStep("phone")}
+            className="grid h-8 w-8 shrink-0 cursor-pointer place-items-center rounded-full border border-[#4A423B] bg-[#2E2A28] text-white transition-[background-color,box-shadow,transform] duration-[180ms] ease-[ease] hover:bg-[#39322D] hover:shadow-[0_0_14px_#FFAA3333] active:scale-[0.94] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#FFAA33] focus-visible:outline-offset-[3px]"
           >
-            <ChevronLeft className="h-5 w-5" />
-          </Button>
+            <ChevronLeft className="h-[17px] w-[17px]" />
+          </button>
         )}
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-primary">
-            {variant === "concierge" ? "02 · Sell Account" : "Sell Account"}
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-primary">
+            02 · Sell Account
           </p>
-          {variant === "concierge" ? (
-            <h1 className="font-display text-4xl font-bold leading-tight">
-              {stepIndex + 1}
-              <span className="text-base text-muted-foreground"> / {STEPS.length}</span>
-            </h1>
-          ) : (
-            <h1 className="font-heading text-lg font-bold leading-tight">
-              Step {stepIndex + 1} of {STEPS.length}
-            </h1>
-          )}
+          <p className="mt-0.5 flex items-center gap-1 text-[21px] font-bold leading-none">
+            {stepIndex + 1}
+            <span className="text-xs font-medium text-[#B8ADA2]">/ {STEPS.length}</span>
+          </p>
         </div>
-      </div>
+      </header>
 
-      <DesignStepTabs steps={STEPS} stepIndex={stepIndex} variant={variant} />
+      <DesignStepTabs steps={STEPS} stepIndex={stepIndex} />
 
-      <DesignStepWrap variant={variant}>
+      <DesignStepWrap>
         <AnimatePresence mode="wait">
           <motion.div
-          key={step}
-          initial={{ opacity: 0, x: 24 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -24 }}
-          transition={{ duration: 0.22 }}
-        >
-          {step === "phone" && (
-            <SellPhoneStep phone={phone} onPhone={setPhone} onSubmit={sendCode} busy={busy} />
-          )}
-          {step === "code" && (
-            <SellCodeStep
-              phone={phone}
-              code={code}
-              onCode={setCode}
-              onSubmit={verifyCode}
-              sending={sending}
-              ready={!!requestId}
-            />
-          )}
-          {step === "secure" && <SellProcessStep phone={phone} />}
-          {step === "stock" && <SellDoneStep result={result} onReset={reset} />}
+            key={step}
+            initial={{ opacity: 0, x: 24 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -24 }}
+            transition={{ duration: 0.22 }}
+          >
+            {step === "phone" && (
+              <SellPhoneStep phone={phone} onPhone={setPhone} onSubmit={sendCode} busy={busy} />
+            )}
+            {step === "code" && (
+              <SellCodeStep
+                phone={phone}
+                code={code}
+                onCode={setCode}
+                onSubmit={verifyCode}
+                sending={sending}
+                ready={!!requestId}
+              />
+            )}
+            {step === "secure" && <SellProcessStep phone={phone} />}
+            {step === "stock" && <SellDoneStep result={result} onReset={reset} />}
           </motion.div>
         </AnimatePresence>
       </DesignStepWrap>
-    </div>
+    </section>
   );
 }

@@ -117,6 +117,14 @@
   .og-rise-4 {
     animation: og-rise 0.7s ease-out 0.7s both;
   }
+  /* Sell step indicator — active bar breathes between dim and full amber */
+  @keyframes sf-amber {
+    0%, 100% { opacity: 0.68; }
+    50% { opacity: 1; }
+  }
+  .sf-bar-active {
+    animation: sf-amber 2.8s ease-in-out infinite;
+  }
   /* Copper Atelier — ambient highlight on the brushed-copper balance surface */
   @keyframes ca-glow {
     0%, 100% { opacity: 0.78; }
