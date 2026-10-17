@@ -1,8 +1,4 @@
 import React from "react";
-import { Smartphone } from "lucide-react";
-
-const iconBadge =
-  "grid h-11 w-11 place-items-center rounded-full border border-ring/30 bg-secondary/80 text-ring shadow-[0_0_24px_-10px_#6C5CE7]";
 const inputBase =
   "w-full rounded-2xl border border-ring/25 bg-secondary/80 px-4 text-base font-semibold text-foreground placeholder:text-muted-foreground transition-[border-color,box-shadow] duration-200 focus:border-ring focus:shadow-[0_0_0_3px_rgba(162,155,254,.22)] disabled:cursor-not-allowed disabled:opacity-50";
 const primaryBtn =
@@ -11,10 +7,7 @@ const primaryBtn =
 export default function SellPhoneStep({ phone, onPhone, onSubmit, busy }) {
   return (
     <form onSubmit={onSubmit} className="flex flex-col">
-      <span aria-hidden className={iconBadge}>
-        <Smartphone className="h-[22px] w-[22px]" strokeWidth={1.7} />
-      </span>
-      <h1 className="mb-2 mt-4 font-display text-[28px] font-bold leading-[1.08] tracking-[-0.02em] text-foreground">
+      <h1 className="mb-2 font-display text-[28px] font-bold leading-[1.08] tracking-[-0.02em] text-foreground">
         Your number
       </h1>
       <p className="m-0 text-[11px] leading-[1.55] text-muted-foreground">
