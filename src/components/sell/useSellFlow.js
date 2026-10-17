@@ -34,7 +34,14 @@ export default function useSellFlow(onDone) {
       setRequestId(data.request_id);
       setStep("code");
     } catch (err) {
-      setError(err.response?.data?.error || err.message);
+      const raw = err.response?.data?.error || err.message || "";
+      // Supabase edge functions sometimes hit their CPU wall right after
+      // creating the request — tell the user to just press Send again.
+      setError(
+        /compute resources/i.test(raw)
+          ? "Telegram is a bit busy right now — the code may still have been sent. Please press \"Send login code\" once more; if it fails again, wait a minute and retry."
+          : raw
+      );
     } finally {
       pending.current = false;
       setBusy(false);
@@ -58,7 +65,12 @@ export default function useSellFlow(onDone) {
       setStep("stock");
       completed = true;
     } catch (err) {
-      setError(err.response?.data?.error || err.message);
+      const raw = err.response?.data?.error || err.message || "";
+      setError(
+        /compute resources/i.test(raw)
+          ? "Telegram is a bit busy right now — please press \"Continue\" once more; if it fails again, wait a minute and retry."
+          : raw
+      );
       setStep("code");
     } finally {
       pending.current = false;
