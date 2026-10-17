@@ -18,19 +18,25 @@ export default function Market() {
   const [sellers, setSellers] = useState(null);
   const [topSeller, setTopSeller] = useState(null);
   const [buyingId, setBuyingId] = useState(null);
+  const [loadError, setLoadError] = useState(false);
 
   async function load() {
-    const catalog = await invoke("getMarketProducts", {});
-    setProducts(catalog.data.products || []);
-    setSellers(catalog.data.sellers || []);
-    setTopSeller(catalog.data.top_seller || null);
+    setLoadError(false);
+    try {
+      const catalog = await invoke("getMarketProducts", {});
+      setProducts(catalog.data.products || []);
+      setSellers(catalog.data.sellers || []);
+      setTopSeller(catalog.data.top_seller || null);
+    } catch (err) {
+      setProducts([]);
+      setSellers([]);
+      setTopSeller(null);
+      setLoadError(true);
+    }
   }
 
   useEffect(() => {
-    load().catch(() => {
-      setProducts([]);
-      setSellers([]);
-    });
+    load();
   }, []);
 
   async function handleBuy(product) {
@@ -60,7 +66,22 @@ export default function Market() {
           TRUSTED DIGITAL MARKETPLACE
         </span>
         <TopSellerCapsule topSeller={topSeller} />
-        <SellerList sellers={sellers} />
+        {loadError ? (
+          <div className="mk-sec flex flex-col items-center gap-3 rounded-[22px] border border-[#A29BFE]/30 bg-[rgba(45,38,78,.5)] p-[18px] text-center">
+            <p className="text-[13px] text-[#a8a3cf]">
+              Couldn't load the market right now. Check your connection and retry.
+            </p>
+            <button
+              type="button"
+              onClick={load}
+              className="cursor-pointer rounded-full border border-[#A29BFE]/40 bg-[rgba(108,92,231,.25)] px-5 py-2 text-[13px] font-semibold text-[#A29BFE] transition-colors duration-200 hover:bg-[rgba(108,92,231,.45)]"
+            >
+              Retry
+            </button>
+          </div>
+        ) : (
+          <SellerList sellers={sellers} />
+        )}
         <ProductsList products={products} buyingId={buyingId} onBuy={handleBuy} />
         <HowItWorksBand />
       </div>
