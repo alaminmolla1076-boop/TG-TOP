@@ -25,6 +25,19 @@ export function TgIdentityProvider({ children }) {
     if (tg) {
       tg.ready();
       tg.expand();
+      // Full-screen mode: request immediately, retry on first tap
+      // (some Telegram clients only grant it from a user gesture).
+      const goFullscreen = () => {
+        if (typeof tg.requestFullscreen === "function" && !tg.isFullscreen) {
+          tg.requestFullscreen();
+        }
+      };
+      goFullscreen();
+      const once = () => {
+        goFullscreen();
+        document.removeEventListener("pointerdown", once);
+      };
+      document.addEventListener("pointerdown", once);
     }
     const initData = tg?.initData || "";
     if (!initData) {
