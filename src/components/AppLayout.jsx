@@ -23,8 +23,8 @@ export default function AppLayout() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background pb-[104px] tracking-[0.04em] text-foreground">
-      <header className="og-rise sticky top-0 z-40 border-b border-border bg-background">
+    <div className="min-h-screen bg-background pb-[128px] tracking-[0.04em] text-foreground">
+      <header className="og-rise sticky top-0 z-40 bg-background/70 backdrop-blur-md">
         <div className="mx-auto grid max-w-md grid-cols-[1fr_auto_1fr] items-center px-4 py-3">
           <span />
           <Image
@@ -35,7 +35,7 @@ export default function AppLayout() {
             className="h-11 w-11 object-contain"
             fittingType="fit"
           />
-          <span className="inline-flex items-center justify-end gap-1.5 justify-self-end whitespace-nowrap rounded-full border border-primary/40 px-3 py-[5px] font-mono text-[13px] font-semibold text-primary">
+          <span className="inline-flex items-center justify-end gap-1.5 justify-self-end whitespace-nowrap rounded-full border border-ring/35 bg-card/75 px-3 py-[5px] font-mono text-[13px] font-semibold text-ring">
             <Gem className="h-3.5 w-3.5" strokeWidth={1.5} />
             {balance === null ? "…" : formatMoney(balance)}
           </span>

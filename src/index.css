@@ -4,80 +4,80 @@
 
 @layer base {
   :root {
-    --background: 212 21% 14%;
-    --obsidian: 212 22% 10%;
-    --foreground: 214 14% 88%;
-    --card: 212 16% 18%;
-    --card-foreground: 214 14% 88%;
-    --popover: 212 16% 17%;
-    --popover-foreground: 214 14% 88%;
-    --primary: 209 15% 71%;
-    --primary-foreground: 212 30% 10%;
-    --secondary: 213 14% 25%;
-    --secondary-foreground: 214 14% 88%;
-    --muted: 213 14% 25%;
-    --muted-foreground: 212 9% 62%;
-    --accent: 213 14% 25%;
-    --accent-foreground: 214 14% 88%;
+    --background: 251 24% 9%;
+    --obsidian: 251 27% 6%;
+    --foreground: 248 70% 94%;
+    --card: 251 27% 16%;
+    --card-foreground: 248 70% 94%;
+    --popover: 251 27% 14%;
+    --popover-foreground: 248 70% 94%;
+    --primary: 247 74% 63%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 250 29% 19%;
+    --secondary-foreground: 248 70% 94%;
+    --muted: 250 29% 19%;
+    --muted-foreground: 248 23% 66%;
+    --accent: 251 31% 30%;
+    --accent-foreground: 248 70% 94%;
     --destructive: 0 62% 52%;
     --destructive-foreground: 0 0% 100%;
-    --border: 213 12% 30%;
-    --input: 213 12% 30%;
-    --ring: 209 15% 71%;
-    --chart-1: 209 15% 71%;
-    --chart-2: 213 10% 45%;
-    --chart-3: 212 9% 62%;
-    --chart-4: 213 14% 25%;
-    --chart-5: 214 14% 88%;
+    --border: 250 25% 26%;
+    --input: 250 25% 26%;
+    --ring: 244 98% 80%;
+    --chart-1: 244 98% 80%;
+    --chart-2: 247 74% 63%;
+    --chart-3: 248 23% 66%;
+    --chart-4: 250 29% 19%;
+    --chart-5: 248 70% 94%;
     --radius: 0.75rem;
-    --font-heading: ui-sans-serif, system-ui, sans-serif;
-    --font-body: ui-sans-serif, system-ui, sans-serif;
-    --font-display: ui-sans-serif, system-ui, sans-serif;
+    --font-heading: ui-rounded, "Segoe UI", system-ui, sans-serif;
+    --font-body: ui-rounded, "Segoe UI", system-ui, sans-serif;
+    --font-display: ui-rounded, "Segoe UI", system-ui, sans-serif;
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    --sidebar-background: 212 20% 12%;
-    --sidebar-foreground: 214 14% 88%;
-    --sidebar-primary: 209 15% 71%;
-    --sidebar-primary-foreground: 212 30% 10%;
-    --sidebar-accent: 213 14% 25%;
-    --sidebar-accent-foreground: 214 14% 88%;
-    --sidebar-border: 213 12% 30%;
-    --sidebar-ring: 209 15% 71%;
+    --sidebar-background: 251 24% 8%;
+    --sidebar-foreground: 248 70% 94%;
+    --sidebar-primary: 247 74% 63%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 250 29% 19%;
+    --sidebar-accent-foreground: 248 70% 94%;
+    --sidebar-border: 250 25% 26%;
+    --sidebar-ring: 244 98% 80%;
   }
 
   .dark {
-    --background: 212 21% 14%;
-    --obsidian: 212 22% 10%;
-    --foreground: 214 14% 88%;
-    --card: 212 16% 18%;
-    --card-foreground: 214 14% 88%;
-    --popover: 212 16% 17%;
-    --popover-foreground: 214 14% 88%;
-    --primary: 209 15% 71%;
-    --primary-foreground: 212 30% 10%;
-    --secondary: 213 14% 25%;
-    --secondary-foreground: 214 14% 88%;
-    --muted: 213 14% 25%;
-    --muted-foreground: 212 9% 62%;
-    --accent: 213 14% 25%;
-    --accent-foreground: 214 14% 88%;
+    --background: 251 24% 9%;
+    --obsidian: 251 27% 6%;
+    --foreground: 248 70% 94%;
+    --card: 251 27% 16%;
+    --card-foreground: 248 70% 94%;
+    --popover: 251 27% 14%;
+    --popover-foreground: 248 70% 94%;
+    --primary: 247 74% 63%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 250 29% 19%;
+    --secondary-foreground: 248 70% 94%;
+    --muted: 250 29% 19%;
+    --muted-foreground: 248 23% 66%;
+    --accent: 251 31% 30%;
+    --accent-foreground: 248 70% 94%;
     --destructive: 0 62% 52%;
     --destructive-foreground: 0 0% 100%;
-    --border: 213 12% 30%;
-    --input: 213 12% 30%;
-    --ring: 209 15% 71%;
-    --chart-1: 209 15% 71%;
-    --chart-2: 213 10% 45%;
-    --chart-3: 212 9% 62%;
-    --chart-4: 213 14% 25%;
-    --chart-5: 214 14% 88%;
-    --sidebar-background: 212 20% 12%;
-    --sidebar-foreground: 214 14% 88%;
-    --sidebar-primary: 209 15% 71%;
-    --sidebar-primary-foreground: 212 30% 10%;
-    --sidebar-accent: 213 14% 25%;
-    --sidebar-accent-foreground: 214 14% 88%;
-    --sidebar-border: 213 12% 30%;
-    --sidebar-ring: 209 15% 71%;
+    --border: 250 25% 26%;
+    --input: 250 25% 26%;
+    --ring: 244 98% 80%;
+    --chart-1: 244 98% 80%;
+    --chart-2: 247 74% 63%;
+    --chart-3: 248 23% 66%;
+    --chart-4: 250 29% 19%;
+    --chart-5: 248 70% 94%;
+    --sidebar-background: 251 24% 8%;
+    --sidebar-foreground: 248 70% 94%;
+    --sidebar-primary: 247 74% 63%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 250 29% 19%;
+    --sidebar-accent-foreground: 248 70% 94%;
+    --sidebar-border: 250 25% 26%;
+    --sidebar-ring: 244 98% 80%;
   }
 }
 
@@ -91,18 +91,10 @@
   }
 }
 
-/* Obsidian Fineline — topo resolve + staggered entrance animations */
 @layer utilities {
   @keyframes og-rise {
-    from { opacity: 0; transform: translateY(10px); }
+    from { opacity: 0; transform: translateY(12px); }
     to { opacity: 1; transform: none; }
-  }
-  @keyframes og-res {
-    from { opacity: 0; transform: scale(1.06); }
-    to { opacity: 0.35; transform: none; }
-  }
-  .og-topo {
-    animation: og-res 1.6s ease-out both;
   }
   .og-rise {
     animation: og-rise 0.7s ease-out both;
@@ -132,5 +124,17 @@
   }
   .vg-sweep {
     animation: vg-sweep 6s ease-in-out infinite;
+  }
+  /* Nordic Frost Glass — balance pod: entrance rise + rhythmic inner glow pulse */
+  @keyframes nf-rise {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes nf-pulse {
+    0%, 100% { box-shadow: inset 0 0 22px rgba(108, 92, 231, .3), inset 0 2px 0 rgba(255, 255, 255, .08), 0 14px 34px rgba(0, 0, 0, .45); }
+    50% { box-shadow: inset 0 0 34px rgba(162, 155, 254, .55), inset 0 2px 0 rgba(255, 255, 255, .1), 0 14px 40px rgba(108, 92, 231, .35); }
+  }
+  .nf-pod {
+    animation: nf-rise 0.7s ease-out 0.2s both, nf-pulse 3.2s ease-in-out infinite;
   }
 }
