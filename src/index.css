@@ -117,4 +117,12 @@
   .og-rise-4 {
     animation: og-rise 0.7s ease-out 0.7s both;
   }
+  /* Copper Atelier — ambient highlight on the brushed-copper balance surface */
+  @keyframes ca-glow {
+    0%, 100% { opacity: 0.78; }
+    50% { opacity: 1; }
+  }
+  .ca-glow {
+    animation: ca-glow 9s ease-in-out infinite;
+  }
 }

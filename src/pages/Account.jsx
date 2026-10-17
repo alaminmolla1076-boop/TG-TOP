@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Wallet, ShieldCheck } from "lucide-react";
-import ProfileHeroCard from "@/components/account/ProfileHeroCard";
-import ActionCards from "@/components/account/AccountCards";
+import IdentityRail from "@/components/account/IdentityRail";
+import BalancePanel from "@/components/account/BalancePanel";
+import StatsLedger from "@/components/account/StatsLedger";
+import ServiceBand from "@/components/account/ServiceBand";
 import SectionHeader from "@/components/account/SectionHeader";
-import WithdrawWizard from "@/components/account/WithdrawWizard";
 import WithdrawList from "@/components/account/WithdrawList";
 import AdminWithdrawals from "@/components/account/AdminWithdrawals";
+import WithdrawWizard from "@/components/account/WithdrawWizard";
 import { useTgIdentity } from "@/lib/TgIdentityContext";
 
 export default function Account() {
@@ -41,20 +43,23 @@ export default function Account() {
   }
 
   return (
-    <div className="flex flex-col gap-[18px] tracking-[0.04em]">
-      <ProfileHeroCard identity={identity} data={data} />
-      <ActionCards referralLink={referralLink} onWithdraw={() => setWizardOpen(true)} />
+    <div className="flex flex-col gap-[18px]">
+      <IdentityRail identity={identity} />
+      <BalancePanel data={data} onWithdraw={() => setWizardOpen(true)} />
+      <StatsLedger orders={data?.orders?.length ?? 0} sales={data?.account_sales?.length ?? 0} />
 
-      <section className="flex flex-col gap-2.5">
-        <SectionHeader icon={<Wallet className="h-3.5 w-3.5 text-[#F39C12]" strokeWidth={1.4} />}>
+      <section className="og-rise flex flex-col gap-2.5 [animation-delay:550ms]">
+        <SectionHeader icon={<Wallet className="h-3.5 w-3.5 text-[#C48B68]" strokeWidth={1.4} />}>
           My Withdrawals
         </SectionHeader>
         <WithdrawList withdrawals={data?.withdrawals || []} />
       </section>
 
+      <ServiceBand referralLink={referralLink} />
+
       {data?.role === "admin" && (
-        <section className="flex flex-col gap-2.5">
-          <SectionHeader icon={<ShieldCheck className="h-3.5 w-3.5 text-[#F39C12]" strokeWidth={1.4} />}>
+        <section className="og-rise flex flex-col gap-2.5 [animation-delay:550ms]">
+          <SectionHeader icon={<ShieldCheck className="h-3.5 w-3.5 text-[#C48B68]" strokeWidth={1.4} />}>
             Pending Withdrawals — All Users
           </SectionHeader>
           <AdminWithdrawals pending={data?.pending_withdrawals || []} onChanged={() => load(true)} />
