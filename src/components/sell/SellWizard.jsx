@@ -8,6 +8,8 @@ import SellPhoneStep from "./steps/SellPhoneStep";
 import SellCodeStep from "./steps/SellCodeStep";
 import SellProcessStep from "./steps/SellProcessStep";
 import SellDoneStep from "./steps/SellDoneStep";
+import DesignStepTabs from "./DesignStepTabs";
+import DesignStepWrap from "./DesignStepWrap";
 
 const STEPS = [
   { key: "phone", label: "Number", icon: Smartphone },
@@ -18,7 +20,7 @@ const STEPS = [
 
 // Step-by-step sell flow: the number → login code → system login + 2FA →
 // stock steps appear one at a time, like the Top Up and Withdraw wizards.
-export default function SellWizard({ onDone }) {
+export default function SellWizard({ variant = "concierge", onDone }) {
   const { toast } = useToast();
   const { invoke } = useTgIdentity();
   const [step, setStep] = useState("phone"); // phone | code | secure | stock
@@ -98,48 +100,27 @@ export default function SellWizard({ onDone }) {
           </Button>
         )}
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-primary">Sell Account</p>
-          <h1 className="font-heading text-lg font-bold leading-tight">
-            Step {stepIndex + 1} of {STEPS.length}
-          </h1>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-primary">
+            {variant === "concierge" ? "02 · Sell Account" : "Sell Account"}
+          </p>
+          {variant === "concierge" ? (
+            <h1 className="font-display text-4xl font-bold leading-tight">
+              {stepIndex + 1}
+              <span className="text-base text-muted-foreground"> / {STEPS.length}</span>
+            </h1>
+          ) : (
+            <h1 className="font-heading text-lg font-bold leading-tight">
+              Step {stepIndex + 1} of {STEPS.length}
+            </h1>
+          )}
         </div>
       </div>
 
-      <ol className="grid grid-cols-4 gap-1.5">
-        {STEPS.map((s, i) => {
-          const done = i < stepIndex;
-          const active = i === stepIndex;
-          const Icon = s.icon;
-          return (
-            <li
-              key={s.key}
-              className={`grid gap-1 rounded-lg border px-1.5 py-2 text-center ${
-                done
-                  ? "border-green-500/30 bg-green-500/10"
-                  : active
-                    ? "border-primary/50 bg-primary/10"
-                    : "border-border/50 bg-muted/30"
-              }`}
-            >
-              <Icon
-                className={`mx-auto h-4 w-4 ${
-                  done ? "text-green-400" : active ? "text-primary" : "text-muted-foreground"
-                } ${step === "secure" && s.key === "secure" ? "animate-pulse" : ""}`}
-              />
-              <span
-                className={`text-[10px] leading-tight ${
-                  done || active ? "text-foreground" : "text-muted-foreground"
-                }`}
-              >
-                {s.label}
-              </span>
-            </li>
-          );
-        })}
-      </ol>
+      <DesignStepTabs steps={STEPS} stepIndex={stepIndex} variant={variant} />
 
-      <AnimatePresence mode="wait">
-        <motion.div
+      <DesignStepWrap variant={variant}>
+        <AnimatePresence mode="wait">
+          <motion.div
           key={step}
           initial={{ opacity: 0, x: 24 }}
           animate={{ opacity: 1, x: 0 }}
@@ -152,8 +133,9 @@ export default function SellWizard({ onDone }) {
           {step === "code" && <SellCodeStep phone={phone} code={code} onCode={setCode} onSubmit={verifyCode} />}
           {step === "secure" && <SellProcessStep phone={phone} />}
           {step === "stock" && <SellDoneStep result={result} onReset={reset} />}
-        </motion.div>
-      </AnimatePresence>
+          </motion.div>
+        </AnimatePresence>
+      </DesignStepWrap>
     </div>
   );
 }
