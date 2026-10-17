@@ -38,9 +38,17 @@ export default function SellerList({ sellers }) {
               </div>
             )}
             <span className="min-w-0 flex-1">
-              <span className="block truncate text-[15px] font-medium text-foreground">{s.name}</span>
+              <span className="flex items-center gap-1.5">
+                <span className="truncate text-[15px] font-medium text-foreground">{s.name}</span>
+                {s.is_self && (
+                  <span className="shrink-0 rounded-full bg-[rgba(108,92,231,.22)] px-[7px] py-px text-[10px] font-semibold text-[#A29BFE]">
+                    You
+                  </span>
+                )}
+              </span>
               <span className="block truncate text-[11px] text-[#a8a3cf]">
-                {s.username ? `@${s.username} · ` : ""}ID: {s.telegram_id || s.id.slice(0, 8)}
+                {s.username ? `@${s.username} · ` : ""}
+                {s.countries.reduce((n, c) => n + (c.stock || 0), 0)} in stock
               </span>
             </span>
             <ChevronRight className="h-4 w-4 shrink-0 text-[#a8a3cf]" strokeWidth={1.5} />

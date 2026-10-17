@@ -1,4 +1,5 @@
 import { runSql, sqlString, callB44 } from "../../shared/supabase.ts";
+import { resolveIdentity } from "../../shared/telegram.ts";
 
 // Buys accounts from a seller's stock. Supabase's purchaseAccount owns the
 // whole flow: it claims the accounts, charges the balance and delivers to the
@@ -21,6 +22,13 @@ export default async function (req) {
     // When buying from a specific seller (market seller list), pass the seller
     // through — Supabase's purchaseAccount claims that seller's accounts.
     const sellerEmail = String(body.seller_email || '').trim();
+    // Your own listings are visible to you on the market but can't be bought.
+    if (sellerEmail) {
+      const identity = await resolveIdentity(body.initData);
+      if ((identity.identity_email || '').toLowerCase() === sellerEmail.toLowerCase()) {
+        return Response.json({ error: 'You cannot buy your own listings' }, { status: 400 });
+      }
+    }
     const res = await callB44('purchaseAccount', {
       initData: body.initData,
       country_iso: countryIso,

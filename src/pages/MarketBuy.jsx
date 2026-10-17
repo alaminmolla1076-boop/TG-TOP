@@ -106,6 +106,11 @@ export default function MarketBuy() {
           </div>
         </div>
 
+        {seller.is_self ? (
+          <div className="mk-sec rounded-[22px] border border-dashed border-[#A29BFE]/30 bg-[rgba(45,38,78,.3)] p-[18px] text-[13px] text-[#a8a3cf]">
+            This is your own listing — you can't buy your own stock. Buyers will see this page with the purchase buttons.
+          </div>
+        ) : (
         <section className="mk-sec flex flex-col gap-3">
           <div className="text-[10px] font-semibold uppercase tracking-[.14em] text-[#A29BFE]">Buy</div>
           <div className="flex flex-col gap-2.5 rounded-[26px] border border-[#A29BFE]/[.22] bg-[rgba(45,38,78,.5)] p-3.5">
@@ -157,6 +162,7 @@ export default function MarketBuy() {
             </form>
           </div>
         </section>
+        )}
       </div>
     </div>
   );

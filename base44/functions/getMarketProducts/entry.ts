@@ -20,6 +20,7 @@ export default async function(req) {
       // they set and their stock — the market shows this as a seller list.
       runSql(
         `select a.owner_email,
+                (a.owner_email = ${email}) as is_self,
                 p.id as seller_id,
                 coalesce(p.full_name, p.telegram_first_name, 'Seller') as name,
                 coalesce(p.telegram_username, '') as username,
@@ -40,9 +41,8 @@ export default async function(req) {
          left join reward_prices r on r.country_iso = a.country_iso and r.active = true
          left join countries c on c.iso = a.country_iso
          where a.status = 'available'
-           and a.price is not null
-           and a.owner_email <> ${email}
-         group by a.owner_email, p.id, p.full_name, p.telegram_first_name, p.telegram_username,
+            and a.price is not null
+          group by a.owner_email, is_self, p.id, p.full_name, p.telegram_first_name, p.telegram_username,
                   p.telegram_id, p.telegram_photo_url, a.country_iso, r.country_name, c.name, r.flag
          order by name asc, country_name asc limit 500`
          ),
@@ -74,6 +74,7 @@ export default async function(req) {
           username: row.username,
           telegram_id: row.telegram_id,
           photo_url: row.photo_url,
+          is_self: row.is_self === true,
           sold: Number(row.sold || 0),
           countries: [],
         });

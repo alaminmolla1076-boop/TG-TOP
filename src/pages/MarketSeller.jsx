@@ -56,7 +56,14 @@ export default function MarketSeller() {
             )}
           </div>
           <div className="min-w-0">
-            <p className="truncate text-base font-semibold text-foreground">{seller.name}</p>
+            <p className="flex items-center gap-1.5 truncate text-base font-semibold text-foreground">
+              {seller.name}
+              {seller.is_self && (
+                <span className="shrink-0 rounded-full bg-[rgba(108,92,231,.22)] px-[7px] py-px text-[10px] font-semibold text-[#A29BFE]">
+                  You
+                </span>
+              )}
+            </p>
             <p className="mt-0.5 truncate text-xs text-[#a8a3cf]">
               {seller.username ? `@${seller.username} · ` : ""}ID: {seller.telegram_id || seller.id.slice(0, 8)}
             </p>
