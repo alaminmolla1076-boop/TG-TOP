@@ -1,24 +1,28 @@
 import React from "react";
 import { Smartphone } from "lucide-react";
 
+const iconBadge =
+  "grid h-11 w-11 place-items-center rounded-full border border-ring/30 bg-secondary/80 text-ring shadow-[0_0_24px_-10px_#6C5CE7]";
+const inputBase =
+  "w-full rounded-2xl border border-ring/25 bg-secondary/80 px-4 text-base font-semibold text-foreground placeholder:text-muted-foreground transition-[border-color,box-shadow] duration-200 focus:border-ring focus:shadow-[0_0_0_3px_rgba(162,155,254,.22)] disabled:cursor-not-allowed disabled:opacity-50";
+const primaryBtn =
+  "h-12 w-full cursor-pointer rounded-full bg-gradient-to-br from-primary to-[#8E7DFF] text-sm font-semibold text-primary-foreground shadow-[0_6px_18px_rgba(108,92,231,.5)] transition-[opacity,box-shadow,transform] duration-200 hover:opacity-90 active:scale-[0.985] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:cursor-not-allowed disabled:opacity-50";
+
 export default function SellPhoneStep({ phone, onPhone, onSubmit, busy }) {
   return (
     <form onSubmit={onSubmit} className="flex flex-col">
-      <span
-        aria-hidden
-        className="grid h-11 w-11 place-items-center rounded-full border border-[#735224] bg-[#30271D] text-primary shadow-[0_0_24px_-10px_#FFAA33]"
-      >
+      <span aria-hidden className={iconBadge}>
         <Smartphone className="h-[22px] w-[22px]" strokeWidth={1.7} />
       </span>
-      <h1 className="mb-2 mt-4 font-display text-[28px] font-normal leading-[1.08] tracking-[-0.035em]">
+      <h1 className="mb-2 mt-4 font-display text-[28px] font-bold leading-[1.08] tracking-[-0.02em] text-foreground">
         Your number
       </h1>
-      <p className="m-0 text-[11px] leading-[1.55] text-[#B8ADA2]">
+      <p className="m-0 text-[11px] leading-[1.55] text-muted-foreground">
         We will send a Telegram login code to this number.{" "}
-        <strong className="font-semibold text-white">Open that Telegram app to read it.</strong>
+        <strong className="font-semibold text-foreground">Open that Telegram app to read it.</strong>
       </p>
       <div className="mt-5 grid gap-2">
-        <label htmlFor="sell-phone" className="text-[11px] font-semibold text-[#E8DFD6]">
+        <label htmlFor="sell-phone" className="text-[11px] font-semibold text-foreground">
           Telegram Phone Number
         </label>
         <input
@@ -30,15 +34,11 @@ export default function SellPhoneStep({ phone, onPhone, onSubmit, busy }) {
           placeholder="+8801XXXXXXXXX"
           disabled={busy}
           required
-          className="w-full rounded-[13px] border border-[#66594B] bg-[#2E2A28] px-4 text-base font-semibold text-white placeholder:text-[#82776C] transition-[border-color,box-shadow] duration-[180ms] ease-[ease] focus:outline-none focus:border-primary focus:shadow-[0_0_0_3px_#FFAA3325] disabled:cursor-not-allowed disabled:opacity-50 h-[52px]"
+          className={`${inputBase} h-[52px]`}
         />
       </div>
       <div className="mt-6 pt-4">
-        <button
-          type="submit"
-          disabled={busy}
-          className="h-12 w-full cursor-pointer rounded-full bg-primary text-sm font-semibold text-[#24201E] shadow-[0_8px_20px_#FFAA3324] transition-[background-color,box-shadow,transform] duration-[180ms] ease-[ease] hover:bg-[#FFB84F] hover:shadow-[0_9px_24px_#FFAA3344] active:scale-[0.985] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#FFAA33] focus-visible:outline-offset-[3px] disabled:cursor-not-allowed disabled:opacity-50"
-        >
+        <button type="submit" disabled={busy} className={primaryBtn}>
           {busy ? "Sending code…" : "Send login code"}
         </button>
       </div>

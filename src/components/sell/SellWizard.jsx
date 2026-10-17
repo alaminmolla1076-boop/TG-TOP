@@ -30,24 +30,24 @@ export default function SellWizard({ onDone }) {
             type="button"
             aria-label="Back"
             onClick={back}
-            className="grid h-8 w-8 shrink-0 cursor-pointer place-items-center rounded-full border border-[#4A423B] bg-[#2E2A28] text-white transition-[background-color,box-shadow,transform] duration-[180ms] ease-[ease] hover:bg-[#39322D] hover:shadow-[0_0_14px_#FFAA3333] active:scale-[0.94] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#FFAA33] focus-visible:outline-offset-[3px]"
+            className="grid h-8 w-8 shrink-0 cursor-pointer place-items-center rounded-full border border-ring/40 bg-secondary/80 text-foreground transition-[background-color,box-shadow,transform] duration-200 hover:bg-accent/90 hover:shadow-[0_0_14px_rgba(108,92,231,.35)] active:scale-[0.94] focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2"
           >
             <ChevronLeft className="h-[17px] w-[17px]" />
           </button>
         )}
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-primary">
+          <p className="text-[10px] font-bold uppercase tracking-[.08em] text-ring">
             02 · Sell Account
           </p>
-          <p className="mt-0.5 flex items-center gap-1 text-[21px] font-bold leading-none">
+          <p className="mt-0.5 flex items-center gap-1 font-display text-[21px] font-bold leading-none text-foreground">
             {stepIndex + 1}
-            <span className="text-xs font-medium text-[#B8ADA2]">/ {STEPS.length}</span>
+            <span className="text-xs font-medium text-muted-foreground">/ {STEPS.length}</span>
           </p>
         </div>
       </header>
 
       <DesignStepTabs steps={STEPS} stepIndex={stepIndex} />
-      {error && <p role="alert" className="mt-4 rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">{error}</p>}
+      {error && <p role="alert" className="mt-4 rounded-2xl border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">{error}</p>}
 
       <DesignStepWrap>
         <AnimatePresence mode="wait">
