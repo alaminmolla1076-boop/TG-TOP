@@ -137,4 +137,22 @@
   .nf-pod {
     animation: nf-rise 0.7s ease-out 0.2s both, nf-pulse 3.2s ease-in-out infinite;
   }
+  /* Capsule List market — opacity-only entrance + Top Seller glow pulse */
+  @keyframes mk-rise {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes mk-glow {
+    0%, 100% { box-shadow: inset 0 0 18px rgba(108, 92, 231, .25), 0 10px 26px rgba(0, 0, 0, .4); }
+    50% { box-shadow: inset 0 0 30px rgba(162, 155, 254, .45), 0 10px 30px rgba(0, 0, 0, .4); }
+  }
+  .mk-fade {
+    animation: mk-rise 0.7s ease-out both;
+  }
+  .mk-cap {
+    animation: mk-rise 0.7s ease-out 0.15s both, mk-glow 4s ease-in-out infinite;
+  }
+  .mk-sec {
+    animation: mk-rise 0.7s ease-out 0.3s both;
+  }
 }

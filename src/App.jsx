@@ -10,6 +10,8 @@ import AppLayout from '@/components/AppLayout';
 import TgShell from '@/components/TgShell';
 import Home from '@/pages/Home';
 import Market from '@/pages/Market';
+import MarketSeller from '@/pages/MarketSeller';
+import MarketBuy from '@/pages/MarketBuy';
 import Sell from '@/pages/Sell';
 import Account from '@/pages/Account';
 import Deposit from '@/pages/Deposit';
@@ -52,6 +54,8 @@ const AuthenticatedApp = () => {
         <Route element={<AppLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/market" element={<Market />} />
+          <Route path="/market/seller/:sellerId" element={<MarketSeller />} />
+          <Route path="/market/buy/:sellerId/:countryIso" element={<MarketBuy />} />
           <Route path="/sell" element={<Sell />} />
           <Route path="/account" element={<Account />} />
           <Route path="/deposit" element={<Deposit />} />

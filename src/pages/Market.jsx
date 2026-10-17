@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useTgIdentity } from "@/lib/TgIdentityContext";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import SellerShop from "@/components/market/SellerShop";
+import MarketBackdrop from "@/components/market/MarketBackdrop";
+import TopSellerCapsule from "@/components/market/TopSellerCapsule";
+import SellerList from "@/components/market/SellerList";
 import PurchasedAccounts from "@/components/market/PurchasedAccounts";
-import { Package, ShoppingBag } from "lucide-react";
+import OrdersList from "@/components/market/OrdersList";
+import ProductsList from "@/components/market/ProductsList";
+import HowItWorksBand from "@/components/market/HowItWorksBand";
 import { formatMoney } from "@/lib/format";
 
-const steps = [
-  { no: "01", title: "Top up your balance", desc: "Top Up USDT from the Account tab — top-ups are verified automatically on-chain." },
-  { no: "02", title: "Browse the market", desc: "Pick a seller below and buy their accounts — all prices are in USDT." },
-  { no: "03", title: "Buy instantly", desc: "Your balance is charged and the order is completed immediately." },
-];
-
+// Capsule List — Market: Top Seller capsule + seller name directory; each
+// seller name opens their own country-stock page, countries open the
+// purchase page. Purchases, orders and products stay on this page.
 export default function Market() {
   const { toast } = useToast();
   const { invoke, fetchMyData } = useTgIdentity();
@@ -21,6 +20,7 @@ export default function Market() {
   const [sellers, setSellers] = useState(null);
   const [orders, setOrders] = useState([]);
   const [purchases, setPurchases] = useState(null);
+  const [topSeller, setTopSeller] = useState(null);
   const [buyingId, setBuyingId] = useState(null);
 
   async function load(force = false) {
@@ -31,6 +31,7 @@ export default function Market() {
     ]);
     setProducts(catalog.data.products || []);
     setSellers(catalog.data.sellers || []);
+    setTopSeller(catalog.data.top_seller || null);
     setOrders(my.orders || []);
     setPurchases(pur.data.purchases || []);
   }
@@ -39,6 +40,7 @@ export default function Market() {
     load().catch(() => {
       setProducts([]);
       setPurchases([]);
+      setSellers([]);
     });
   }, []);
 
@@ -62,93 +64,19 @@ export default function Market() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-center">
-        <span className="rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-[11px] font-semibold tracking-widest text-primary">
+    <div className="relative">
+      <MarketBackdrop />
+      <div className="relative z-10 flex flex-col gap-[22px]">
+        <span className="mk-fade self-center rounded-full border border-[#A29BFE]/35 bg-[rgba(108,92,231,.14)] px-4 py-1.5 text-[11px] font-semibold tracking-[.14em] text-[#A29BFE]">
           TRUSTED DIGITAL MARKETPLACE
         </span>
+        <TopSellerCapsule topSeller={topSeller} />
+        <SellerList sellers={sellers} />
+        <PurchasedAccounts purchases={purchases} />
+        <OrdersList orders={orders} />
+        <ProductsList products={products} buyingId={buyingId} onBuy={handleBuy} />
+        <HowItWorksBand />
       </div>
-
-      {products?.length > 0 && (
-      <section className="space-y-3">
-        <div className="flex items-center gap-2">
-          <Package className="h-4 w-4 text-primary" />
-          <h2 className="font-heading text-base font-semibold">Products</h2>
-          <Badge className="border border-primary/30 bg-primary/10 text-primary hover:bg-primary/10">
-            {products?.length ?? 0} items
-          </Badge>
-        </div>
-        {products === null ? (
-          <p className="text-sm text-muted-foreground">Loading…</p>
-        ) : products.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No products are available right now — check back soon.</p>
-        ) : (
-          <div className="space-y-3">
-            {products.map((p) => (
-              <div key={p.id} className="flex items-center gap-3 rounded-xl border border-border/60 bg-card p-4">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-lg">
-                  {p.icon || p.name[0]}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium">{p.name}</p>
-                  <p className="truncate text-xs text-muted-foreground">
-                    {p.description || p.unit_label || p.category || "General"}
-                  </p>
-                </div>
-                <div className="flex shrink-0 flex-col items-end gap-1.5">
-                  <p className="font-heading font-semibold text-primary">{formatMoney(p.price)}</p>
-                  <Button size="sm" onClick={() => handleBuy(p)} disabled={buyingId === p.id}>
-                    {buyingId === p.id ? "Buying…" : "Buy"}
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
-      )}
-
-      <SellerShop sellers={sellers} onBought={() => load(true)} />
-
-      <PurchasedAccounts purchases={purchases} />
-
-      <section className="space-y-3">
-        <div className="flex items-center gap-2">
-          <ShoppingBag className="h-4 w-4 text-primary" />
-          <h2 className="font-heading text-base font-semibold">My Orders</h2>
-        </div>
-        {orders.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No orders yet.</p>
-        ) : (
-          <div className="space-y-3">
-            {orders.map((o) => (
-              <div key={o.id} className="flex items-center justify-between gap-2 rounded-xl border border-border/60 bg-card p-4">
-                <div className="min-w-0">
-                  <p className="truncate font-medium">{o.product_name}</p>
-                  <p className="text-xs capitalize text-muted-foreground">{o.status}</p>
-                </div>
-                <p className="shrink-0 font-heading font-semibold text-primary">{formatMoney(o.price)}</p>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
-
-      <section>
-        <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">Simple Process</p>
-        <h2 className="mt-1 font-heading text-2xl font-bold">How it works</h2>
-        <div className="mt-3 space-y-3">
-          {steps.map((s) => (
-            <div key={s.no} className="flex gap-4 rounded-xl border border-border/60 bg-card p-4">
-              <span className="font-heading text-3xl font-bold leading-none text-primary">{s.no}</span>
-              <div>
-                <h3 className="font-medium">{s.title}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">{s.desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
     </div>
   );
 }
