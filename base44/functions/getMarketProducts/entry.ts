@@ -43,7 +43,7 @@ export default async function(req) {
          where a.status = 'available'
             and a.price is not null
           group by a.owner_email, is_self, p.id, p.full_name, p.telegram_first_name, p.telegram_username,
-                  p.telegram_id, p.telegram_photo_url, a.country_iso, r.country_name, c.name, r.flag
+                  p.telegram_id, p.telegram_photo_url, a.country_iso, r.country_name, c.name, r.flag, c.flag
          order by name asc, country_name asc limit 500`
          ),
          // Top Seller — the profile with the most completed account sales. A sold
