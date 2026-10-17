@@ -3,7 +3,6 @@ import { useTgIdentity } from "@/lib/TgIdentityContext";
 import { Badge } from "@/components/ui/badge";
 import SellWizard from "@/components/sell/SellWizard";
 import StockPricesPanel from "@/components/sell/StockPricesPanel";
-import DesignSwitcher from "@/components/sell/DesignSwitcher";
 import { formatMoney } from "@/lib/format";
 
 const saleStatusStyle = {
@@ -25,7 +24,7 @@ export default function Sell() {
   const { fetchMyData } = useTgIdentity();
   const [sales, setSales] = useState(null);
   const [stock, setStock] = useState(null);
-  const [variant, setVariant] = useState("concierge");
+  const variant = "concierge";
   const listStyle = salesListStyles[variant];
 
   async function load(force = false) {
@@ -43,13 +42,6 @@ export default function Sell() {
 
   return (
     <div className="mx-auto max-w-md space-y-6">
-      <section className="space-y-2 rounded-2xl border border-dashed border-primary/40 bg-primary/5 p-4">
-        <p className="text-xs font-semibold uppercase tracking-wider text-primary">
-          Design preview — tap A, B, C or D and tell me which to keep
-        </p>
-        <DesignSwitcher value={variant} onChange={setVariant} />
-      </section>
-
       <StockPricesPanel stock={stock} variant={variant} onSaved={() => load(true)} />
 
       <SellWizard variant={variant} onDone={() => load(true)} />
