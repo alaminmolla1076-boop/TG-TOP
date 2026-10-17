@@ -15,7 +15,7 @@ export default function WithdrawAddressStep({ amount, network, address, submitti
       <div className="grid gap-1">
         <h2 className="font-heading text-2xl font-bold">Your {meta.label} Address</h2>
         <p className="text-xs text-muted-foreground">
-          <span className="font-bold text-emerald-300">${amount}</span> will be sent to this address after admin approval.
+          <span className="font-bold text-emerald-300">${amount}</span>{network === "TON" ? " USD equivalent in TON" : " USDT"} will be sent to this address after admin approval.
         </p>
       </div>
 

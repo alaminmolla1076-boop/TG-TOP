@@ -21,8 +21,8 @@ export default function WithdrawWizard({ balance, onDone }) {
 
   function goNextFromAmount() {
     const value = Number(amount);
-    if (!value || value < 1) {
-      toast({ title: "Enter at least $1", variant: "destructive" });
+    if (!Number.isFinite(value) || value < 3 || Math.abs(value * 100 - Math.round(value * 100)) > 0.000001) {
+      toast({ title: "Enter at least $3 with up to two decimal places", variant: "destructive" });
       return;
     }
     if (value > balance) {

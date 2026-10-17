@@ -67,8 +67,8 @@ export default async function(req) {
         ]);
 
     let balance = profile ? Number(profile.balance) : 0;
-    if (balanceRes && balanceRes.balance !== undefined) {
-      balance = Number(balanceRes.balance) || balance;
+    if (balanceRes && balanceRes.balance !== undefined && Number.isFinite(Number(balanceRes.balance))) {
+      balance = Number(balanceRes.balance);
     }
 
     return Response.json({

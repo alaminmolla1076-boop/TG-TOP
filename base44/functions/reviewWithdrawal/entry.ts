@@ -19,9 +19,7 @@ export default async function(req) {
     await callB44('approveWithdrawal', {
       initData: body.initData,
       withdrawal_id: id,
-      id,
-      approved: decision === 'approved',
-      decision,
+      status: decision,
     });
     return Response.json({ status: decision });
   } catch (error) {

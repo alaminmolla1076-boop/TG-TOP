@@ -24,7 +24,7 @@ export const NETWORK_META = {
     logo: LOGOS.TON,
     hint: "Toncoin — formerly Gram",
     placeholder: "EQ… / UQ… your TON address",
-    validate: (a) => /^(EQ|UQ|Eq|Uq)[A-Za-z0-9_-]{46}$/.test(a) || /^0:\d+:[A-Fa-f0-9]+$/.test(a),
+    validate: (a) => /^(EQ|UQ|kQ|0Q)[A-Za-z0-9_-]{46}$/.test(a) || /^(0|-1):[A-Fa-f0-9]{64}$/.test(a),
     error: "Enter a valid TON address — it starts with EQ… or UQ… (48 characters).",
   },
 };
