@@ -32,9 +32,12 @@ export default async function(req) {
       return Response.json({ error: "This sale request does not belong to you" }, { status: 403 });
     }
 
-    const res = await callB44("verifyLoginCode", { initData: body.initData, request_id: requestId, phone_code: code });
+    const res = await callB44("verifyLoginCode", { initData: body.initData, request_id: requestId, phone_code: code }, 180000);
+    if (res.success !== true) {
+      return Response.json({ error: res.error || "Supabase did not confirm the account was saved" }, { status: 400 });
+    }
     return Response.json({
-      success: true,
+      success: res.success,
       phone: res.phone,
       country: res.country,
       country_iso: res.country_iso,

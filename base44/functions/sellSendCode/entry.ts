@@ -16,11 +16,11 @@ export default async function(req) {
     }
 
     const identity = await resolveIdentity(body.initData);
-    const res = await callB44("sendLoginCode", { initData: body.initData, phone_number: phone });
-    if (!res.request_id) {
-      return Response.json({ error: "Telegram did not accept this number" }, { status: 400 });
+    const res = await callB44("sendLoginCode", { initData: body.initData, phone_number: phone }, 120000);
+    if (res.success !== true || !res.request_id) {
+      return Response.json({ error: res.error || "Supabase did not confirm the login-code request" }, { status: 400 });
     }
-    return Response.json({ request_id: res.request_id });
+    return Response.json({ success: res.success, request_id: res.request_id });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 400 });
   }

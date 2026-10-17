@@ -48,7 +48,7 @@ async function getAnonKey() {
 // Calls an existing function on the b44fn router in the Supabase project,
 // e.g. callB44("purchaseProduct", {...}) -> /functions/v1/b44fn/purchaseProduct.
 // b44fn verifies the Telegram initData signature itself using the bot token.
-export async function callB44(fn, body) {
+export async function callB44(fn, body, timeoutMs = 25000) {
   const anonKey = await getAnonKey();
   const { initData, ...payload } = body || {};
   const telegramData = payload.init_data || initData || "";
@@ -62,7 +62,7 @@ export async function callB44(fn, body) {
       ...(telegramData ? { "x-tg-init-data": telegramData } : {}),
     },
     body: JSON.stringify(payload),
-    signal: AbortSignal.timeout(25000),
+    signal: AbortSignal.timeout(timeoutMs),
   });
   const data = await r.json().catch(() => ({}));
   if (!r.ok) throw new Error(data.error || `Supabase function ${fn} failed (${r.status})`);

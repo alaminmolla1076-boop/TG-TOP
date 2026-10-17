@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
-import { useTgIdentity } from "@/lib/TgIdentityContext";
-import { useToast } from "@/components/ui/use-toast";
+import useSellFlow from "@/components/sell/useSellFlow";
 import SellPhoneStep from "./steps/SellPhoneStep";
 import SellCodeStep from "./steps/SellCodeStep";
 import SellProcessStep from "./steps/SellProcessStep";
@@ -20,72 +19,8 @@ const STEPS = [
 // Step-by-step sell flow: the number → login code → system login + 2FA →
 // stock steps appear one at a time, like the Top Up and Withdraw wizards.
 export default function SellWizard({ onDone }) {
-  const { toast } = useToast();
-  const { invoke } = useTgIdentity();
-  const [step, setStep] = useState("phone"); // phone | code | secure | stock
-  const [phone, setPhone] = useState("");
-  const [code, setCode] = useState("");
-  const [requestId, setRequestId] = useState("");
-  const [result, setResult] = useState(null);
-  const [busy, setBusy] = useState(false);
-  const [sending, setSending] = useState(false);
-
+  const { step, phone, setPhone, code, setCode, requestId, result, busy, error, sendCode, verifyCode, back, reset } = useSellFlow(onDone);
   const stepIndex = STEPS.findIndex((s) => s.key === step);
-
-  async function sendCode(e) {
-    e.preventDefault();
-    if (!/^\+[0-9]{6,19}$/.test(phone.trim())) {
-      toast({
-        title: "Invalid number",
-        description: "Enter the number in international format, e.g. +8801XXXXXXXXX",
-        variant: "destructive",
-      });
-      return;
-    }
-    setBusy(true);
-    setSending(true);
-    setStep("code"); // move to the login-code page right away, like Telegram's own flow
-    try {
-      const res = await invoke("sellSendCode", { phone_number: phone.trim() });
-      setRequestId(res.data.request_id);
-      toast({ title: "Login code sent", description: "Check the Telegram app of that number." });
-    } catch (err) {
-      toast({
-        title: "Could not send the code",
-        description: err.response?.data?.error || err.message,
-        variant: "destructive",
-      });
-    }
-    setSending(false);
-    setBusy(false);
-  }
-
-  async function verifyCode(e) {
-    e.preventDefault();
-    if (!code.trim()) return;
-    setStep("secure");
-    try {
-      const res = await invoke("sellVerifyCode", { request_id: requestId, phone_code: code.trim() });
-      setResult(res.data);
-      setStep("stock");
-      onDone();
-    } catch (err) {
-      toast({
-        title: "Verification failed",
-        description: err.response?.data?.error || err.message,
-        variant: "destructive",
-      });
-      setStep("code");
-    }
-  }
-
-  function reset() {
-    setStep("phone");
-    setPhone("");
-    setCode("");
-    setRequestId("");
-    setResult(null);
-  }
 
   return (
     <section>
@@ -94,7 +29,7 @@ export default function SellWizard({ onDone }) {
           <button
             type="button"
             aria-label="Back"
-            onClick={() => setStep("phone")}
+            onClick={back}
             className="grid h-8 w-8 shrink-0 cursor-pointer place-items-center rounded-full border border-[#4A423B] bg-[#2E2A28] text-white transition-[background-color,box-shadow,transform] duration-[180ms] ease-[ease] hover:bg-[#39322D] hover:shadow-[0_0_14px_#FFAA3333] active:scale-[0.94] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#FFAA33] focus-visible:outline-offset-[3px]"
           >
             <ChevronLeft className="h-[17px] w-[17px]" />
@@ -112,6 +47,7 @@ export default function SellWizard({ onDone }) {
       </header>
 
       <DesignStepTabs steps={STEPS} stepIndex={stepIndex} />
+      {error && <p role="alert" className="mt-4 rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">{error}</p>}
 
       <DesignStepWrap>
         <AnimatePresence mode="wait">
@@ -131,7 +67,6 @@ export default function SellWizard({ onDone }) {
                 code={code}
                 onCode={setCode}
                 onSubmit={verifyCode}
-                sending={sending}
                 ready={!!requestId}
               />
             )}
