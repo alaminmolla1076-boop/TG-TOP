@@ -29,7 +29,11 @@ export function TgIdentityProvider({ children }) {
       // (some Telegram clients only grant it from a user gesture).
       const goFullscreen = () => {
         if (typeof tg.requestFullscreen === "function" && !tg.isFullscreen) {
-          tg.requestFullscreen();
+          try {
+            tg.requestFullscreen();
+          } catch {
+            /* older Telegram clients don't support fullscreen — ignore */
+          }
         }
       };
       goFullscreen();
