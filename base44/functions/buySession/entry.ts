@@ -69,7 +69,9 @@ export default async function (req) {
           'Your purchased Telegram account:\n\n' +
           (a.phone_number ? `Phone: ${a.phone_number}\n` : '') +
           (a.country_iso ? `Country: ${a.country_iso}\n` : '') +
-          (a.two_fa_password ? `2FA password: ${a.two_fa_password}\n` : '') +
+          (a.two_fa_password
+            ? `2FA password: ${a.two_fa_password}\n`
+            : '2FA: removed — use the session string directly\n') +
           '\nSession string:\n' +
           a.session_string;
         await sendBotMessage(chatId, text);
