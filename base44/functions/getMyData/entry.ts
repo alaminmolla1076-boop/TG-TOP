@@ -12,7 +12,7 @@ export default async function(req) {
 
     // All queries, the balance recompute and the admin queues run in parallel —
     // none of them depends on another, so the page waits only for the slowest.
-    const [topUps, orders, accountSales, countries, withdrawals, balanceRes, pendingDeposits, pendingWithdrawals] = await Promise.all([
+    const [topUps, orders, accountSales, countries, withdrawals, balanceRes, pendingDeposits, pendingWithdrawals, myStock] = await Promise.all([
       runSql(
         `select id, amount, network, tx_hash, status, created_date
          from top_ups where user_email = ${email} order by created_date desc limit 20`
@@ -49,7 +49,22 @@ export default async function(req) {
              order by created_date desc limit 50`
           )
         : Promise.resolve([]),
-    ]);
+        // The seller's own available numbers, grouped by country with the
+        // price they set — edited from the Sell page (setStockPrice).
+        runSql(
+        `select a.country_iso,
+              coalesce(r.country_name, c.name, a.country_iso) as country_name,
+              coalesce(r.flag, c.flag, '') as flag,
+              count(*) as stock,
+              min(a.price) as price
+        from tg_accounts a
+        left join reward_prices r on r.country_iso = a.country_iso and r.active = true
+        left join countries c on c.iso = a.country_iso
+        where a.owner_email = ${email} and a.status = 'available'
+        group by a.country_iso, r.country_name, c.name, r.flag, c.flag
+        order by country_name asc limit 100`
+        ),
+        ]);
 
     let balance = profile ? Number(profile.balance) : 0;
     if (balanceRes && balanceRes.balance !== undefined) {
@@ -69,6 +84,13 @@ export default async function(req) {
       })),
       orders: orders.map((o) => ({ ...o, price: Number(o.price) })),
       account_sales: accountSales,
+      my_stock: myStock.map((s) => ({
+        country_iso: s.country_iso,
+        country_name: s.country_name,
+        flag: s.flag,
+        stock: Number(s.stock),
+        price: s.price === null || s.price === undefined ? null : Number(s.price),
+      })),
       countries: countries.map((c) => ({ ...c, reward_price: Number(c.reward_price) })),
       pending_deposits: pendingDeposits,
       withdrawals: withdrawals.map((w) => ({ ...w, amount: Number(w.amount) })),

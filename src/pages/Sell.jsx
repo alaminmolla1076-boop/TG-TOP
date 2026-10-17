@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useTgIdentity } from "@/lib/TgIdentityContext";
 import { Badge } from "@/components/ui/badge";
 import SellWizard from "@/components/sell/SellWizard";
+import StockPricesPanel from "@/components/sell/StockPricesPanel";
 import { formatMoney } from "@/lib/format";
 
 const saleStatusStyle = {
@@ -15,18 +16,25 @@ const saleStatusStyle = {
 export default function Sell() {
   const { fetchMyData } = useTgIdentity();
   const [sales, setSales] = useState(null);
+  const [stock, setStock] = useState(null);
 
   async function load(force = false) {
     const data = await fetchMyData(force);
     setSales(data.account_sales || []);
+    setStock(data.my_stock || []);
   }
 
   useEffect(() => {
-    load().catch(() => setSales([]));
+    load().catch(() => {
+      setSales([]);
+      setStock([]);
+    });
   }, []);
 
   return (
     <div className="mx-auto max-w-md space-y-6">
+      <StockPricesPanel stock={stock} onSaved={() => load(true)} />
+
       <SellWizard onDone={() => load(true)} />
 
       <section className="space-y-3">
