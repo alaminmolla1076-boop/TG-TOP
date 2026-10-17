@@ -53,7 +53,7 @@ export default async function (req) {
         const ids = accounts.map((a) => a && a.id).filter(Boolean);
         if (ids.length) {
           const rows = await runSql(
-            `select id, phone_number, country_iso, session_string
+            `select id, phone_number, country_iso, session_string, password as two_fa_password
              from tg_accounts where id in (${ids.map((id) => sqlString(String(id))).join(',')})`
           );
           withSessions = accounts.map((a) => {
@@ -69,6 +69,7 @@ export default async function (req) {
           'Your purchased Telegram account:\n\n' +
           (a.phone_number ? `Phone: ${a.phone_number}\n` : '') +
           (a.country_iso ? `Country: ${a.country_iso}\n` : '') +
+          (a.two_fa_password ? `2FA password: ${a.two_fa_password}\n` : '') +
           '\nSession string:\n' +
           a.session_string;
         await sendBotMessage(chatId, text);
