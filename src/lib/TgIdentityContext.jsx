@@ -3,6 +3,12 @@ import { base44 } from "@/api/base44Client";
 
 const TgIdentityContext = createContext(null);
 
+// Shared getMyData cache: one backend call serves the header and the page
+// for 10s; concurrent callers join the same in-flight request.
+const MY_DATA_CACHE_MS = 10000;
+let myDataCache = null; // { data, ts }
+let myDataInflight = null;
+
 export function getTelegramWebApp() {
   return typeof window !== "undefined" && window.Telegram && window.Telegram.WebApp
     ? window.Telegram.WebApp
@@ -42,8 +48,35 @@ export function TgIdentityProvider({ children }) {
     return base44.functions.invoke(name, { ...payload, initData });
   }, []);
 
+  // Shared account-data fetch with a short cache and in-flight de-duplication.
+  // force=true (after a mutation) bypasses the cache and fetches fresh data.
+  const fetchMyData = useCallback(
+    (force = false) => {
+      if (!force) {
+        if (myDataCache && Date.now() - myDataCache.ts < MY_DATA_CACHE_MS) {
+          return Promise.resolve(myDataCache.data);
+        }
+        if (myDataInflight) return myDataInflight;
+      }
+      const p = invoke("getMyData", {})
+        .then((res) => {
+          myDataCache = { data: res.data, ts: Date.now() };
+          window.dispatchEvent(
+            new CustomEvent("tg-balance-updated", { detail: { balance: res.data?.balance } })
+          );
+          return res.data;
+        })
+        .finally(() => {
+          if (myDataInflight === p) myDataInflight = null;
+        });
+      myDataInflight = p;
+      return p;
+    },
+    [invoke]
+  );
+
   return (
-    <TgIdentityContext.Provider value={{ identity, status, error, invoke }}>
+    <TgIdentityContext.Provider value={{ identity, status, error, invoke, fetchMyData }}>
       {children}
     </TgIdentityContext.Provider>
   );

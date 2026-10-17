@@ -9,15 +9,15 @@ import { useTgIdentity } from "@/lib/TgIdentityContext";
 import { useTelegramBackButton } from "@/lib/useTelegramBackButton";
 
 export default function AppLayout() {
-  const { invoke } = useTgIdentity();
+  const { fetchMyData } = useTgIdentity();
   useTelegramBackButton();
   const [balance, setBalance] = useState(null);
 
   useEffect(() => {
     const updateBalance = (event) => setBalance(event.detail.balance);
     window.addEventListener("tg-balance-updated", updateBalance);
-    invoke("getMyData", {})
-      .then((res) => setBalance(res.data.balance))
+    fetchMyData()
+      .then((data) => setBalance(data.balance))
       .catch(() => setBalance(0));
     return () => window.removeEventListener("tg-balance-updated", updateBalance);
   }, []);

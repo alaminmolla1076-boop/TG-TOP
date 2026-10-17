@@ -10,7 +10,9 @@ export default async function(req) {
     const profile = identity.profile;
     const isAdmin = identity.role === 'admin';
 
-    const [topUps, orders, accountSales, countries, withdrawals] = await Promise.all([
+    // All queries, the balance recompute and the admin queues run in parallel —
+    // none of them depends on another, so the page waits only for the slowest.
+    const [topUps, orders, accountSales, countries, withdrawals, balanceRes, pendingDeposits, pendingWithdrawals] = await Promise.all([
       runSql(
         `select id, amount, network, tx_hash, status, created_date
          from top_ups where user_email = ${email} order by created_date desc limit 20`
@@ -31,32 +33,27 @@ export default async function(req) {
         `select id, amount, coin, network, wallet_address, status, created_date
          from withdrawals where user_email = ${email} order by created_date desc limit 20`
       ),
+      // Balance from the existing Supabase function — it recomputes it from the
+      // source-of-truth records and keeps the profile in sync.
+      callB44('getBalance', { initData: body.initData }).catch(() => null),
+      isAdmin
+        ? runSql(
+            `select id, amount, network, tx_hash, status, user_email, created_date
+             from top_ups where status = 'pending' order by created_date desc limit 50`
+          )
+        : Promise.resolve([]),
+      isAdmin
+        ? runSql(
+            `select id, amount, coin, network, wallet_address, status, user_email, created_date
+             from withdrawals where status not in ('approved', 'rejected')
+             order by created_date desc limit 50`
+          )
+        : Promise.resolve([]),
     ]);
 
-    let pendingDeposits = [];
-    if (isAdmin) {
-      pendingDeposits = await runSql(
-        `select id, amount, network, tx_hash, status, user_email, created_date
-         from top_ups where status = 'pending' order by created_date desc limit 50`
-      );
-    }
-
-    let pendingWithdrawals = [];
-    if (isAdmin) {
-      pendingWithdrawals = await runSql(
-        `select id, amount, coin, network, wallet_address, status, user_email, created_date
-         from withdrawals where status not in ('approved', 'rejected')
-         order by created_date desc limit 50`
-      );
-    }
-
-    // Balance from the existing Supabase function when signed in — it recomputes
-    // it from the source-of-truth records and keeps the profile in sync.
     let balance = profile ? Number(profile.balance) : 0;
-    try {
-      balance = Number((await callB44('getBalance', { initData: body.initData })).balance) || balance;
-    } catch (e) {
-      /* fall back to the stored profile balance */
+    if (balanceRes && balanceRes.balance !== undefined) {
+      balance = Number(balanceRes.balance) || balance;
     }
 
     return Response.json({

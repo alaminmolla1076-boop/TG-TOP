@@ -7,14 +7,12 @@ import AdminDeposits from "@/components/deposit/AdminDeposits";
 import { LOGOS } from "@/components/deposit/logos";
 
 export default function Deposit() {
-  const { invoke } = useTgIdentity();
+  const { invoke, fetchMyData } = useTgIdentity();
   const [data, setData] = useState(null);
   const [wizardOpen, setWizardOpen] = useState(false);
 
-  async function load() {
-    const res = await invoke("getMyData", {});
-    setData(res.data);
-    window.dispatchEvent(new CustomEvent("tg-balance-updated", { detail: { balance: res.data.balance } }));
+  async function load(force = false) {
+    setData(await fetchMyData(force));
   }
 
   useEffect(() => {
@@ -24,7 +22,7 @@ export default function Deposit() {
   if (wizardOpen) {
     return (
       <div className="mx-auto max-w-md">
-        <TopUpWizard onDone={() => { setWizardOpen(false); load(); }} onClose={() => setWizardOpen(false)} />
+        <TopUpWizard onDone={() => { setWizardOpen(false); load(true); }} onClose={() => setWizardOpen(false)} />
       </div>
     );
   }
@@ -72,7 +70,7 @@ export default function Deposit() {
             </span>
             <h2 className="font-heading text-base font-bold">Pending Top-Ups — All Users</h2>
           </div>
-          <AdminDeposits pending={data?.pending_deposits || []} onChanged={load} />
+          <AdminDeposits pending={data?.pending_deposits || []} onChanged={() => load(true)} />
         </section>
       )}
     </div>

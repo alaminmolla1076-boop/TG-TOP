@@ -13,13 +13,13 @@ const depositStatusStyle = {
 };
 
 export default function Home() {
-  const { identity, invoke } = useTgIdentity();
+  const { identity, fetchMyData } = useTgIdentity();
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    invoke("getMyData", {})
-      .then((res) => setData(res.data))
+    fetchMyData()
+      .then((data) => setData(data))
       .catch((e) => setError(e.response?.data?.error || e.message));
   }, []);
 

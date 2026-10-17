@@ -15,20 +15,20 @@ const steps = [
 
 export default function Market() {
   const { toast } = useToast();
-  const { invoke } = useTgIdentity();
+  const { invoke, fetchMyData } = useTgIdentity();
   const [products, setProducts] = useState(null);
   const [accountCountries, setAccountCountries] = useState(null);
   const [orders, setOrders] = useState([]);
   const [buyingId, setBuyingId] = useState(null);
 
-  async function load() {
+  async function load(force = false) {
     const [catalog, my] = await Promise.all([
       invoke("getMarketProducts", {}),
-      invoke("getMyData", {}),
+      fetchMyData(force),
     ]);
     setProducts(catalog.data.products || []);
     setAccountCountries(catalog.data.account_countries || []);
-    setOrders(my.data.orders || []);
+    setOrders(my.orders || []);
   }
 
   useEffect(() => {
@@ -43,7 +43,7 @@ export default function Market() {
         title: "Purchase completed",
         description: `${product.name} — new balance ${formatMoney(res.data.balance)}`,
       });
-      load();
+      load(true);
     } catch (err) {
       toast({
         title: "Purchase failed",
@@ -99,7 +99,7 @@ export default function Market() {
         )}
       </section>
 
-      <AccountShop countries={accountCountries} onBought={load} />
+      <AccountShop countries={accountCountries} onBought={() => load(true)} />
 
       <section className="space-y-3">
         <div className="flex items-center gap-2">

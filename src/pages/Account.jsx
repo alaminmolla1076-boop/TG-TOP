@@ -9,14 +9,13 @@ import AdminWithdrawals from "@/components/account/AdminWithdrawals";
 import { useTgIdentity } from "@/lib/TgIdentityContext";
 
 export default function Account() {
-  const { identity, invoke } = useTgIdentity();
+  const { identity, fetchMyData } = useTgIdentity();
   const [data, setData] = useState(null);
   const [wizardOpen, setWizardOpen] = useState(false);
 
-  async function load() {
+  async function load(force = false) {
     try {
-      const res = await invoke("getMyData", {});
-      setData(res.data);
+      setData(await fetchMyData(force));
     } catch {
       setData({ balance: 0, orders: [], account_sales: [], withdrawals: [] });
     }
@@ -35,7 +34,7 @@ export default function Account() {
       <div className="mx-auto max-w-md">
         <WithdrawWizard
           balance={Number(data?.balance) || 0}
-          onDone={() => { setWizardOpen(false); load(); }}
+          onDone={() => { setWizardOpen(false); load(true); }}
         />
       </div>
     );
@@ -58,7 +57,7 @@ export default function Account() {
           <SectionHeader icon={<ShieldCheck className="h-3.5 w-3.5 text-[#F39C12]" strokeWidth={1.4} />}>
             Pending Withdrawals — All Users
           </SectionHeader>
-          <AdminWithdrawals pending={data?.pending_withdrawals || []} onChanged={load} />
+          <AdminWithdrawals pending={data?.pending_withdrawals || []} onChanged={() => load(true)} />
         </section>
       )}
     </div>

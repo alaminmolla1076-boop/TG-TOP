@@ -13,12 +13,12 @@ const saleStatusStyle = {
 };
 
 export default function Sell() {
-  const { invoke } = useTgIdentity();
+  const { fetchMyData } = useTgIdentity();
   const [sales, setSales] = useState(null);
 
-  async function load() {
-    const res = await invoke("getMyData", {});
-    setSales(res.data.account_sales || []);
+  async function load(force = false) {
+    const data = await fetchMyData(force);
+    setSales(data.account_sales || []);
   }
 
   useEffect(() => {
@@ -29,7 +29,7 @@ export default function Sell() {
     <div className="mx-auto max-w-md space-y-6">
       <h1 className="font-heading text-2xl font-semibold">Sell Account</h1>
 
-      <SellWizard onDone={load} />
+      <SellWizard onDone={() => load(true)} />
 
       <section className="space-y-3">
         <h2 className="font-heading text-base font-semibold">My Account Sales</h2>
