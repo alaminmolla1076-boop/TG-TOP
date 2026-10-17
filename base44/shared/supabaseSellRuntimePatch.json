@@ -55,6 +55,27 @@
       "path": "source/fns/verifyLoginCode.ts",
       "find": "  } catch (error) {\n    return Response.json({\n      error: error.message || String(error)\n    }, {\n      status: 500\n    });\n  }\n}",
       "replace": "  } catch (error) {\n    return Response.json({\n      error: error.message || String(error)\n    }, {\n      status: 500\n    });\n  } finally {\n    mt?.close();\n  }\n}"
+    },
+    {
+      "path": "source/_shared/mtproto.js",
+      "find": "  constructor(sessionString) {\n    this.mem = new Map();",
+      "replace": "  constructor(sessionString, { syncAuth = true } = {}) {\n    this.syncAuth = syncAuth;\n    this.mem = new Map();"
+    },
+    {
+      "path": "source/_shared/mtproto.js",
+      "find": "      return await this.client.call(method, params, { dcId: this.dcId });",
+      "replace": "      return await this.client.call(method, params, { dcId: this.dcId, syncAuth: this.syncAuth });"
+    },
+    {
+      "path": "source/fns/verifyLoginCode.ts",
+      "find": "    mt = new Mt(sr.session_string || '');",
+      "replace": "    // A stored account only needs its own DC; do not create four extra\n    // auth keys through the library's automatic authorization fan-out.\n    mt = new Mt(sr.session_string || '', { syncAuth: false });"
+    },
+    {
+      "path": "source/fns/verifyLoginCode.ts",
+      "find": "    let authResult;\n    try {\n      authResult = await mt.call('auth.signIn', {\n        phone_number: sr.phone_number,\n        phone_code_hash: sr.phone_code_hash,\n        phone_code: String(phone_code).trim()\n      });\n    } catch (e) {",
+      "replace": "    try {\n      // A previous worker can stop after Telegram accepted the code.\n      // Reuse that authorized key rather than consume the same OTP again.\n      if (!(await mt.isAuthorized())) {\n        await mt.call('auth.signIn', {\n          phone_number: sr.phone_number,\n          phone_code_hash: sr.phone_code_hash,\n          phone_code: String(phone_code).trim()\n        });\n      }\n    } catch (e) {"
     }
-  ]
+  ],
+  "expected_live_version": 62
 }
