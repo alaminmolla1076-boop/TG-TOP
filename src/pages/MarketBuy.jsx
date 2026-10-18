@@ -4,6 +4,7 @@ import { ChevronLeft } from "lucide-react";
 import { useTgIdentity } from "@/lib/TgIdentityContext";
 import { useToast } from "@/components/ui/use-toast";
 import MarketBackdrop from "@/components/market/MarketBackdrop";
+import PurchaseResult from "@/components/market/PurchaseResult";
 import { formatMoney } from "@/lib/format";
 
 const QUICK_QTY = [5, 10, 20, 50, 100, 500, 1000];
@@ -24,6 +25,7 @@ export default function MarketBuy() {
   const [formatsOpen, setFormatsOpen] = useState(false);
   const [pendingQty, setPendingQty] = useState(null); // quantity awaiting confirmation
   const [busy, setBusy] = useState(false);
+  const [purchased, setPurchased] = useState(null); // last single purchase, shown on-page
 
   useEffect(() => {
     invoke("getMarketProducts", {})
@@ -50,9 +52,13 @@ export default function MarketBuy() {
       });
       const bought = res.data.accounts || [];
       if (qty === 1 && bought[0]?.phone_number) {
+        setPurchased(bought[0]);
+        setEntry((prev) =>
+          prev ? { ...prev, country: { ...prev.country, stock: Math.max(0, prev.country.stock - 1) } } : prev
+        );
         toast({
           title: "Account purchased",
-          description: `${bought[0].phone_number} — tap Get Code on the Market page for its login code. New balance ${formatMoney(res.data.balance)}`,
+          description: `New balance ${formatMoney(res.data.balance)}`,
         });
       } else {
         toast({
@@ -61,7 +67,8 @@ export default function MarketBuy() {
         });
       }
       fetchMyData(true).catch(() => {});
-      navigate("/market");
+      if (qty !== 1) navigate("/market");
+      setBusy(false);
     } catch (err) {
       toast({
         title: "Purchase failed",
@@ -116,6 +123,14 @@ export default function MarketBuy() {
             <p className="mt-1 text-[13px] text-[#a8a3cf]">{country.stock} in stock</p>
           </div>
         </div>
+
+        {purchased && (
+          <PurchaseResult
+            account={purchased}
+            flag={country.flag}
+            countryName={country.country_name}
+          />
+        )}
 
         {seller.is_self ? (
           <div className="mk-sec rounded-[22px] border border-dashed border-[#A29BFE]/30 bg-[rgba(45,38,78,.3)] p-[18px] text-[13px] text-[#a8a3cf]">
