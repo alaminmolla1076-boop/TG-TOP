@@ -1,7 +1,7 @@
 import React from "react";
 import { LifeBuoy, Send } from "lucide-react";
 
-const CHANNEL_URL = "https://t.me/tgtops";
+const CHANNEL_URL = "https://t.me/tgtop_official";
 
 export default function Support() {
   return (

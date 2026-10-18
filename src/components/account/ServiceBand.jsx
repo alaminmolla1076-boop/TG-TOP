@@ -2,7 +2,7 @@ import React from "react";
 import { Send, Gift, ChevronRight } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
-const CHANNEL_URL = "https://t.me/tgtops";
+const CHANNEL_URL = "https://t.me/tgtop_official";
 
 const rowClass =
   "flex w-full cursor-pointer items-center gap-3 rounded-full border border-ring/[.28] bg-secondary/80 px-[18px] py-[13px] text-left no-underline text-foreground " +
