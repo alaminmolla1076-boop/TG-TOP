@@ -1,10 +1,10 @@
-import { t, langName } from '../_shared/botTranslations.js';
-import { tgSend, tgDeleteMessage, tgSendMenu, tgAnswerCallback, tgEditMenu, tgSendReplyKeyboard } from '../_shared/telegramApi.ts';
+import { t, langName, BOT_LANGS } from '../_shared/botTranslations.js';
+import { tgSend, tgDeleteMessage, tgSendMenu, tgAnswerCallback, tgEditMenu } from '../_shared/telegramApi.ts';
 import { getRealBalance } from '../_shared/balance.ts';
-import { buildRewardsPage } from '../_shared/rewardViews.js';
+import { buildRewardsPage, buildUserRewards } from '../_shared/rewardViews.js';
 import { buySeasonInChunks } from '../_shared/seasonBuy.js';
 import { getState, setState, clearState, getUserContext, findUserByTelegramId } from './state.ts';
-import { mainMenuKeyboard, buyMenuKeyboard, buildCountryKeyboard, mainReplyKeyboard, DEPOSIT_ADDRESSES } from './keyboards.ts';
+import { mainMenuKeyboard, buyMenuKeyboard, buildCountryKeyboard, DEPOSIT_ADDRESSES } from './keyboards.ts';
 import { formatOrders, formatStatus, formatProducts } from './views.ts';
 import { deliverSeasonZip, handleBind, errText } from './delivery.ts';
 // Handles every inline-keyboard button press. Direct port of the callback
@@ -289,10 +289,9 @@ export default async function handleCallback(base44, token, cq) {
     await setState(base44, `lang:${String(cbUser.id)}`, langCode);
     const name = langName(langCode);
     await tgAnswerCallback(token, cq.id, `✅ ${name}`);
-    await dropHost();
-    await tgSendReplyKeyboard(token, cbChatId, t(langCode, 'lang.set', {
+    await sendMenu(cbChatId, t(langCode, 'lang.set', {
       name
-    }) + '\n\n' + t(langCode, 'menu.title') + '\n' + t(langCode, 'menu.prompt'), mainReplyKeyboard(langCode, {
+    }) + '\n\n' + t(langCode, 'menu.title') + '\n' + t(langCode, 'menu.prompt'), mainMenuKeyboard(langCode, {
       hidePremium: cbSettings.premium_hidden,
       hideStars: cbSettings.stars_hidden
     }));
@@ -746,5 +745,146 @@ export default async function handleCallback(base44, token, cq) {
     case 'menu_help':
       await send(cbChatId, `${t(cbLang, 'help.title')}\n\n${t(cbLang, 'help.body')}`);
       break;
+    case 'menu_sell':
+      {
+        if (!cbUserRec) {
+          await send(cbChatId, t(cbLang, 'bind.required'));
+          break;
+        }
+        await sendMenu(cbChatId, `${t(cbLang, 'sell.menuTitle')}\n\n${t(cbLang, 'sell.menuPrompt')}`, [
+          [
+            {
+              text: t(cbLang, 'sell.numberBtn'),
+              callback_data: 'sell_number'
+            }
+          ],
+          [
+            {
+              text: t(cbLang, 'sell.seasonBtn'),
+              callback_data: 'sell_season'
+            }
+          ],
+          [
+            {
+              text: t(cbLang, 'buy.back'),
+              callback_data: 'menu_main'
+            }
+          ]
+        ]);
+        break;
+      }
+    case 'menu_myaccount':
+      {
+        if (!cbUserRec) {
+          await send(cbChatId, t(cbLang, 'bind.required'));
+          break;
+        }
+        const [accounts, sessions, topups, withdrawals] = await Promise.all([
+          base44.asServiceRole.entities.TgAccount.filter({
+            owner_email: cbUserRec.email
+          }),
+          base44.asServiceRole.entities.SessionRequest.filter({
+            user_email: cbUserRec.email,
+            status: 'completed'
+          }),
+          base44.asServiceRole.entities.TopUp.filter({
+            user_email: cbUserRec.email,
+            status: 'approved'
+          }),
+          base44.asServiceRole.entities.Withdrawal.filter({
+            user_email: cbUserRec.email
+          })
+        ]);
+        const bal = await getRealBalance(base44, cbUserRec.email);
+        const totalDeposits = topups.reduce((sum, tp)=>sum + (tp.amount || 0), 0);
+        const totalWithdrawals = withdrawals.filter((w)=>w.status === 'approved').reduce((sum, w)=>sum + (w.amount || 0), 0);
+        const totalReward = sessions.filter((s)=>s.reward_status === 'rewarded').reduce((sum, s)=>sum + (s.reward_amount || 0), 0);
+        const name = [
+          cbUserRec.telegram_first_name,
+          cbUserRec.telegram_last_name
+        ].filter(Boolean).join(' ') || cbUserRec.full_name || cbUserRec.email;
+        await send(cbChatId, `${t(cbLang, 'myaccount.title')}\n\n` + `Name: <b>${name}</b>\n` + `Username: ${cbUserRec.telegram_username ? `@${cbUserRec.telegram_username}` : 'N/A'}\n` + `ID: <code>${cbUserRec.telegram_id || cbUserRec.id}</code>\n\n` + `📊 <b>Statistics</b>\n` + `🛒 Purchased: ${accounts.length} account(s)\n` + `📱 Sold: ${sessions.length} account(s)\n` + `🔐 Total Login: ${sessions.length}\n` + `🎁 Total Reward: $${totalReward.toFixed(2)}\n` + `💰 Total Top Up: $${totalDeposits.toFixed(2)}\n` + `💸 Total Withdraw: $${totalWithdrawals.toFixed(2)}\n` + `💎 Balance: <b>$${bal.toFixed(2)}</b>` + await buildUserRewards(base44, cbUserRec.email));
+        break;
+      }
+    case 'menu_reward':
+      {
+        if (!cbUserRec) {
+          await send(cbChatId, t(cbLang, 'bind.required'));
+          break;
+        }
+        const { text: rewText, keyboard: rewKb } = await buildRewardsPage(base44, cbLang, 1);
+        await sendMenu(cbChatId, rewText, rewKb);
+        break;
+      }
+    case 'menu_withdraw':
+      {
+        if (!cbUserRec) {
+          await send(cbChatId, t(cbLang, 'bind.required'));
+          break;
+        }
+        const wdPromptMsg = await send(cbChatId, `${t(cbLang, 'withdraw.title')}\n\n${t(cbLang, 'withdraw.prompt')}`);
+        await setState(base44, `withdraw:${String(cbUser.id)}`, JSON.stringify({
+          status: 'awaiting_amount',
+          msgs: [
+            wdPromptMsg?.result?.message_id
+          ].filter(Boolean)
+        }));
+        break;
+      }
+    case 'menu_channel':
+    case 'menu_support':
+      {
+        const kind = cbData === 'menu_channel' ? 'channel' : 'support';
+        const rec = await getState(base44, kind === 'channel' ? 'setting:channel_url' : 'setting:support_url');
+        const url = rec ? rec.value : null;
+        if (!url) {
+          await send(cbChatId, t(cbLang, `${kind}.notConfig`));
+          break;
+        }
+        await sendMenu(cbChatId, `${t(cbLang, `${kind}.title`)}\n\n${t(cbLang, `${kind}.desc`)}`, [
+          [
+            {
+              text: t(cbLang, `${kind}.btn`),
+              url
+            }
+          ]
+        ]);
+        break;
+      }
+    case 'menu_language':
+      {
+        const keyboard = [];
+        for(let i = 0; i < BOT_LANGS.length; i += 2){
+          keyboard.push(BOT_LANGS.slice(i, i + 2).map((l)=>({
+              text: `${l.flag} ${l.label}`,
+              callback_data: `langset:${l.code}`
+            })));
+        }
+        await sendMenu(cbChatId, `${t(cbLang, 'lang.selectTitle')}\n\n${t(cbLang, 'lang.selectPrompt')}`, keyboard);
+        break;
+      }
+    case 'menu_refer':
+      {
+        if (!cbUserRec) {
+          await send(cbChatId, t(cbLang, 'bind.required'));
+          break;
+        }
+        const refLink = `https://t.me/tgtopsbot?startapp=${cbUserRec.telegram_id || cbUser.id}`;
+        await sendMenu(cbChatId, `${t(cbLang, 'refer.title')}\n\n${t(cbLang, 'refer.desc')}\n\n${t(cbLang, 'refer.yourLink')}:\n<code>${refLink}</code>`, [
+          [
+            {
+              text: t(cbLang, 'refer.copyBtn'),
+              copy_text: {
+                text: refLink
+              }
+            },
+            {
+              text: '📤 Share',
+              switch_inline_query: refLink
+            }
+          ]
+        ]);
+        break;
+      }
   }
 }

@@ -1,10 +1,10 @@
 import { t, BOT_LANGS } from '../_shared/botTranslations.js';
-import { tgSend, tgSendMenu, tgSendReplyKeyboard } from '../_shared/telegramApi.ts';
+import { tgSend, tgSendMenu, tgSendRemoveKeyboard } from '../_shared/telegramApi.ts';
 import { getRealBalance } from '../_shared/balance.ts';
 import { buildRewardsPage, buildUserRewards } from '../_shared/rewardViews.js';
 import { buySeasonInChunks } from '../_shared/seasonBuy.js';
 import { getState, setState, clearState, findUserByTelegramId, findUserByBindCode } from './state.ts';
-import { buildCountryKeyboard, mainReplyKeyboard } from './keyboards.ts';
+import { buildCountryKeyboard, mainMenuKeyboard } from './keyboards.ts';
 import { formatCountries, formatOrders, formatStatus } from './views.ts';
 import { deliverSeasonZip, handleBind, handleSeasonGen, errText } from './delivery.ts';
 // The bot's slash-command / reply-keyboard command switch.
@@ -28,7 +28,10 @@ export default async function handleCommand(base44, token, ctx) {
   switch(cmd){
     case 'start':
       {
-        await tgSendReplyKeyboard(token, chatId, t(lang, 'welcome.title') + '\n\n' + (user ? `👤 Username: ${user.telegram_username ? '@' + user.telegram_username : 'N/A'}\n🆔 ID: <code>${user.telegram_id || tgUser.id}</code>\n` : t(lang, 'welcome.notLinked') + '\n') + '\n' + t(lang, 'welcome.start'), mainReplyKeyboard(lang, {
+        // The reply keyboard is cleared (in case an old session still shows it)
+        // and the menu is delivered as inline buttons on their own message.
+        await tgSendRemoveKeyboard(token, chatId, t(lang, 'welcome.title') + '\n\n' + (user ? `👤 Username: ${user.telegram_username ? '@' + user.telegram_username : 'N/A'}\n🆔 ID: <code>${user.telegram_id || tgUser.id}</code>\n` : t(lang, 'welcome.notLinked') + '\n') + '\n' + t(lang, 'welcome.start'), replyTo);
+        await tgSendMenu(token, chatId, `${t(lang, 'menu.title')}\n\n${t(lang, 'menu.prompt')}`, mainMenuKeyboard(lang, {
           hidePremium: settings.premium_hidden,
           hideStars: settings.stars_hidden
         }), replyTo);
@@ -36,7 +39,7 @@ export default async function handleCommand(base44, token, ctx) {
       }
     case 'menu':
       {
-        await tgSendReplyKeyboard(token, chatId, t(lang, 'menu.title') + '\n\n' + t(lang, 'menu.prompt'), mainReplyKeyboard(lang, {
+        await tgSendMenu(token, chatId, t(lang, 'menu.title') + '\n\n' + t(lang, 'menu.prompt'), mainMenuKeyboard(lang, {
           hidePremium: settings.premium_hidden,
           hideStars: settings.stars_hidden
         }), replyTo);

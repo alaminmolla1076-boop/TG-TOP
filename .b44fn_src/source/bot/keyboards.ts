@@ -1,4 +1,4 @@
-import { t, buildReplyKeyboard } from '../_shared/botTranslations.js';
+import { t } from '../_shared/botTranslations.js';
 // Keyboards and deposit addresses for the Telegram bot — unchanged port.
 // USDT deposit addresses (mirrors the app's Top-Up page)
 export const DEPOSIT_ADDRESSES = [
@@ -23,66 +23,26 @@ export const DEPOSIT_ADDRESSES = [
     address: '0x2a62cd712863028804a5789629c23d842990aded'
   }
 ];
-// Main menu — one button per row. hidePremium/hideStars drop those buttons.
+// Main menu — the full app-feature set as INLINE buttons (two per row),
+// mirroring the old reply keyboard. hidePremium/hideStars drop those buttons.
 export function mainMenuKeyboard(lang, opts) {
   const L = lang || 'en';
   const o = opts || {};
+  const btn = (label, data)=>({
+      text: t(L, label),
+      callback_data: data
+    });
   const kb = [
-    [
-      {
-        text: t(L, 'menu.buy'),
-        callback_data: 'menu_buy'
-      }
-    ],
-    [
-      {
-        text: t(L, 'menu.topup'),
-        callback_data: 'menu_topup'
-      }
-    ],
-    [
-      {
-        text: t(L, 'menu.balance'),
-        callback_data: 'menu_balance'
-      }
-    ],
-    [
-      {
-        text: t(L, 'menu.status'),
-        callback_data: 'menu_status'
-      }
-    ],
-    [
-      {
-        text: t(L, 'menu.orders'),
-        callback_data: 'menu_orders'
-      }
-    ]
+    [btn('menu.buy', 'menu_buy'), btn('menu.topup', 'menu_topup')],
+    [btn('menu.sell', 'menu_sell'), btn('menu.myaccount', 'menu_myaccount')],
+    [btn('menu.reward', 'menu_reward'), btn('menu.withdraw', 'menu_withdraw')]
   ];
-  if (!o.hidePremium) kb.push([
-    {
-      text: t(L, 'menu.premium'),
-      callback_data: 'menu_premium'
-    }
-  ]);
-  if (!o.hideStars) kb.push([
-    {
-      text: t(L, 'menu.stars'),
-      callback_data: 'menu_stars'
-    }
-  ]);
-  kb.push([
-    {
-      text: t(L, 'menu.bind'),
-      callback_data: 'menu_bind'
-    }
-  ]);
-  kb.push([
-    {
-      text: t(L, 'menu.help'),
-      callback_data: 'menu_help'
-    }
-  ]);
+  const featureRow = [];
+  if (!o.hidePremium) featureRow.push(btn('menu.premium', 'menu_premium'));
+  if (!o.hideStars) featureRow.push(btn('menu.stars', 'menu_stars'));
+  if (featureRow.length) kb.push(featureRow);
+  kb.push([btn('menu.channel', 'menu_channel'), btn('menu.support', 'menu_support')]);
+  kb.push([btn('menu.language', 'menu_language'), btn('menu.refer', 'menu_refer')]);
   return kb;
 }
 export function buyMenuKeyboard(lang) {
@@ -171,7 +131,4 @@ export function buildCountryKeyboard(countries, lang, query, page) {
     }
   ]);
   return keyboard;
-}
-export function mainReplyKeyboard(lang, opts) {
-  return buildReplyKeyboard(lang || 'en', opts);
 }

@@ -191,6 +191,20 @@ export async function tgDownloadFileBytes(token, fileId) {
   if (!res.ok) throw new Error(`Download failed: ${res.status}`);
   return new Uint8Array(await res.arrayBuffer());
 }
+// Sends a message that clears any previously-set reply keyboard. Used when the
+// menu moves to inline buttons so the old bottom keyboard disappears for users.
+export async function tgSendRemoveKeyboard(token, chatId, text, replyTo) {
+  return tgCall(token, 'sendMessage', {
+    chat_id: chatId,
+    text,
+    parse_mode: 'HTML',
+    reply_to_message_id: replyTo || undefined,
+    disable_web_page_preview: true,
+    reply_markup: {
+      remove_keyboard: true
+    }
+  });
+}
 export async function tgSendReplyKeyboard(token, chatId, text, keyboard, replyTo) {
   try {
     const r = await tgCall(token, 'sendMessage', {
