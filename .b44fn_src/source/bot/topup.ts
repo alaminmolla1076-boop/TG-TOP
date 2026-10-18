@@ -35,8 +35,8 @@ const NETWORKS = [
   },
   {
     id: 'TON',
-    name: 'TON',
-    badge: 'Gram',
+    name: 'TON Network',
+    badge: '',
     desc: 'USDT on The Open Network'
   }
 ];
@@ -101,7 +101,7 @@ export function topupMethodView(amount) {
 function topupNetworkView(amount) {
   const kb = NETWORKS.map((n)=>[
       {
-        text: `🌐 ${n.name} — ${n.badge}`,
+        text: `🌐 ${n.badge ? `${n.name} — ${n.badge}` : n.name}`,
         callback_data: `tp_net:${amount}:${n.id}`
       }
     ]);
