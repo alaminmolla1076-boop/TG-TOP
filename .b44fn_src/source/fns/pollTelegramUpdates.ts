@@ -196,16 +196,13 @@ export default async function(req) {
         method: 'POST'
       });
     let updatesData = await (await poll()).json();
-    // A still-active webhook makes getUpdates return 409 — drop it and retry.
+    // A webhook handles delivery when one is active. Never delete it from
+    // here — a stray polling call must not knock the whole bot offline.
     if (!updatesData.ok && updatesData.error_code === 409) {
-      try {
-        await fetch(`https://api.telegram.org/bot${token}/deleteWebhook`, {
-          method: 'POST'
-        });
-        updatesData = await (await poll()).json();
-      } catch (e) {
-        console.error('deleteWebhook failed', e.message);
-      }
+      return Response.json({
+        ok: true,
+        note: 'webhook active, polling skipped'
+      });
     }
     if (!updatesData.ok) return Response.json({
       error: updatesData.description

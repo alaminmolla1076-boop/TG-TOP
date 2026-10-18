@@ -38,7 +38,7 @@ export default async function handleCommand(base44, token, ctx) {
       }
     case 'menu':
       {
-        await tgSendMenu(token, chatId, t(lang, 'menu.title') + '\n\n' + t(lang, 'menu.prompt'), mainMenuKeyboard(lang, {
+        await tgSendReplyKeyboard(token, chatId, t(lang, 'menu.title') + '\n\n' + t(lang, 'menu.prompt'), mainReplyKeyboard(lang, {
           hidePremium: settings.premium_hidden,
           hideStars: settings.stars_hidden
         }), replyTo);
