@@ -851,8 +851,8 @@ export function buildReplyKeyboard(lang, opts) {
   const o = opts || {};
   const keyboard = [
     [{ text: t(L, 'menu.buy') }, { text: t(L, 'menu.topup') }],
-    [{ text: t(L, 'menu.sell') }, { text: t(L, 'menu.myaccount') }],
-    [{ text: t(L, 'menu.withdraw') }],
+    [{ text: t(L, 'menu.sell') }, { text: t(L, 'menu.withdraw') }],
+    [{ text: t(L, 'menu.myaccount') }],
   ];
   keyboard.push([{ text: t(L, 'menu.channel') }, { text: t(L, 'menu.support') }]);
   keyboard.push([{ text: t(L, 'menu.language') }, { text: t(L, 'menu.refer') }]);

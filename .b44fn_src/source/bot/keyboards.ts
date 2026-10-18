@@ -39,8 +39,8 @@ export function mainMenuKeyboard(lang, opts) {
     });
   const kb = [
     [btn('menu.buy', 'menu_buy'), btn('menu.topup', 'menu_topup')],
-    [btn('menu.sell', 'menu_sell'), btn('menu.myaccount', 'menu_myaccount')],
-    [btn('menu.withdraw', 'menu_withdraw')]
+    [btn('menu.sell', 'menu_sell'), btn('menu.withdraw', 'menu_withdraw')],
+    [btn('menu.myaccount', 'menu_myaccount')]
   ];
   kb.push([btn('menu.channel', 'menu_channel'), btn('menu.support', 'menu_support')]);
   kb.push([btn('menu.language', 'menu_language'), btn('menu.refer', 'menu_refer')]);
