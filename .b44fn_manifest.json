@@ -1,0 +1,372 @@
+[
+  {
+    "name": "source/index.ts",
+    "srcOff": 0,
+    "srcLen": 5041
+  },
+  {
+    "name": "source/_shared/registry.ts",
+    "srcOff": 5041,
+    "srcLen": 435
+  },
+  {
+    "name": "source/fns/getPublicSettings.ts",
+    "srcOff": 5476,
+    "srcLen": 1013
+  },
+  {
+    "name": "source/_shared/b44.ts",
+    "srcOff": 6489,
+    "srcLen": 3913
+  },
+  {
+    "name": "source/_shared/entities.ts",
+    "srcOff": 10402,
+    "srcLen": 5196
+  },
+  {
+    "name": "source/_shared/tables.ts",
+    "srcOff": 15598,
+    "srcLen": 593
+  },
+  {
+    "name": "source/_shared/storage.ts",
+    "srcOff": 16191,
+    "srcLen": 1224
+  },
+  {
+    "name": "source/_shared/tgIdentity.ts",
+    "srcOff": 17415,
+    "srcLen": 1604
+  },
+  {
+    "name": "source/fns/getBalance.ts",
+    "srcOff": 19019,
+    "srcLen": 839
+  },
+  {
+    "name": "source/_shared/balance.ts",
+    "srcOff": 19858,
+    "srcLen": 2110
+  },
+  {
+    "name": "source/_shared/resolveUser.ts",
+    "srcOff": 21968,
+    "srcLen": 1000
+  },
+  {
+    "name": "source/fns/submitManualTopUp.ts",
+    "srcOff": 22968,
+    "srcLen": 1776
+  },
+  {
+    "name": "source/_shared/adminNotify.ts",
+    "srcOff": 24744,
+    "srcLen": 4018
+  },
+  {
+    "name": "source/fns/requestWithdrawal.ts",
+    "srcOff": 28762,
+    "srcLen": 2282
+  },
+  {
+    "name": "source/fns/approveTopUp.ts",
+    "srcOff": 31044,
+    "srcLen": 2281
+  },
+  {
+    "name": "source/_shared/isAdmin.ts",
+    "srcOff": 33325,
+    "srcLen": 576
+  },
+  {
+    "name": "source/fns/approveWithdrawal.ts",
+    "srcOff": 33901,
+    "srcLen": 2448
+  },
+  {
+    "name": "source/fns/addUserBalance.ts",
+    "srcOff": 36349,
+    "srcLen": 2246
+  },
+  {
+    "name": "source/fns/banUser.ts",
+    "srcOff": 38595,
+    "srcLen": 1117
+  },
+  {
+    "name": "source/fns/createOkpayOrder.ts",
+    "srcOff": 39712,
+    "srcLen": 2276
+  },
+  {
+    "name": "source/_shared/okpay.ts",
+    "srcOff": 41988,
+    "srcLen": 3610
+  },
+  {
+    "name": "source/fns/okpayCallback.ts",
+    "srcOff": 45598,
+    "srcLen": 2796
+  },
+  {
+    "name": "source/fns/checkOkpayOrder.ts",
+    "srcOff": 48394,
+    "srcLen": 2282
+  },
+  {
+    "name": "source/fns/purchaseProduct.ts",
+    "srcOff": 50676,
+    "srcLen": 1696
+  },
+  {
+    "name": "source/fns/getMyMoneyRecords.ts",
+    "srcOff": 52372,
+    "srcLen": 1521
+  },
+  {
+    "name": "source/fns/getMyStats.ts",
+    "srcOff": 53893,
+    "srcLen": 1423
+  },
+  {
+    "name": "source/fns/getMySessions.ts",
+    "srcOff": 55316,
+    "srcLen": 1115
+  },
+  {
+    "name": "source/fns/processSellSeasonJobs.ts",
+    "srcOff": 56431,
+    "srcLen": 6269
+  },
+  {
+    "name": "source/_shared/selfInvoke.ts",
+    "srcOff": 62700,
+    "srcLen": 1240
+  },
+  {
+    "name": "source/_shared/botTranslations.js",
+    "srcOff": 63940,
+    "srcLen": 99418
+  },
+  {
+    "name": "source/_shared/telegramApi.ts",
+    "srcOff": 163358,
+    "srcLen": 6742
+  },
+  {
+    "name": "source/fns/pollTelegramUpdates.ts",
+    "srcOff": 170100,
+    "srcLen": 8040
+  },
+  {
+    "name": "source/bot/state.ts",
+    "srcOff": 178140,
+    "srcLen": 4161
+  },
+  {
+    "name": "source/bot/callbacks.ts",
+    "srcOff": 182301,
+    "srcLen": 26412
+  },
+  {
+    "name": "source/_shared/rewardViews.js",
+    "srcOff": 208713,
+    "srcLen": 2900
+  },
+  {
+    "name": "source/_shared/seasonBuy.js",
+    "srcOff": 211613,
+    "srcLen": 1190
+  },
+  {
+    "name": "source/bot/keyboards.ts",
+    "srcOff": 212803,
+    "srcLen": 4526
+  },
+  {
+    "name": "source/bot/views.ts",
+    "srcOff": 217329,
+    "srcLen": 4015
+  },
+  {
+    "name": "source/bot/delivery.ts",
+    "srcOff": 221344,
+    "srcLen": 7086
+  },
+  {
+    "name": "source/_shared/zipBuilder.js",
+    "srcOff": 228430,
+    "srcLen": 3091
+  },
+  {
+    "name": "source/_shared/sqliteBuilder.js",
+    "srcOff": 231521,
+    "srcLen": 7985
+  },
+  {
+    "name": "source/bot/commands.ts",
+    "srcOff": 239506,
+    "srcLen": 32333
+  },
+  {
+    "name": "source/bot/flows.ts",
+    "srcOff": 271839,
+    "srcLen": 22169
+  },
+  {
+    "name": "source/_shared/extractSessions.js",
+    "srcOff": 294008,
+    "srcLen": 7646
+  },
+  {
+    "name": "source/_shared/zipExtractor.js",
+    "srcOff": 301654,
+    "srcLen": 2006
+  },
+  {
+    "name": "source/_shared/sessionParser.js",
+    "srcOff": 303660,
+    "srcLen": 11468
+  },
+  {
+    "name": "source/fns/getAdminData.ts",
+    "srcOff": 315128,
+    "srcLen": 1072
+  },
+  {
+    "name": "source/fns/telegramWebAppAuth.ts",
+    "srcOff": 316200,
+    "srcLen": 2545
+  },
+  {
+    "name": "source/fns/updateRewardPrice.ts",
+    "srcOff": 318745,
+    "srcLen": 1256
+  },
+  {
+    "name": "source/fns/sendBotMessage.ts",
+    "srcOff": 320001,
+    "srcLen": 2826
+  },
+  {
+    "name": "source/fns/submitTelegramUsername.ts",
+    "srcOff": 322827,
+    "srcLen": 1882
+  },
+  {
+    "name": "source/fns/getMyAdminStatus.ts",
+    "srcOff": 324709,
+    "srcLen": 794
+  },
+  {
+    "name": "source/fns/getTelegramBotInfo.ts",
+    "srcOff": 325503,
+    "srcLen": 807
+  },
+  {
+    "name": "source/fns/setupTelegramWebhook.ts",
+    "srcOff": 326310,
+    "srcLen": 1465
+  },
+  {
+    "name": "source/fns/enforceAdminRoles.ts",
+    "srcOff": 327775,
+    "srcLen": 1672
+  },
+  {
+    "name": "source/fns/purchaseAccount.ts",
+    "srcOff": 329447,
+    "srcLen": 7628
+  },
+  {
+    "name": "source/_shared/inventory.js",
+    "srcOff": 337075,
+    "srcLen": 1253
+  },
+  {
+    "name": "source/_shared/readOtp.js",
+    "srcOff": 338328,
+    "srcLen": 567
+  },
+  {
+    "name": "source/_shared/mtproto.js",
+    "srcOff": 338895,
+    "srcLen": 11291
+  },
+  {
+    "name": "source/_shared/telegramSessionCodec.js",
+    "srcOff": 350186,
+    "srcLen": 1243
+  },
+  {
+    "name": "source/_shared/passwordDigest.js",
+    "srcOff": 351429,
+    "srcLen": 2018
+  },
+  {
+    "name": "source/_shared/telegramConfig.js",
+    "srcOff": 353447,
+    "srcLen": 165
+  },
+  {
+    "name": "source/_shared/twoFactor.js",
+    "srcOff": 353612,
+    "srcLen": 4094
+  },
+  {
+    "name": "source/fns/fetchOtpCode.ts",
+    "srcOff": 357706,
+    "srcLen": 1805
+  },
+  {
+    "name": "source/fns/sendLoginCode.ts",
+    "srcOff": 359511,
+    "srcLen": 1892
+  },
+  {
+    "name": "source/fns/verifyLoginCode.ts",
+    "srcOff": 361403,
+    "srcLen": 4978
+  },
+  {
+    "name": "source/_shared/acceptedCountries.js",
+    "srcOff": 366381,
+    "srcLen": 17621
+  },
+  {
+    "name": "source/fns/uploadSessions.ts",
+    "srcOff": 384002,
+    "srcLen": 6081
+  },
+  {
+    "name": "source/_shared/spamBot.js",
+    "srcOff": 390083,
+    "srcLen": 1422
+  },
+  {
+    "name": "source/fns/sellSeason.ts",
+    "srcOff": 391505,
+    "srcLen": 14185
+  },
+  {
+    "name": "source/fns/generateSeasonZip.ts",
+    "srcOff": 405690,
+    "srcLen": 4602
+  },
+  {
+    "name": "source/fns/updateSellerPrice.ts",
+    "srcOff": 410292,
+    "srcLen": 2266
+  },
+  {
+    "name": "source/fns/processPendingRewards.ts",
+    "srcOff": 412558,
+    "srcLen": 5430
+  },
+  {
+    "name": "npm:@mtproto/core@6.3.0/envs/browser/index.js",
+    "srcOff": 46,
+    "srcLen": 1852861754
+  }
+]
