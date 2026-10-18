@@ -852,14 +852,8 @@ export function buildReplyKeyboard(lang, opts) {
   const keyboard = [
     [{ text: t(L, 'menu.buy') }, { text: t(L, 'menu.topup') }],
     [{ text: t(L, 'menu.sell') }, { text: t(L, 'menu.myaccount') }],
-    [{ text: t(L, 'menu.reward') }, { text: t(L, 'menu.withdraw') }],
+    [{ text: t(L, 'menu.withdraw') }],
   ];
-  if (!o.hidePremium || !o.hideStars) {
-    const row = [];
-    if (!o.hidePremium) row.push({ text: t(L, 'menu.premium') });
-    if (!o.hideStars) row.push({ text: t(L, 'menu.stars') });
-    if (row.length) keyboard.push(row);
-  }
   keyboard.push([{ text: t(L, 'menu.channel') }, { text: t(L, 'menu.support') }]);
   keyboard.push([{ text: t(L, 'menu.language') }, { text: t(L, 'menu.refer') }]);
   return { keyboard, resize_keyboard: true };
