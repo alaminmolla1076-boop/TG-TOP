@@ -27,6 +27,7 @@ const T = {
     'menu.channel': '📢 Channel',
     'menu.support': '🛟 Support',
     'menu.language': '🌐 Language',
+    'menu.refer': '🎁 Refer',
     'menu.balance': '💰 Balance', 'menu.status': '📊 Status', 'menu.orders': '📦 Orders', 'menu.bind': '🔗 Bind', 'menu.help': '📋 Help',
     'menu.mainMsg': '👋 <b>Main Menu</b>\n\nSelect an option:',
     'buy.menuMsg': '🌍 <b>Buy Accounts</b>\n\nChoose a purchase type:',
@@ -73,6 +74,10 @@ const T = {
     'withdraw.prompt': 'Please type the amount you want to withdraw:\nExample: <code>50</code>',
     'withdraw.addrPrompt': '💸 <b>Withdraw — {amount}</b>\n\nPlease send your USDT (BEP20) wallet address:',
     'withdraw.success': '✅ <b>Withdrawal Submitted Successfully!</b>\n\nAmount: {amount} USDT\nWallet: {wallet}\n\nFunds will be sent after admin approval.',
+    'refer.title': '🎁 <b>Refer &amp; Earn</b>',
+    'refer.desc': 'Share your invite link with friends. When they join TG TOP through it, you earn rewards.',
+    'refer.yourLink': 'Your referral link',
+    'refer.copyBtn': '📋 Copy Link',
     'reward.title': '🎁 <b>Reward Prices</b>',
     'myaccount.title': '👤 <b>My Account</b>',
     'help.title': '📋 <b>All Commands</b>',
@@ -168,6 +173,7 @@ const T = {
     'menu.channel': '📢 চ্যানেল',
     'menu.support': '🛟 সাপোর্ট',
     'menu.language': '🌐 ভাষা',
+    'menu.refer': '🎁 রেফার',
     'menu.balance': '💰 ব্যালেন্স', 'menu.status': '📊 স্ট্যাটাস', 'menu.orders': '📦 অর্ডার', 'menu.bind': '🔗 বাইন্ড', 'menu.help': '📋 সাহায্য',
     'menu.mainMsg': '👋 <b>প্রধান মেনু</b>\n\nএকটি অপশন নির্বাচন করুন:',
     'buy.menuMsg': '🌍 <b>অ্যাকাউন্ট কিনুন</b>\n\nক্রয়ের ধরন নির্বাচন করুন:',
@@ -213,6 +219,10 @@ const T = {
     'withdraw.prompt': 'উত্তোলন করতে চান এমাউন্ট লিখুন:\nউদাহরণ: <code>50</code>',
     'withdraw.addrPrompt': '💸 <b>উত্তোলন — {amount}</b>\n\nআপনার USDT (BEP20) ওয়ালেট ঠিকানা পাঠান:',
     'withdraw.success': '✅ <b>উত্তোলন সফলভাবে জমা হয়েছে!</b>\n\nএমাউন্ট: {amount} USDT\nওয়ালেট: {wallet}\n\nঅ্যাডমিন অনুমোদনের পর অর্থ পাঠানো হবে।',
+    'refer.title': '🎁 <b>রেফার ও আয়</b>',
+    'refer.desc': 'আপনার আমন্ত্রণ লিংক বন্ধুদের সাথে শেয়ার করুন। এর মাধ্যমে তারা TG TOP-এ যোগ দিলে আপনি পুরস্কার অর্জন করবেন।',
+    'refer.yourLink': 'আপনার রেফার লিংক',
+    'refer.copyBtn': '📋 লিংক কপি',
     'reward.title': '🎁 <b>পুরস্কারের মূল্য</b>',
     'myaccount.title': '👤 <b>আমার অ্যাকাউন্ট</b>',
     'help.title': '📋 <b>সকল কমান্ড</b>',
@@ -300,7 +310,7 @@ const T = {
     'menu.buy': '🌍 Comprar', 'menu.topup': '💳 Recargar', 'menu.sell': '📱 Vender',
     'menu.myaccount': '👤 Mi Cuenta', 'menu.reward': '💰 Precio de Venta', 'menu.withdraw': '💸 Retirar',
     'menu.premium': '⭐ Premium', 'menu.stars': '⭐ Estrellas', 'menu.channel': '📢 Canal',
-    'menu.support': '🛟 Soporte', 'menu.language': '🌐 Idioma',
+    'menu.support': '🛟 Soporte', 'menu.language': '🌐 Idioma', 'menu.refer': '🎁 Referir',
     'menu.balance': '💰 Saldo', 'menu.status': '📊 Estado', 'menu.orders': '📦 Pedidos', 'menu.bind': '🔗 Vincular', 'menu.help': '📋 Ayuda',
     'menu.mainMsg': '👋 <b>Menú Principal</b>\n\nSelecciona una opción:',
     'buy.menuMsg': '🌍 <b>Comprar Cuentas</b>\n\nElige un tipo:',
@@ -368,7 +378,7 @@ const T = {
     'menu.buy': '🌍 Acheter', 'menu.topup': '💳 Recharger', 'menu.sell': '📱 Vendre',
     'menu.myaccount': '👤 Mon Compte', 'menu.reward': '💰 Prix de Vente', 'menu.withdraw': '💸 Retirer',
     'menu.premium': '⭐ Premium', 'menu.stars': '⭐ Étoiles', 'menu.channel': '📢 Canal',
-    'menu.support': '🛟 Support', 'menu.language': '🌐 Langue',
+    'menu.support': '🛟 Support', 'menu.language': '🌐 Langue', 'menu.refer': '🎁 Parrainer',
     'menu.balance': '💰 Solde', 'menu.status': '📊 Statut', 'menu.orders': '📦 Commandes', 'menu.bind': '🔗 Lier', 'menu.help': '📋 Aide',
     'menu.mainMsg': '👋 <b>Menu Principal</b>\n\nChoisissez une option :',
     'buy.menuMsg': '🌍 <b>Acheter des Comptes</b>\n\nChoisissez un type :',
@@ -432,7 +442,7 @@ const T = {
     'menu.buy': '🌍 Kaufen', 'menu.topup': '💳 Aufladen', 'menu.sell': '📱 Verkaufen',
     'menu.myaccount': '👤 Mein Konto', 'menu.reward': '💰 Verkaufspreis', 'menu.withdraw': '💸 Auszahlen',
     'menu.premium': '⭐ Premium', 'menu.stars': '⭐ Sterne', 'menu.channel': '📢 Kanal',
-    'menu.support': '🛟 Support', 'menu.language': '🌐 Sprache',
+    'menu.support': '🛟 Support', 'menu.language': '🌐 Sprache', 'menu.refer': '🎁 Werben',
     'menu.balance': '💰 Guthaben', 'menu.status': '📊 Status', 'menu.orders': '📦 Bestellungen', 'menu.bind': '🔗 Verknüpfen', 'menu.help': '📋 Hilfe',
     'menu.mainMsg': '👋 <b>Hauptmenü</b>\n\nOption wählen:',
     'buy.menuMsg': '🌍 <b>Konten Kaufen</b>\n\nTyp wählen:',
@@ -496,7 +506,7 @@ const T = {
     'menu.buy': '🌍 Comprar', 'menu.topup': '💳 Recarregar', 'menu.sell': '📱 Vender',
     'menu.myaccount': '👤 Minha Conta', 'menu.reward': '💰 Preço de Venda', 'menu.withdraw': '💸 Sacar',
     'menu.premium': '⭐ Premium', 'menu.stars': '⭐ Estrelas', 'menu.channel': '📢 Canal',
-    'menu.support': '🛟 Suporte', 'menu.language': '🌐 Idioma',
+    'menu.support': '🛟 Suporte', 'menu.language': '🌐 Idioma', 'menu.refer': '🎁 Indicar',
     'menu.balance': '💰 Saldo', 'menu.status': '📊 Status', 'menu.orders': '📦 Pedidos', 'menu.bind': '🔗 Vincular', 'menu.help': '📋 Ajuda',
     'menu.mainMsg': '👋 <b>Menu Principal</b>\n\nEscolha uma opção:',
     'buy.menuMsg': '🌍 <b>Comprar Contas</b>\n\nEscolha um tipo:',
@@ -560,7 +570,7 @@ const T = {
     'menu.buy': '🌍 Купить', 'menu.topup': '💳 Пополнить', 'menu.sell': '📱 Продать',
     'menu.myaccount': '👤 Мой Аккаунт', 'menu.reward': '💰 Цена Продажи', 'menu.withdraw': '💸 Вывод',
     'menu.premium': '⭐ Премиум', 'menu.stars': '⭐ Звёзды', 'menu.channel': '📢 Канал',
-    'menu.support': '🛟 Поддержка', 'menu.language': '🌐 Язык',
+    'menu.support': '🛟 Поддержка', 'menu.language': '🌐 Язык', 'menu.refer': '🎁 Реферал',
     'menu.balance': '💰 Баланс', 'menu.status': '📊 Статус', 'menu.orders': '📦 Заказы', 'menu.bind': '🔗 Привязать', 'menu.help': '📋 Помощь',
     'menu.mainMsg': '👋 <b>Главное Меню</b>\n\nВыберите опцию:',
     'buy.menuMsg': '🌍 <b>Купить Аккаунты</b>\n\nВыберите тип:',
@@ -624,7 +634,7 @@ const T = {
     'menu.buy': '🌍 شراء', 'menu.topup': '💳 شحن', 'menu.sell': '📱 بيع',
     'menu.myaccount': '👤 حسابي', 'menu.reward': '💰 سعر البيع', 'menu.withdraw': '💸 سحب',
     'menu.premium': '⭐ بريميوم', 'menu.stars': '⭐ نجوم', 'menu.channel': '📢 قناة',
-    'menu.support': '🛟 دعم', 'menu.language': '🌐 اللغة',
+    'menu.support': '🛟 دعم', 'menu.language': '🌐 اللغة', 'menu.refer': '🎁 إحالة',
     'menu.balance': '💰 الرصيد', 'menu.status': '📊 الحالة', 'menu.orders': '📦 الطلبات', 'menu.bind': '🔗 ربط', 'menu.help': '📋 مساعدة',
     'menu.mainMsg': '👋 <b>القائمة الرئيسية</b>\n\nاختر خياراً:',
     'buy.menuMsg': '🌍 <b>شراء حسابات</b>\n\nاختر نوعاً:',
@@ -688,7 +698,7 @@ const T = {
     'menu.buy': '🌍 खरीदें', 'menu.topup': '💳 टॉप-अप', 'menu.sell': '📱 बेचें',
     'menu.myaccount': '👤 मेरा खाता', 'menu.reward': '💰 बिक्री मूल्य', 'menu.withdraw': '💸 निकासी',
     'menu.premium': '⭐ प्रीमियम', 'menu.stars': '⭐ स्टार', 'menu.channel': '📢 चैनल',
-    'menu.support': '🛟 सहायता', 'menu.language': '🌐 भाषा',
+    'menu.support': '🛟 सहायता', 'menu.language': '🌐 भाषा', 'menu.refer': '🎁 रेफर',
     'menu.balance': '💰 बैलेंस', 'menu.status': '📊 स्थिति', 'menu.orders': '📦 ऑर्डर', 'menu.bind': '🔗 बाइन्ड', 'menu.help': '📋 सहायता',
     'menu.mainMsg': '👋 <b>मुख्य मेनू</b>\n\nएक विकल्प चुनें:',
     'buy.menuMsg': '🌍 <b>खाते खरीदें</b>\n\nप्रकार चुनें:',
@@ -752,7 +762,7 @@ const T = {
     'menu.buy': '🌍 购买', 'menu.topup': '💳 充值', 'menu.sell': '📱 出售',
     'menu.myaccount': '👤 我的账户', 'menu.reward': '💰 售价', 'menu.withdraw': '💸 提现',
     'menu.premium': '⭐ 高级', 'menu.stars': '⭐ 星星', 'menu.channel': '📢 频道',
-    'menu.support': '🛟 支持', 'menu.language': '🌐 语言',
+    'menu.support': '🛟 支持', 'menu.language': '🌐 语言', 'menu.refer': '🎁 推荐',
     'menu.balance': '💰 余额', 'menu.status': '📊 状态', 'menu.orders': '📦 订单', 'menu.bind': '🔗 绑定', 'menu.help': '📋 帮助',
     'menu.mainMsg': '👋 <b>主菜单</b>\n\n选择一个选项：',
     'buy.menuMsg': '🌍 <b>购买账户</b>\n\n选择类型：',
@@ -851,7 +861,7 @@ export function buildReplyKeyboard(lang, opts) {
     if (row.length) keyboard.push(row);
   }
   keyboard.push([{ text: t(L, 'menu.channel') }, { text: t(L, 'menu.support') }]);
-  keyboard.push([{ text: t(L, 'menu.language') }]);
+  keyboard.push([{ text: t(L, 'menu.language') }, { text: t(L, 'menu.refer') }]);
   return { keyboard, resize_keyboard: true };
 }
 
@@ -859,7 +869,7 @@ export function buildReplyKeyboard(lang, opts) {
 // This lets us route button presses regardless of the user's language.
 export function buildAllReplyActions() {
   const actions = {};
-  const keys = ['buy', 'topup', 'sell', 'myaccount', 'rewards', 'withdraw', 'premium', 'stars', 'channel', 'support', 'language'];
+  const keys = ['buy', 'topup', 'sell', 'myaccount', 'rewards', 'withdraw', 'premium', 'stars', 'channel', 'support', 'language', 'refer'];
   for (const lang of Object.keys(T)) {
     for (const k of keys) {
       const menuKey = k === 'rewards' ? 'menu.reward' : `menu.${k}`;

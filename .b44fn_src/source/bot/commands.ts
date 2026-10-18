@@ -178,6 +178,18 @@ export default async function handleCommand(base44, token, ctx) {
         ], replyTo);
         break;
       }
+    case 'refer':
+      {
+        if (!await requireUser()) break;
+        const refLink = `https://t.me/tgtopsbot?startapp=${user.telegram_id || tgUser.id}`;
+        await tgSendMenu(token, chatId, `${t(lang, 'refer.title')}\n\n${t(lang, 'refer.desc')}\n\n${t(lang, 'refer.yourLink')}:\n<code>${refLink}</code>`, [
+          [
+            { text: t(lang, 'refer.copyBtn'), copy_text: { text: refLink } },
+            { text: '📤 Share', switch_inline_query: refLink }
+          ]
+        ], replyTo);
+        break;
+      }
     case 'set_channel':
     case 'set_support':
       {
