@@ -70,12 +70,12 @@ export default async function handleCommand(base44, token, ctx) {
         const bal = await getRealBalance(base44, user.email);
         const totalDeposits = topups.reduce((sum, tp)=>sum + (tp.amount || 0), 0);
         const totalWithdrawals = withdrawals.filter((w)=>w.status === 'approved').reduce((sum, w)=>sum + (w.amount || 0), 0);
-        const totalReward = sessions.filter((s)=>s.reward_status === 'rewarded').reduce((sum, s)=>sum + (s.reward_amount || 0), 0);
         const name = [
           user.telegram_first_name,
           user.telegram_last_name
         ].filter(Boolean).join(' ') || user.full_name || user.email;
-        await tgSend(token, chatId, `${t(lang, 'myaccount.title')}\n\n` + `Name: <b>${name}</b>\n` + `Username: ${user.telegram_username ? `@${user.telegram_username}` : 'N/A'}\n` + `ID: <code>${user.telegram_id || user.id}</code>\n\n` + `📊 <b>Statistics</b>\n` + `🛒 Purchased: ${accounts.length} account(s)\n` + `📱 Sold: ${sessions.length} account(s)\n` + `🔐 Total Login: ${sessions.length}\n` + `🎁 Total Reward: $${totalReward.toFixed(2)}\n` + `💰 Total Top Up: $${totalDeposits.toFixed(2)}\n` + `💸 Total Withdraw: $${totalWithdrawals.toFixed(2)}\n` + `💎 Balance: <b>$${bal.toFixed(2)}</b>` + await buildUserRewards(base44, user.email), replyTo);
+        const sep = '━━━━━━━━━━━━━━━━━━';
+        await tgSend(token, chatId, `${sep}\n${t(lang, 'myaccount.title')}\n${sep}\n\n` + `<b>${name}</b>\n` + `🔗 ${user.telegram_username ? `@${user.telegram_username}` : 'N/A'}\n` + `🆔 <code>${user.telegram_id || user.id}</code>\n\n` + `┈┈┈┈ 📊 <b>Statistics</b> ┈┈┈┈\n` + `🛒 Purchased: <b>${accounts.length} account(s)</b>\n` + `📱 Sold: <b>${sessions.length} account(s)</b>\n` + `🔐 Total Login: <b>${sessions.length}</b>\n` + `💰 Total Top Up: <b>$${totalDeposits.toFixed(2)}</b>\n` + `💸 Total Withdraw: <b>$${totalWithdrawals.toFixed(2)}</b>\n\n` + `${sep}\n💎 <b>Balance: $${bal.toFixed(2)}</b>\n${sep}` + await buildUserRewards(base44, user.email), replyTo);
         break;
       }
     case 'balance':
@@ -320,6 +320,10 @@ export default async function handleCommand(base44, token, ctx) {
               await tgSend(token, chatId, `❌ Error: ${err.message}`, replyTo);
             }
           }
+        } else {
+          // Menu press (Market button) — show the market menu, like the app's Market page.
+          const { text: mkText, keyboard: mkKb } = await marketMenu(base44, user);
+          await tgSendMenu(token, chatId, mkText, mkKb, replyTo);
         }
         break;
       }
