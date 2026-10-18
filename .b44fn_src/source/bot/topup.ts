@@ -248,7 +248,11 @@ export async function handleTopupCallback(base44, token, cq, user, lang, chatId,
   }
   if (cbData.startsWith('tp_net:')) {
     const [, amountRaw, networkId] = cbData.split(':');
-    await showDepositPage(base44, token, user, chatId, msgId, Number(amountRaw), networkId);
+    try {
+      await showDepositPage(base44, token, user, chatId, msgId, Number(amountRaw), networkId);
+    } catch (err) {
+      await tgSend(token, chatId, `❌ ${errText(err)}`);
+    }
     return;
   }
   if (cbData.startsWith('tp_okpay:')) {
