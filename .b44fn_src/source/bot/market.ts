@@ -44,8 +44,7 @@ const gone = (sellerEmail)=>[
 // Market menu — the same content the app's Market page shows.
 export async function marketMenu(base44, user) {
   const market = await fetchMarket(base44, user);
-  const bal = await getRealBalance(base44, user.email);
-  let text = `${SEP}\n🌍 <b>Market</b>\n${SEP}\n\n💵 Balance: <b>${money(bal)}</b>\n\n${SEC('👤 <b>Sellers</b>')}\nTap a seller to browse their stock:`;
+  let text = `${SEP}\n🌍 <b>Market</b>\n${SEP}\n\n${SEC('👤 <b>Sellers</b>')}\nTap a seller to browse their stock:`;
   const kb = [];
   for (const s of (market.sellers || []).slice(0, 30)){
     kb.push([
