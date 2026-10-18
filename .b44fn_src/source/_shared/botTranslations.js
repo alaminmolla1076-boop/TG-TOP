@@ -871,5 +871,16 @@ export function buildAllReplyActions() {
       if (btnText) actions[btnText] = k;
     }
   }
+  // Telegram keeps showing the LAST reply keyboard a chat received, so old
+  // chats still display pre-rename buttons. Their presses must keep working:
+  // legacy 'Buy' labels route to the same Market action as the new one.
+  const LEGACY_LABELS = {
+    'buy': ['🌍 Buy', '🌍 কিনুন', '🌍 Comprar', '🌍 Acheter', '🌍 Kaufen', '🌍 Купить', '🌍 شراء', '🌍 खरीदें', '🌍 购买'],
+  };
+  for (const [action, labels] of Object.entries(LEGACY_LABELS)) {
+    for (const label of labels) {
+      if (!actions[label]) actions[label] = action;
+    }
+  }
   return actions;
 }
