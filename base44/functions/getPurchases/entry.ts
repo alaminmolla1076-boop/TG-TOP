@@ -26,11 +26,37 @@ export default async function (req) {
         order by account_id, created_date desc
       ) o on o.account_id = a.id
       where a.owner_email = ${email} and a.status = 'sold'
+        and (a.purchase_type is null or a.purchase_type <> 'season')
       order by a.updated_date desc
       limit 20
     `);
 
+    // Batch (session-format) purchases grouped per batch: one history row per
+    // ZIP, with the account count and batch_id for chat redelivery.
+    const batchRows = await runSql(`
+      select a.batch_id, max(a.country_iso) as country_iso, count(*) as account_count,
+             max(a.updated_date) as purchased_at,
+             coalesce(max(r.country_name), max(c.name), max(a.country_iso)) as country_name,
+             coalesce(max(r.flag), max(c.flag), '') as flag
+      from tg_accounts a
+      left join reward_prices r on r.country_iso = a.country_iso and r.active = true
+      left join countries c on c.iso = a.country_iso
+      where a.owner_email = ${email} and a.status = 'sold'
+        and a.purchase_type = 'season' and a.batch_id is not null
+      group by a.batch_id
+      order by purchased_at desc
+      limit 10
+    `);
+
     return Response.json({
+      batches: batchRows.map((b) => ({
+        batch_id: b.batch_id,
+        country_iso: b.country_iso,
+        country_name: b.country_name,
+        flag: b.flag,
+        account_count: b.account_count,
+        purchased_at: b.purchased_at,
+      })),
       purchases: rows.map((p) => ({
         id: p.id,
         phone_number: p.phone_number,
