@@ -32,6 +32,12 @@ const NETWORKS = [
     name: 'BNB Chain',
     badge: 'USDT BEP20',
     desc: 'Low fees · fast confirmation'
+  },
+  {
+    id: 'TON',
+    name: 'TON',
+    badge: 'TON Coin',
+    desc: 'The Open Network'
   }
 ];
 const netName = (id)=>NETWORKS.find((n)=>n.id === id) || {
@@ -129,8 +135,10 @@ async function showDepositPage(base44, token, user, chatId, msgId, amount, netwo
   await tgSendPhoto(token, chatId, qrUrl);
   // Compact receipt — exactly the reference layout: header, amount, address,
   // one instruction line, and a single "I Have Paid" button.
-  const title = networkId === 'BEP20' ? 'BNB (BEP-20) Recharge' : 'TRON (TRC-20) Recharge';
-  const text = `💰 <b>${title}</b>\n${SEP}\n` + `💵 Amount: <b>$${Number(req.identify_amount || 0).toFixed(4)} USDT</b>\n` + `⚠️ Send <b>EXACTLY</b> this amount\n` + `⏳ Reserved: <b>20 minutes</b>\n${SEP}\n` + `🔒 <b>Wallet Address:</b>\n${req.wallet_address}\n` + `☝️ <i>Tap the address to copy</i>\n${SEP}\n` + `After sending, tap ✅ <b>I Have Paid</b> below.`;
+  const isTon = networkId === 'TON';
+  const title = isTon ? 'TON (TON Coin) Recharge' : networkId === 'BEP20' ? 'BNB (BEP-20) Recharge' : 'TRON (TRC-20) Recharge';
+  const amountText = isTon ? `${Number(req.identify_amount || 0).toFixed(2)} TON${req.amount_usd ? ` ≈ $${Number(req.amount_usd).toFixed(2)}` : ''}` : `$${Number(req.identify_amount || 0).toFixed(4)} USDT`;
+  const text = `💰 <b>${title}</b>\n${SEP}\n` + `💵 Amount: <b>${amountText}</b>\n` + `⚠️ Send <b>EXACTLY</b> this amount\n` + `⏳ Reserved: <b>20 minutes</b>\n${SEP}\n` + `🔒 <b>Wallet Address:</b>\n${req.wallet_address}\n` + `☝️ <i>Tap the address to copy</i>\n${SEP}\n` + `After sending, tap ✅ <b>I Have Paid</b> below.`;
   await tgSendMenu(token, chatId, text, [
     [
       {
