@@ -25,7 +25,8 @@ begin
     values('ZZ', 'commerce_check_3_' || v_suffix, 2.25, v_seller) returning id into v_spare;
   v_items := jsonb_build_array(jsonb_build_object('id', v_first, 'price', 4.50), jsonb_build_object('id', v_second, 'price', 2.25));
   v_result := public.complete_account_purchase(v_buyer, v_items, 'season', 'commerce_check_' || v_suffix);
-  if public.commerce_balance(v_buyer) <> 13.25 or public.commerce_balance(v_seller) <> 6.75 then
+  -- 5% commission: round(6.75 * 0.05, 2) = 0.34 charged to the buyer separately.
+  if public.commerce_balance(v_buyer) <> 12.91 or public.commerce_balance(v_seller) <> 6.75 then
     raise exception 'Purchase balance assertion failed';
   end if;
   if (select count(*) from public.tg_accounts where id in (v_first, v_second) and status = 'sold' and owner_email = v_buyer and password = '') <> 2 then
@@ -33,6 +34,10 @@ begin
   end if;
   if (select count(*) from public.top_ups where user_email = v_seller and network = 'account_sale' and status = 'approved') <> 2 then
     raise exception 'Seller credit assertion failed';
+  end if;
+  if (select count(*) from public.top_ups where user_email = v_buyer and network = 'purchase_commission'
+      and amount = -0.34 and status = 'approved') <> 1 then
+    raise exception 'Commission assertion failed';
   end if;
   v_blocked := false;
   begin
@@ -67,7 +72,7 @@ begin
       raise exception 'Withdrawal asset assertion failed';
     end if;
   end loop;
-  if public.commerce_balance(v_buyer) <> 4.25 then raise exception 'Withdrawal hold assertion failed'; end if;
+  if public.commerce_balance(v_buyer) <> 3.91 then raise exception 'Withdrawal hold assertion failed'; end if;
   v_blocked := false;
   begin
     perform public.create_wallet_withdrawal(v_buyer, 5, '0x' || repeat('0', 40), 'BEP20');
@@ -90,9 +95,9 @@ begin
   end;
   if not v_blocked then raise exception 'Address network assertion failed'; end if;
   update public.withdrawals set status = 'rejected' where user_email = v_buyer and network = 'POLYGON';
-  if public.commerce_balance(v_buyer) <> 7.25 then raise exception 'Rejected withdrawal refund assertion failed'; end if;
+  if public.commerce_balance(v_buyer) <> 6.91 then raise exception 'Rejected withdrawal refund assertion failed'; end if;
   update public.withdrawals set status = 'approved' where user_email = v_buyer and network = 'BEP20';
-  if public.commerce_balance(v_buyer) <> 7.25 then raise exception 'Approved withdrawal double-debit assertion failed'; end if;
+  if public.commerce_balance(v_buyer) <> 6.91 then raise exception 'Approved withdrawal double-debit assertion failed'; end if;
   if has_function_privilege('anon', 'public.complete_account_purchase(text,jsonb,text,text)', 'EXECUTE')
     or has_function_privilege('authenticated', 'public.create_wallet_withdrawal(text,numeric,text,text)', 'EXECUTE') then
     raise exception 'Privileged operation assertion failed';

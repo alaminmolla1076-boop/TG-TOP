@@ -15,7 +15,8 @@ export default async function(req) {
     const [topUps, orders, accountSales, countries, withdrawals, balanceRes, pendingDeposits, pendingWithdrawals, myStock] = await Promise.all([
       runSql(
         `select id, amount, network, tx_hash, status, created_date
-         from top_ups where user_email = ${email} order by created_date desc limit 20`
+         from top_ups where user_email = ${email} and network <> 'purchase_commission'
+         order by created_date desc limit 20`
       ),
       runSql(
         `select id, product_name, price, category, status, created_date

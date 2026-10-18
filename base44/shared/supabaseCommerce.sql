@@ -21,6 +21,7 @@ declare
   v_affected text[] := array[p_buyer_email];
   v_price numeric;
   v_total numeric := 0;
+  v_commission numeric := 0;
 begin
   if nullif(trim(p_buyer_email), '') is null or jsonb_typeof(p_items) is distinct from 'array'
     or jsonb_array_length(p_items) not between 1 and 40
@@ -51,8 +52,11 @@ begin
     end if;
     v_total := v_total + v_price;
   end loop;
-  if public.commerce_balance(p_buyer_email) < v_total then
-    raise exception 'Insufficient balance';
+  -- Platform commission: $0.05 per $1 (5%) charged to the BUYER on top of the
+  -- sale price; the seller still receives the full price.
+  v_commission := round(v_total * 0.05, 2);
+  if public.commerce_balance(p_buyer_email) < v_total + v_commission then
+    raise exception 'Insufficient balance (5%% service fee applies on top of the price)';
   end if;
   for v_item in select value from jsonb_array_elements(p_items) loop
     select * into v_account from public.tg_accounts where id = v_item->>'id';
@@ -66,8 +70,16 @@ begin
       v_affected := array_append(v_affected, v_account.owner_email);
     end if;
   end loop;
+  -- Commission is kept as its own ledger row (negative top-up) so it is
+  -- recorded separately from the sale and the balance math stays auditable.
+  if v_commission > 0 then
+    insert into public.top_ups(user_email, amount, coin, network, tx_hash, status)
+      values(p_buyer_email, -v_commission, 'USDT', 'purchase_commission',
+        'commission:' || coalesce(p_batch_id, v_ids[1]), 'approved');
+  end if;
   update public.profiles p set balance = public.commerce_balance(p.email) where p.email = any(v_affected);
   return jsonb_build_object('account_ids', to_jsonb(v_ids), 'total', v_total,
+    'commission', v_commission,
     'new_balance', public.commerce_balance(p_buyer_email));
 end;
 $$;

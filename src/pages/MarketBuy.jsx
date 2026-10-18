@@ -8,6 +8,9 @@ import { formatMoney } from "@/lib/format";
 
 const QUICK_QTY = [5, 10, 20, 50, 100, 500, 1000];
 
+// Platform service fee: $0.05 per $1 (5%) charged to the buyer on top of the price.
+const feeOf = (amount) => Math.round(amount * 5) / 100;
+
 // Capsule List — purchase page for one seller's country. Buy 1 directly, or
 // open Buy Session Formats for batch sizes 5..1000 plus a custom quantity;
 // every batch passes an explicit confirmation before the purchase runs.
@@ -143,6 +146,11 @@ export default function MarketBuy() {
               Buy Session Formats
             </button>
 
+            <p className="px-1 text-center text-[11px] text-[#a8a3cf]">
+              + 5% service fee on every purchase (e.g. {formatMoney(country.price)} →{" "}
+              {formatMoney(country.price + feeOf(country.price))})
+            </p>
+
             {formatsOpen && (
               <div className="flex flex-col gap-2.5 rounded-[22px] border border-[#A29BFE]/25 bg-[rgba(45,38,78,.6)] p-3">
                 <div className="grid grid-cols-3 gap-2">
@@ -188,9 +196,23 @@ export default function MarketBuy() {
               <div className="flex flex-col gap-3 rounded-[22px] border border-[#A29BFE]/35 bg-[rgba(45,38,78,.85)] p-[16px]">
                 <div>
                   <p className="text-[13px] font-semibold text-foreground">Confirm purchase</p>
-                  <p className="mt-1 text-[12px] leading-relaxed text-[#a8a3cf]">
-                    {pendingQty} × {formatMoney(country.price)} ={" "}
-                    <span className="font-semibold text-[#A29BFE]">{formatMoney(pendingQty * country.price)}</span>.
+                  <div className="mt-1.5 space-y-1 text-[12px] leading-relaxed text-[#a8a3cf]">
+                    <div className="flex justify-between gap-2">
+                      <span>{pendingQty} × {formatMoney(country.price)}</span>
+                      <span className="tabular-nums">{formatMoney(pendingQty * country.price)}</span>
+                    </div>
+                    <div className="flex justify-between gap-2">
+                      <span>Service fee (5%)</span>
+                      <span className="tabular-nums">{formatMoney(feeOf(pendingQty * country.price))}</span>
+                    </div>
+                    <div className="flex justify-between gap-2 font-semibold text-[#A29BFE]">
+                      <span>Total charge</span>
+                      <span className="tabular-nums">
+                        {formatMoney(pendingQty * country.price + feeOf(pendingQty * country.price))}
+                      </span>
+                    </div>
+                  </div>
+                  <p className="mt-1.5 text-[12px] leading-relaxed text-[#a8a3cf]">
                     Session formats will be delivered to your Telegram chat, with 2FA removed.
                   </p>
                 </div>
