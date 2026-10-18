@@ -89,8 +89,18 @@ export default function MarketSeller() {
                 {c.flag || c.country_iso}
               </div>
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-[15px] font-medium text-foreground">{c.country_name}</span>
+                <span className="block truncate text-[15px] font-medium text-foreground">
+                  {c.country_name}
+                  {c.dial_code ? (
+                    <span className="ml-1.5 text-[12px] font-semibold text-[#A29BFE]">
+                      +{String(c.dial_code).replace(/^\+/, "")}
+                    </span>
+                  ) : null}
+                </span>
                 <span className="block truncate text-[11px] text-[#a8a3cf]">{c.stock} in stock</span>
+              </span>
+              <span className="shrink-0 rounded-full border border-[#A29BFE]/40 bg-[rgba(108,92,231,.22)] px-3 py-1 text-[11px] font-semibold text-[#A29BFE]">
+                Buy
               </span>
               <span className="shrink-0 text-[15px] font-bold text-[#A29BFE] tabular-nums">
                 {formatMoney(c.price)}

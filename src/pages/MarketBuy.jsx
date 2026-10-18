@@ -8,8 +8,9 @@ import { formatMoney } from "@/lib/format";
 
 const QUICK_QTY = [5, 10, 20, 50, 100, 500, 1000];
 
-// Capsule List — purchase page for one seller's country: Buy 1, quick batch
-// sizes up to 1000 and a custom quantity, capped by the live stock count.
+// Capsule List — purchase page for one seller's country. Buy 1 directly, or
+// open Buy Session Formats for batch sizes 5..1000 plus a custom quantity;
+// every batch passes an explicit confirmation before the purchase runs.
 export default function MarketBuy() {
   const { sellerId, countryIso } = useParams();
   const navigate = useNavigate();
@@ -17,6 +18,8 @@ export default function MarketBuy() {
   const { invoke, fetchMyData } = useTgIdentity();
   const [entry, setEntry] = useState(undefined); // undefined = loading, null = not found
   const [custom, setCustom] = useState("");
+  const [formatsOpen, setFormatsOpen] = useState(false);
+  const [pendingQty, setPendingQty] = useState(null); // quantity awaiting confirmation
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
@@ -78,6 +81,9 @@ export default function MarketBuy() {
   }
 
   const { seller, country } = entry;
+  const dial = country.dial_code
+    ? ` +${String(country.dial_code).replace(/^\+/, "")}`
+    : "";
 
   return (
     <div className="relative">
@@ -97,7 +103,9 @@ export default function MarketBuy() {
           </div>
           <div className="min-w-0">
             <div className="truncate text-[10px] font-semibold uppercase tracking-[.14em] text-[#A29BFE]">
-              {country.country_name} · from {seller.name}
+              {country.country_name}
+              <span className="ml-1.5 normal-case tracking-normal">{dial}</span>
+               · from {seller.name}
             </div>
             <div className="mt-1 bg-gradient-to-r from-[#A29BFE] to-[#6C5CE7] bg-clip-text font-display text-[34px] font-bold leading-none text-transparent tabular-nums">
               {formatMoney(country.price)}
@@ -123,43 +131,89 @@ export default function MarketBuy() {
               {busy ? "Buying…" : "Buy 1"}
             </button>
 
-            <div className="grid grid-cols-3 gap-2">
-              {QUICK_QTY.map((n) => (
-                <button
-                  key={n}
-                  type="button"
-                  disabled={busy || n > stock}
-                  onClick={() => buy(n)}
-                  className="cursor-pointer rounded-full border border-[#A29BFE]/30 bg-[rgba(45,38,78,.7)] py-2.5 text-xs font-semibold text-foreground transition-[border-color] duration-200 hover:border-[#A29BFE]/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#A29BFE] disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  Buy {n}
-                </button>
-              ))}
-            </div>
-
-            <form
-              className="flex gap-2"
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (customValid) buy(parsed);
+            <button
+              type="button"
+              disabled={busy || stock < 1}
+              onClick={() => {
+                setFormatsOpen((v) => !v);
+                setPendingQty(null);
               }}
+              className="w-full cursor-pointer rounded-full border border-[#A29BFE]/40 bg-[rgba(108,92,231,.22)] px-[18px] py-3 text-[13px] font-semibold text-[#A29BFE] transition-[border-color,background-color] duration-200 hover:border-[#A29BFE]/70 hover:bg-[rgba(108,92,231,.35)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A29BFE] disabled:cursor-not-allowed disabled:opacity-50"
             >
-              <input
-                value={custom}
-                onChange={(e) => setCustom(e.target.value.replace(/[^0-9]/g, ""))}
-                placeholder={`Custom quantity (max ${stock})`}
-                inputMode="numeric"
-                disabled={busy}
-                className="h-[42px] min-w-0 flex-1 rounded-full border border-[#A29BFE]/30 bg-[rgba(45,38,78,.7)] px-4 text-[13px] text-foreground placeholder:text-[#a8a3cf] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#A29BFE] disabled:cursor-not-allowed disabled:opacity-50"
-              />
-              <button
-                type="submit"
-                disabled={busy || !customValid}
-                className="h-[42px] shrink-0 cursor-pointer rounded-full border border-[#A29BFE]/30 bg-[rgba(45,38,78,.7)] px-5 text-xs font-semibold text-[#A29BFE] transition-[border-color] duration-200 hover:border-[#A29BFE]/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#A29BFE] disabled:cursor-not-allowed disabled:opacity-40"
-              >
-                Buy
-              </button>
-            </form>
+              Buy Session Formats
+            </button>
+
+            {formatsOpen && (
+              <div className="flex flex-col gap-2.5 rounded-[22px] border border-[#A29BFE]/25 bg-[rgba(45,38,78,.6)] p-3">
+                <div className="grid grid-cols-3 gap-2">
+                  {QUICK_QTY.map((n) => (
+                    <button
+                      key={n}
+                      type="button"
+                      disabled={busy || n > stock}
+                      onClick={() => setPendingQty(n)}
+                      className="cursor-pointer rounded-full border border-[#A29BFE]/30 bg-[rgba(45,38,78,.7)] py-2.5 text-xs font-semibold text-foreground transition-[border-color] duration-200 hover:border-[#A29BFE]/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#A29BFE] disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      Buy {n}
+                    </button>
+                  ))}
+                </div>
+                <form
+                  className="flex gap-2"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (customValid) setPendingQty(parsed);
+                  }}
+                >
+                  <input
+                    value={custom}
+                    onChange={(e) => setCustom(e.target.value.replace(/[^0-9]/g, ""))}
+                    placeholder={`Custom quantity (max ${stock})`}
+                    inputMode="numeric"
+                    disabled={busy}
+                    className="h-[42px] min-w-0 flex-1 rounded-full border border-[#A29BFE]/30 bg-[rgba(45,38,78,.7)] px-4 text-[13px] text-foreground placeholder:text-[#a8a3cf] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#A29BFE] disabled:cursor-not-allowed disabled:opacity-50"
+                  />
+                  <button
+                    type="submit"
+                    disabled={busy || !customValid}
+                    className="h-[42px] shrink-0 cursor-pointer rounded-full border border-[#A29BFE]/30 bg-[rgba(45,38,78,.7)] px-5 text-xs font-semibold text-[#A29BFE] transition-[border-color] duration-200 hover:border-[#A29BFE]/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#A29BFE] disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    Buy
+                  </button>
+                </form>
+              </div>
+            )}
+
+            {pendingQty != null && (
+              <div className="flex flex-col gap-3 rounded-[22px] border border-[#A29BFE]/35 bg-[rgba(45,38,78,.85)] p-[16px]">
+                <div>
+                  <p className="text-[13px] font-semibold text-foreground">Confirm purchase</p>
+                  <p className="mt-1 text-[12px] leading-relaxed text-[#a8a3cf]">
+                    {pendingQty} × {formatMoney(country.price)} ={" "}
+                    <span className="font-semibold text-[#A29BFE]">{formatMoney(pendingQty * country.price)}</span>.
+                    Session formats will be delivered to your Telegram chat, with 2FA removed.
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() => buy(pendingQty)}
+                    className="flex-1 cursor-pointer rounded-full border-0 bg-gradient-to-br from-[#6C5CE7] to-[#8E7DFF] px-[18px] py-3 text-[13px] font-semibold text-white shadow-[0_6px_18px_rgba(108,92,231,.5)] transition-opacity duration-200 hover:opacity-90 active:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A29BFE] disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {busy ? "Buying…" : "Confirm"}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() => setPendingQty(null)}
+                    className="flex-1 cursor-pointer rounded-full border border-[#A29BFE]/30 bg-[rgba(45,38,78,.7)] px-[18px] py-3 text-[13px] font-semibold text-foreground transition-[border-color] duration-200 hover:border-[#A29BFE]/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#A29BFE] disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </section>
         )}

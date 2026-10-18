@@ -47,7 +47,7 @@ export default function SellerList({ sellers }) {
                 )}
               </span>
               <span className="block truncate text-[11px] text-[#a8a3cf]">
-                {s.username ? `@${s.username} · ` : ""}
+                {s.username ? `@${s.username} · ` : ""}ID {s.telegram_id || s.id.slice(0, 8)} ·{" "}
                 {s.countries.reduce((n, c) => n + (c.stock || 0), 0)} in stock
               </span>
             </span>

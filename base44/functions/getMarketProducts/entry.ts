@@ -29,6 +29,7 @@ export default async function(req) {
                 a.country_iso,
                 coalesce(r.country_name, c.name, a.country_iso) as country_name,
                 coalesce(r.flag, c.flag, '') as flag,
+                coalesce(r.dial_code, c.dial_code, '') as dial_code,
                 min(a.price) as price,
                 count(*) as stock,
                 -- Sales the seller completed: a sold account's original seller
@@ -43,8 +44,9 @@ export default async function(req) {
          where a.status = 'available'
             and a.price is not null
           group by a.owner_email, is_self, p.id, p.full_name, p.telegram_first_name, p.telegram_username,
-                  p.telegram_id, p.telegram_photo_url, a.country_iso, r.country_name, c.name, r.flag, c.flag
-         order by name asc, country_name asc limit 500`
+                  p.telegram_id, p.telegram_photo_url, a.country_iso, r.country_name, c.name, r.flag, c.flag,
+                  r.dial_code, c.dial_code
+                  order by name asc, country_name asc limit 500`
          ),
          // Top Seller — the profile with the most completed account sales. A sold
          // account's original seller is its session_requests row, because the
@@ -83,6 +85,7 @@ export default async function(req) {
         country_iso: row.country_iso,
         country_name: row.country_name,
         flag: row.flag,
+        dial_code: row.dial_code,
         price: Number(row.price),
         stock: Number(row.stock),
       });
