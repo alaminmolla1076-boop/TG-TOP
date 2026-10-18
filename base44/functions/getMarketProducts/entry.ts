@@ -22,10 +22,10 @@ export default async function(req) {
         `select a.owner_email,
                 (a.owner_email = ${email}) as is_self,
                 p.id as seller_id,
-                coalesce(p.full_name, p.telegram_first_name, 'Seller') as name,
-                coalesce(p.telegram_username, '') as username,
-                p.telegram_id,
-                p.telegram_photo_url as photo_url,
+                coalesce(nullif(trim(concat(coalesce(u.telegram_first_name, p.telegram_first_name), ' ', coalesce(nullif(u.telegram_last_name, ''), nullif(p.telegram_last_name, '')))), ''), p.full_name, 'Seller') as name,
+                coalesce(nullif(u.telegram_username, ''), nullif(p.telegram_username, ''), '') as username,
+                coalesce(u.telegram_id, p.telegram_id) as telegram_id,
+                coalesce(nullif(u.photo_url, ''), nullif(p.telegram_photo_url, ''), '') as photo_url,
                 a.country_iso,
                 coalesce(r.country_name, c.name, a.country_iso) as country_name,
                 coalesce(r.flag, c.flag, '') as flag,
@@ -39,12 +39,14 @@ export default async function(req) {
                  where s.user_email = a.owner_email and a2.status = 'sold') as sold
                 from tg_accounts a
          join profiles p on p.email = a.owner_email
+         left join tg_web_users u on u.identity_email = a.owner_email
          left join reward_prices r on r.country_iso = a.country_iso and r.active = true
          left join countries c on c.iso = a.country_iso
          where a.status = 'available'
             and a.price is not null
-          group by a.owner_email, is_self, p.id, p.full_name, p.telegram_first_name, p.telegram_username,
-                  p.telegram_id, p.telegram_photo_url, a.country_iso, r.country_name, c.name, r.flag, c.flag,
+          group by a.owner_email, is_self, p.id, p.full_name, p.telegram_first_name, p.telegram_last_name, p.telegram_username,
+                  p.telegram_id, p.telegram_photo_url, u.telegram_first_name, u.telegram_last_name, u.telegram_username,
+                  u.telegram_id, u.photo_url, a.country_iso, r.country_name, c.name, r.flag, c.flag,
                   r.dial_code, c.dial_code
                   order by name asc, country_name asc limit 500`
          ),
@@ -53,15 +55,17 @@ export default async function(req) {
          // purchase moves tg_accounts.owner_email to the buyer.
          runSql(
            `select p.id,
-                   coalesce(p.full_name, p.telegram_first_name, 'Seller') as name,
-                   coalesce(p.telegram_username, '') as username,
-                   p.telegram_photo_url as photo_url,
+                   coalesce(nullif(trim(concat(coalesce(u.telegram_first_name, p.telegram_first_name), ' ', coalesce(nullif(u.telegram_last_name, ''), nullif(p.telegram_last_name, '')))), ''), p.full_name, 'Seller') as name,
+                   coalesce(nullif(u.telegram_username, ''), nullif(p.telegram_username, ''), '') as username,
+                   coalesce(nullif(u.photo_url, ''), nullif(p.telegram_photo_url, ''), '') as photo_url,
                    count(distinct a.id) as sold
             from tg_accounts a
             join session_requests s on s.account_id = a.id
             join profiles p on p.email = s.user_email
+            left join tg_web_users u on u.identity_email = s.user_email
             where a.status = 'sold'
-            group by p.id, p.full_name, p.telegram_first_name, p.telegram_username, p.telegram_photo_url
+            group by p.id, p.full_name, p.telegram_first_name, p.telegram_last_name, p.telegram_username,
+                     p.telegram_photo_url, u.telegram_first_name, u.telegram_last_name, u.telegram_username, u.photo_url
             order by sold desc limit 1`
          ),
          ]);
