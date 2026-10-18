@@ -36,8 +36,8 @@ const NETWORKS = [
   {
     id: 'TON',
     name: 'TON',
-    badge: 'TON Coin',
-    desc: 'The Open Network'
+    badge: 'Gram',
+    desc: 'USDT on The Open Network'
   }
 ];
 const netName = (id)=>NETWORKS.find((n)=>n.id === id) || {
@@ -136,8 +136,8 @@ async function showDepositPage(base44, token, user, chatId, msgId, amount, netwo
   // Compact receipt — exactly the reference layout: header, amount, address,
   // one instruction line, and a single "I Have Paid" button.
   const isTon = networkId === 'TON';
-  const title = isTon ? 'TON (TON Coin) Recharge' : networkId === 'BEP20' ? 'BNB (BEP-20) Recharge' : 'TRON (TRC-20) Recharge';
-  const amountText = isTon ? `${Number(req.identify_amount || 0).toFixed(2)} TON${req.amount_usd ? ` ≈ $${Number(req.amount_usd).toFixed(2)}` : ''}` : `$${Number(req.identify_amount || 0).toFixed(4)} USDT`;
+  const title = isTon ? 'TON (USDT) Recharge' : networkId === 'BEP20' ? 'BNB (BEP-20) Recharge' : 'TRON (TRC-20) Recharge';
+  const amountText = isTon ? `$${Number(req.identify_amount || 0).toFixed(2)} USDT` : `$${Number(req.identify_amount || 0).toFixed(4)} USDT`;
   const text = `💰 <b>${title}</b>\n${SEP}\n` + `💵 Amount: <b>${amountText}</b>\n` + `⚠️ Send <b>EXACTLY</b> this amount\n` + `⏳ Reserved: <b>20 minutes</b>\n${SEP}\n` + `🔒 <b>Wallet Address:</b>\n${req.wallet_address}\n` + `☝️ <i>Tap the address to copy</i>\n${SEP}\n` + `After sending, tap ✅ <b>I Have Paid</b> below.`;
   await tgSendMenu(token, chatId, text, [
     [

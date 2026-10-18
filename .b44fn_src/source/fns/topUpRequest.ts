@@ -1,8 +1,9 @@
 // Top-up request bridge: the bot's crypto flow shares the same on-chain
 // deposit system as the app. USDT (TRC20/BEP20) uses the public edge functions
-// (unique identify amount + wallet address, verified on-chain). TON mirrors the
-// app's tonTopUp: the TON_DEPOSIT_ADDRESS secret, a unique TON amount at the
-// live price, and Toncenter verification on check.
+// (unique identify amount + wallet address, verified on-chain). TON is USDT on
+// the TON network (the network's coin is now called Gram): the user sends the
+// exact unique USDT jetton amount to the TON_DEPOSIT_ADDRESS and the transfer is
+// verified on-chain via Toncenter.
 import { entities } from '../_shared/entities.ts';
 import { secrets } from '../_shared/b44.ts';
 async function callPublicEdge(name, body) {
@@ -22,8 +23,8 @@ async function callPublicEdge(name, body) {
   if (!res.ok) throw new Error(data.error || data.message || `HTTP ${res.status}`);
   return data;
 }
-// Converts a user-friendly TON address (EQ…/UQ…) to raw form (0:<hash>)
-// for matching on-chain message destinations.
+// Converts a TON address (EQ…/UQ… or raw 0:<hash>) to raw form for matching
+// on-chain message and jetton-transfer destinations.
 function toRawAddress(addr) {
   const a = String(addr || '').trim();
   if (/^-?\d+:[0-9a-fA-F]{64}$/.test(a)) return a.toLowerCase();
@@ -34,60 +35,39 @@ function toRawAddress(addr) {
   const hash = Array.from(bytes.slice(2, 34), (b)=>b.toString(16).padStart(2, '0')).join('');
   return `${wc}:${hash}`;
 }
-// Live TON price: CoinGecko first, Kraken fallback when rate-limited.
-async function getTonPriceUsd() {
-  try {
-    const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd', {
-      signal: AbortSignal.timeout(8000)
-    });
-    if (res.ok) {
-      const data = await res.json();
-      const price = data && data['the-open-network'] && data['the-open-network'].usd;
-      if (price && price > 0) return Number(price);
-    }
-  } catch  {}
-  const res = await fetch('https://api.kraken.com/0/public/Ticker?pair=TONUSD', {
-    signal: AbortSignal.timeout(8000)
-  });
-  if (!res.ok) throw new Error('Could not fetch TON price');
-  const data = await res.json();
-  const price = data && data.result && data.result.TONUSD && data.result.TONUSD.c && data.result.TONUSD.c[0];
-  if (!price || price <= 0) throw new Error('Could not fetch TON price');
-  return Number(price);
-}
-// TON create — mirrors the app's tonTopUp flow: unique nano amount, pending
-// record with coin TON, credited in USD once verified on-chain.
-async function createTonRequest(body) {
+// Official Tether USD jetton on TON (6 decimals) — same public contract the
+// app's TON network uses for USDT payments.
+const TON_USDT_MASTER = 'EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs';
+// TON create — a USDT top-up on the TON network: unique identify amount in
+// USDT (base + 1..5 unique cents) so the exact jetton amount matches one
+// pending request on-chain. Credited 1:1 in USD once verified.
+async function createTonUsdtRequest(body) {
   const usd = Number(body.amount);
   if (!usd || usd < 1 || usd > 1000) throw new Error('Amount must be between $1 and $1000');
   const depositAddress = String(secrets.get('TON_DEPOSIT_ADDRESS') || '').trim();
   if (!depositAddress) throw new Error('TON deposit address is not configured yet.');
   toRawAddress(depositAddress);
-  const price = await getTonPriceUsd();
-  const baseTon = Math.round(usd / price * 100) / 100;
-  // Unique identify amount in TON (base + 1..5 unique cents) so the exact nano
-  // amount matches one pending request on-chain.
-  let nano = '';
+  let identify = 0, nano = '';
   for(let attempt = 0; attempt < 8; attempt++){
     const cents = Math.floor(Math.random() * 5) + 1;
-    const tonAmount = Math.round((baseTon + cents / 100) * 100) / 100;
-    const candidate = String(Math.round(tonAmount * 1e9));
+    const candidate = Number((usd + cents / 100).toFixed(2));
+    const candidateNano = String(Math.round(candidate * 1e6));
     const existing = await entities.TopUp.filter({
-      tx_hash: `ton:${candidate}`,
+      tx_hash: `tonusdt:${candidateNano}`,
       status: 'pending'
     });
     if (!existing || existing.length === 0){
-      nano = candidate;
+      identify = candidate;
+      nano = candidateNano;
       break;
     }
   }
   if (!nano) throw new Error('All payment slots are busy. Please try again shortly.');
-  const amountUsd = Math.round(Number(nano) / 1e9 * price * 100) / 100;
   const rec = await entities.TopUp.create({
-    amount: amountUsd,
-    coin: 'TON',
+    amount: identify,
+    coin: 'USDT',
     network: 'TON',
-    tx_hash: `ton:${nano}`,
+    tx_hash: `tonusdt:${nano}`,
     status: 'pending',
     user_email: body.user_email
   });
@@ -95,27 +75,27 @@ async function createTonRequest(body) {
     request: {
       request_id: rec.id,
       wallet_address: depositAddress,
-      identify_amount: Math.round(Number(nano) / 1e9 * 100) / 100,
-      amount_usd: amountUsd,
-      coin: 'TON'
+      identify_amount: identify,
+      coin: 'USDT',
+      network: 'TON'
     }
   };
 }
-// TON check — verifies the exact TON transfer on-chain via Toncenter and
-// approves the pending record (balance is computed from records, so approval
-// credits it immediately).
-async function checkTonRequest(rec) {
+// TON check — verifies the exact USDT jetton transfer on-chain via Toncenter
+// and approves the pending record (balance is computed from records, so
+// approval credits it immediately).
+async function checkTonUsdtRequest(rec) {
   if (rec.status === 'approved' || rec.status === 'rejected') return {
     status: rec.status
   };
-  const nano = String(rec.tx_hash || '').replace(/^ton:/, '');
+  const nano = String(rec.tx_hash || '').replace(/^tonusdt:/, '');
   const depositAddress = String(secrets.get('TON_DEPOSIT_ADDRESS') || '').trim();
   if (!/^\d+$/.test(nano) || !depositAddress) return {
     status: 'pending'
   };
   const depositRaw = toRawAddress(depositAddress);
-  const createdAt = Math.floor(new Date(rec.created_date).getTime() / 1000);
-  const res = await fetch(`https://toncenter.com/api/v3/transactions?account=${encodeURIComponent(depositAddress)}&start_utime=${createdAt}&limit=50&sort=desc`, {
+  const createdAt = Math.floor(new Date(rec.created_date).getTime() / 1000) - 60;
+  const res = await fetch(`https://toncenter.com/api/v3/jetton/transfers?owner_address=${encodeURIComponent(depositAddress)}&jetton_master=${encodeURIComponent(TON_USDT_MASTER)}&limit=100`, {
     headers: {
       Accept: 'application/json'
     },
@@ -126,24 +106,23 @@ async function checkTonRequest(rec) {
   };
   const data = await res.json();
   let matched = null;
-  for (const tx of (data && data.transactions) || []){
-    const msg = tx && tx.in_msg;
-    if (!msg?.source || msg.bounced || tx.description?.aborted || tx.now < createdAt) continue;
-    if (String(msg.destination).toLowerCase() === depositRaw && String(msg.value) === nano){
-      matched = tx;
+  for (const tr of (data && data.jetton_transfers) || []){
+    if (tr.transaction_aborted || !tr.transaction_now || tr.transaction_now < createdAt) continue;
+    if (String(tr.destination).toLowerCase() === depositRaw && String(tr.amount) === nano){
+      matched = tr;
       break;
     }
   }
   if (!matched) return {
     status: 'pending'
   };
-  const hash = typeof matched.hash === 'string' ? matched.hash : '';
+  const hash = typeof matched.transaction_hash === 'string' ? matched.transaction_hash : '';
   if (!hash) return {
     status: 'pending'
   };
   // One on-chain transfer may only approve one request — reuse is rejected.
   const dupe = await entities.TopUp.filter({
-    coin: 'TON',
+    network: 'TON',
     tx_hash: hash
   });
   if ((dupe || []).some((r)=>r.id !== rec.id)) return {
@@ -179,7 +158,7 @@ export default async function(req) {
       }, {
         status: 400
       });
-      if (network === 'TON') return Response.json(await createTonRequest(body));
+      if (network === 'TON') return Response.json(await createTonUsdtRequest(body));
       const request = await callPublicEdge('createTopUpRequest', {
         user_email: body.user_email,
         amount,
@@ -212,7 +191,7 @@ export default async function(req) {
       }, {
         status: 403
       });
-      if (rec.coin === 'TON') return Response.json(await checkTonRequest(rec));
+      if (rec.network === 'TON') return Response.json(await checkTonUsdtRequest(rec));
       const result = await callPublicEdge('checkTopUpStatus', {
         request_id: body.request_id
       });
