@@ -14,12 +14,13 @@ export async function readOtpFromSession(sessionString) {
 }
 
 // Telegram service messages often contain years (e.g. 2026), subscription IDs or
-// dates; only an explicitly labeled code wins, and standalone years are skipped.
+// dates; only an explicitly labeled code wins, and year-like or partial-digit
+// numbers are skipped.
 export function extractLoginCode(text) {
   if (!text) return null;
-  const labeled = text.match(/(?:login\s*code|log\s*in\s*code|verification\s*code|confirmation\s*code|\bc[o\u00f3]de\b)[^0-9]{0,30}(\d{4,8})/i);
+  const labeled = text.match(/(?:login\s*code|log\s*in\s*code|verification\s*code|confirmation\s*code|\bc[o\u00f3]de\b)[^0-9]{0,30}(\d{4,8})(?!\d)/i);
   if (labeled && !/^(19|20)\d{2}$/.test(labeled[1])) return labeled[1];
-  const runs = text.match(/\d{4,8}/g) || [];
+  const runs = text.match(/(?<!\d)\d{4,8}(?!\d)/g) || [];
   for (const run of runs) {
     if (/^(19|20)\d{2}$/.test(run)) continue;
     return run;
