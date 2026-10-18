@@ -1,22 +1,27 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import { TgIdentityProvider, useTgIdentity } from "@/lib/TgIdentityContext";
 import TelegramGate from "@/components/TelegramGate";
+import SplashScreen from "@/components/SplashScreen";
+
+// The splash plays for a minimum of ~3s on entry (logo glow + progress bar),
+// then hands over as soon as the Telegram session is ready.
+const SPLASH_MIN_MS = 3000;
 
 function Gate() {
   const { status } = useTgIdentity();
+  const [splashDone, setSplashDone] = useState(false);
 
-  if (status === "ready") return <Outlet />;
+  useEffect(() => {
+    const t = setTimeout(() => setSplashDone(true), SPLASH_MIN_MS);
+    return () => clearTimeout(t);
+  }, []);
 
-  if (status === "loading") {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center bg-background">
-        <div className="w-8 h-8 border-4 border-secondary border-t-primary rounded-full animate-spin" />
-      </div>
-    );
-  }
+  if (status === "ready" && splashDone) return <Outlet />;
 
-  return <TelegramGate />;
+  if (status === "outside" || status === "error") return <TelegramGate />;
+
+  return <SplashScreen />;
 }
 
 // Layout route: identifies the user via the Telegram Mini App (auto sign-up),
