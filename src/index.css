@@ -158,6 +158,15 @@
       transform: scale(1.045);
     }
   }
+  .splash-tint {
+    background:
+      radial-gradient(140% 85% at 50% 100%, rgba(0, 212, 255, .18), transparent 44%),
+      radial-gradient(75% 55% at 88% 8%, rgba(247, 214, 109, .13), transparent 58%),
+      radial-gradient(75% 55% at 10% 14%, rgba(188, 19, 254, .12), transparent 58%),
+      radial-gradient(120% 70% at 50% 42%, rgba(26, 10, 46, .30), transparent 72%),
+      linear-gradient(180deg, rgba(5, 2, 10, .30), rgba(10, 4, 22, .18) 50%, rgba(5, 2, 10, .42));
+    mix-blend-mode: normal;
+  }
   .splash-halo {
     border-radius: 9999px;
     padding: 14px;

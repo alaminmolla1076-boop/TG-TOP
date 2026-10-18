@@ -1,7 +1,7 @@
 import React from "react";
 import { LOGO_URL } from "@/lib/brand";
 
-const SPLASH_BG = "https://media.base44.com/images/public/6ad1ec4d9f3d182acc871a46/f153672b0_generated_image.png";
+const SPLASH_BG = "https://media.base44.com/images/public/6ad1ec4d9f3d182acc871a46/c9053bffb_generated_image.png";
 
 // Premium luxury entry splash — matches the approved reference: golden-flare
 // background with coins, glow-pulsing TG TOP logo in a golden halo ring,
@@ -10,6 +10,9 @@ export default function SplashScreen() {
   return (
     <div className="fixed inset-0 z-50 overflow-hidden bg-obsidian">
       <img src={SPLASH_BG} alt="" className="absolute inset-0 w-full h-full object-cover" />
+      {/* Exact-palette color grade: forces the reference's violet-black base,
+          gold flares and blue pedestal glow over the artwork */}
+      <div className="splash-tint absolute inset-0" />
       <div className="relative h-full flex flex-col items-center justify-center px-8">
         <div className="splash-halo og-rise">
           <img src={LOGO_URL} alt="TG TOP" className="splash-logo w-32 h-32 object-contain" />
