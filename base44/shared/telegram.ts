@@ -30,12 +30,20 @@ export async function verifyInitData(initData) {
 }
 
 
+// Short-lived identity cache: verifying initData + the profile lookup costs a
+// full Supabase management-API roundtrip (~2s), and every function call pays
+// it. A 30s cache keeps page loads fast; role/ban changes apply within 30s.
+const IDENTITY_CACHE_MS = 30000;
+const identityCache = new Map();
+
 // Resolves the acting Telegram user from initData (required — the app must be
 // opened from the Telegram bot). Sign-up, profile creation and wallet setup all
 // happen in the existing Supabase system (b44fn telegramWebAppAuth at login) —
 // here we only READ the user's records to know their role and balance.
 export async function resolveIdentity(initData) {
   if (!initData) throw new Error("Open the app from Telegram to continue");
+  const cached = identityCache.get(initData);
+  if (cached && Date.now() - cached.ts < IDENTITY_CACHE_MS) return cached.value;
   const tgUser = await verifyInitData(initData);
 
   const telegramId = String(tgUser.id);
@@ -51,7 +59,7 @@ export async function resolveIdentity(initData) {
   if (!row) throw new Error("Open the app from Telegram to create your account");
   if (row.tg_banned || row.profile_banned) throw new Error("Your account is banned");
 
-  return {
+  const value = {
     telegram_id: telegramId,
     identity_email: identityEmail,
     username: tgUser.username || "",
@@ -61,4 +69,7 @@ export async function resolveIdentity(initData) {
     profile: { role: row.role || "user", balance: Number(row.balance) || 0 },
     role: row.role || "user",
   };
+  if (identityCache.size > 100) identityCache.clear();
+  identityCache.set(initData, { ts: Date.now(), value });
+  return value;
 }

@@ -10,7 +10,9 @@ export default async function (req) {
     const identity = await resolveIdentity(body.initData || '');
     const email = sqlString(identity.identity_email);
 
-    const rows = await runSql(`
+    // Both queries run in parallel — the page waits only for the slowest.
+    const [rows, batchRows] = await Promise.all([
+      runSql(`
       select a.id, a.phone_number, a.country_iso, a.purchase_type, a.updated_date,
              coalesce(r.country_name, c.name, a.country_iso) as country_name,
              coalesce(r.flag, c.flag, '') as flag,
@@ -29,11 +31,10 @@ export default async function (req) {
         and (a.purchase_type is null or a.purchase_type <> 'season')
       order by a.updated_date desc
       limit 20
-    `);
-
-    // Batch (session-format) purchases grouped per batch: one history row per
-    // ZIP, with the account count and batch_id for chat redelivery.
-    const batchRows = await runSql(`
+    `),
+      // Batch (session-format) purchases grouped per batch: one history row per
+      // ZIP, with the account count and batch_id for chat redelivery.
+      runSql(`
       select a.batch_id, max(a.country_iso) as country_iso, count(*) as account_count,
              max(a.updated_date) as purchased_at,
              coalesce(max(r.country_name), max(c.name), max(a.country_iso)) as country_name,
@@ -46,7 +47,8 @@ export default async function (req) {
       group by a.batch_id
       order by purchased_at desc
       limit 10
-    `);
+    `)
+    ]);
 
     return Response.json({
       batches: batchRows.map((b) => ({

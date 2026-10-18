@@ -1,4 +1,4 @@
-import { runSql, sqlString, callB44 } from "../../shared/supabase.ts";
+import { runSql, sqlString } from "../../shared/supabase.ts";
 import { resolveIdentity } from "../../shared/telegram.ts";
 
 export default async function(req) {
@@ -34,9 +34,10 @@ export default async function(req) {
         `select id, amount, coin, network, wallet_address, status, created_date
          from withdrawals where user_email = ${email} order by created_date desc limit 20`
       ),
-      // Balance from the existing Supabase function — it recomputes it from the
-      // source-of-truth records and keeps the profile in sync.
-      callB44('getBalance', { initData: body.initData }).catch(() => null),
+      // Balance computed from the same source-of-truth SQL function the
+      // Supabase getBalance uses (commerce_balance) — one query in parallel
+      // instead of a slow edge-function roundtrip.
+      runSql(`select public.commerce_balance(${email}) as balance`).catch(() => null),
       isAdmin
         ? runSql(
             `select id, amount, network, tx_hash, status, user_email, created_date
@@ -68,8 +69,9 @@ export default async function(req) {
         ]);
 
     let balance = profile ? Number(profile.balance) : 0;
-    if (balanceRes && balanceRes.balance !== undefined && Number.isFinite(Number(balanceRes.balance))) {
-      balance = Number(balanceRes.balance);
+    const recomputed = balanceRes && balanceRes[0] ? balanceRes[0].balance : undefined;
+    if (recomputed !== undefined && Number.isFinite(Number(recomputed))) {
+      balance = Number(recomputed);
     }
 
     return Response.json({
