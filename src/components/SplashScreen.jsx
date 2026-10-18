@@ -1,9 +1,9 @@
 import React from "react";
 import { Crown, ShieldCheck, Users, Handshake } from "lucide-react";
+import { LOGO_URL } from "@/lib/brand";
 
 // Exact-palette splash assets generated from the user's reference artwork.
 const SPLASH_BG = "https://media.base44.com/images/public/6ad1ec4d9f3d182acc871a46/cabdbc2a2_generated_image.png";
-const SPLASH_LOGO = "https://media.base44.com/images/public/6ad1ec4d9f3d182acc871a46/d655c1d56_generated_image.png";
 
 // Floating gold coins: [left%, top%, size-class, float-delay, spin-duration]
 const COINS = [
@@ -44,7 +44,7 @@ export default function SplashScreen() {
       {/* Center: TGTOP logo, wordmark, progress bar */}
       <div className="relative h-full flex flex-col items-center justify-center px-8">
         <div className="splash-halo mb-6">
-          <img src={SPLASH_LOGO} alt="TG TOP" className="splash-logo sp-logo-img" />
+          <img src={LOGO_URL} alt="TG TOP" className="splash-logo sp-logo-img" />
         </div>
         <p className="sp-wordmark mb-10">P2P Marketplace</p>
 

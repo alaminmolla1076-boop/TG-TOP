@@ -216,7 +216,6 @@
   .sp-logo-img {
     width: 11rem;
     max-width: 70vw;
-    mix-blend-mode: screen;
   }
   .sp-wordmark {
     font-weight: 600;
