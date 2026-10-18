@@ -4,8 +4,8 @@ import { getRealBalance } from '../_shared/balance.ts';
 import { buySeasonInChunks } from '../_shared/seasonBuy.js';
 import { deliverSeasonZip, errText } from './delivery.ts';
 import { setState } from './state.ts';
-// The bot's Market — a direct mirror of the app's Market page: Top Seller,
-// the seller directory (each seller opens their country stock), products and
+// The bot's Market — a direct mirror of the app's Market page: the seller
+// directory (each seller opens their country stock), products and
 // the same purchase options (Buy 1, or Buy Session Formats with quick and
 // custom quantities — every purchase + 5% service fee, confirmed first).
 const QUICK_QTY = [
@@ -14,9 +14,12 @@ const QUICK_QTY = [
   20,
   50,
   100,
+  200,
   500,
   1000
 ];
+const SEP = '━━━━━━━━━━━━━━━━━━';
+const SEC = (title)=>`┈┈┈┈ ${title} ┈┈┈┈`;
 const feeOf = (amount)=>Math.round(amount * 5) / 100;
 const money = (n)=>`$${Number(n || 0).toFixed(2)}`;
 const dial = (code)=>code ? ` +${String(code).replace(/^\+/, '')}` : '';
@@ -42,10 +45,7 @@ const gone = (sellerEmail)=>[
 export async function marketMenu(base44, user) {
   const market = await fetchMarket(base44, user);
   const bal = await getRealBalance(base44, user.email);
-  let text = `🌍 <b>Market</b>\n💵 Balance: <b>${money(bal)}</b>`;
-  const top = market.top_seller;
-  if (top) text += `\n\n🏆 <b>Top Seller:</b> ${top.name} — ${Number(top.sold || 0)} sold`;
-  text += `\n\nTap a seller to browse their stock:`;
+  let text = `${SEP}\n🌍 <b>Market</b>\n${SEP}\n\n💵 Balance: <b>${money(bal)}</b>\n\n${SEC('👤 <b>Sellers</b>')}\nTap a seller to browse their stock:`;
   const kb = [];
   for (const s of (market.sellers || []).slice(0, 30)){
     kb.push([
@@ -82,9 +82,9 @@ async function sellerView(base44, user, sellerEmail) {
     text: '❌ Seller not found — they may be out of stock.',
     keyboard: gone(null)
   };
-  let text = `👤 <b>${seller.name}</b>${seller.is_self ? ' (You)' : ''}\n`;
+  let text = `${SEP}\n👤 <b>${seller.name}</b>${seller.is_self ? ' (You)' : ''}\n${SEP}\n\n`;
   if (seller.username) text += `🔗 @${seller.username}\n`;
-  text += `🏆 ${seller.sold} sold\n\nTap a country to buy:`;
+  text += `🏆 ${seller.sold} sold\n\n${SEC('📦 <b>Stock</b>')}\nTap a country to buy:`;
   const kb = [];
   for (const c of seller.countries || []){
     kb.push([
@@ -115,10 +115,12 @@ async function buyView(base44, user, sellerEmail, iso) {
     keyboard: gone(sellerEmail)
   };
   const bal = await getRealBalance(base44, user.email);
-  let text = `${country.flag || '🌐'} <b>${country.country_name}</b>${dial(country.dial_code)}\n`;
-  text += `👤 from ${seller.name}\n`;
-  text += `💰 <b>${money(country.price)}</b> + 5% service fee (${money(country.price + feeOf(country.price))} total)\n`;
-  text += `📦 ${country.stock} in stock\n💵 Balance: ${money(bal)}`;
+  let text = `${SEP}\n${country.flag || '🌐'} <b>${country.country_name}</b>${dial(country.dial_code)}\n${SEP}\n\n`;
+  text += `👤 Seller: <b>${seller.name}</b>\n`;
+  text += `💰 Price: <b>${money(country.price)}</b> + 5% service fee\n`;
+  text += `🧾 Total each: <b>${money(country.price + feeOf(country.price))}</b>\n`;
+  text += `📦 Stock: <b>${country.stock}</b> available\n`;
+  text += `💵 Balance: ${money(bal)}\n\n${SEC('🛒 <b>Purchase</b>')}`;
   if (seller.is_self) {
     text += `\n\nThis is your own listing — you can't buy your own stock.`;
     return {
@@ -159,10 +161,9 @@ async function formatsView(base44, user, sellerEmail, iso) {
     text: '❌ Country not found — the stock may have just sold out.',
     keyboard: gone(sellerEmail)
   };
-  const qtys = QUICK_QTY.filter((q)=>q <= country.stock);
   const kb = [];
-  for(let i = 0; i < qtys.length; i += 3){
-    kb.push(qtys.slice(i, i + 3).map((q)=>({
+  for(let i = 0; i < QUICK_QTY.length; i += 4){
+    kb.push(QUICK_QTY.slice(i, i + 4).map((q)=>({
         text: `📦 ${q}`,
         callback_data: `mk_q:${sellerEmail}:${iso}:${q}`
       })));
@@ -180,7 +181,7 @@ async function formatsView(base44, user, sellerEmail, iso) {
     }
   ]);
   return {
-    text: `📦 <b>Buy Session Formats</b>\n\n${country.flag || '🌐'} ${country.country_name} — ${money(country.price)} each + 5% fee\n📦 ${country.stock} in stock\n\nChoose a quantity:`,
+    text: `${SEP}\n📦 <b>Buy Session Formats</b>\n${SEP}\n\n${country.flag || '🌐'} <b>${country.country_name}</b> — <b>${money(country.price + feeOf(country.price))}</b> each (incl. 5% fee)\n📦 Stock: <b>${country.stock}</b> available\n\n${SEC('🔢 <b>Choose a quantity</b>')}`,
     keyboard: kb
   };
 }
@@ -227,7 +228,7 @@ export async function showMarketConfirm(base44, token, user, chatId, sellerEmail
     ]);
     return;
   }
-  await reply(`🧾 <b>Confirm purchase</b>\n\n👤 ${seller.name}\n${country.flag || '🌐'} <b>${country.country_name}</b> (${iso})\n\n` + `${qty} × ${money(country.price)}: ${money(subtotal)}\n` + `Service fee (5%): ${money(fee)}\n` + `<b>Total: ${money(total)}</b>\n` + `💵 Balance: ${money(bal)}\n\n` + `Session formats will be delivered to this chat, with 2FA removed.`, [
+  await reply(`${SEP}\n🧾 <b>Confirm Purchase</b>\n${SEP}\n\n👤 ${seller.name}\n${country.flag || '🌐'} <b>${country.country_name}</b> (${iso})\n\n` + `📦 Quantity: <b>${qty}</b>\n` + `💰 ${qty} × ${money(country.price)}: ${money(subtotal)}\n` + `🧾 Service fee (5%): ${money(fee)}\n` + `${SEP}\n` + `💳 <b>Total: ${money(total)}</b>\n` + `💵 Balance: ${money(bal)}\n${SEP}\n\n` + `Session formats will be delivered to this chat, with 2FA removed.`, [
     [
       {
         text: '✅ Confirm',
@@ -258,12 +259,12 @@ async function buyOne(base44, token, user, chatId, msgId, sellerEmail, iso) {
     });
     const data = res.data || res;
     if (data.error) throw new Error(data.error);
-    let msg = `✅ <b>Purchase complete</b>\n\n`;
+    let msg = `${SEP}\n✅ <b>Purchase Complete</b>\n${SEP}\n\n`;
     if (country) msg += `${country.flag || '🌐'} <b>${country.country_name}</b> (${iso})\n`;
-    msg += `💰 Price: ${money(country ? country.price : 0)} + 5% service fee\n`;
+    msg += `💰 Price: <b>${money(country ? country.price + feeOf(country.price) : 0)}</b> (incl. 5% fee)\n`;
     msg += `📱 Phone: <code>${data.phone || ''}</code>\n`;
     msg += `🛡️ 2FA: <b>Removed</b>\n`;
-    msg += `💵 New balance: ${money(data.balance)}\n`;
+    msg += `💵 New balance: <b>${money(data.balance)}</b>\n`;
     await tgSendMenu(token, chatId, msg, [
       [
         {
@@ -301,9 +302,9 @@ async function buyBatch(base44, token, user, chatId, msgId, sellerEmail, iso, qt
     const market = await fetchMarket(base44, user);
     const seller = findSeller(market, sellerEmail);
     const country = findCountry(seller, iso);
-    let msg = `✅ <b>Purchase complete</b>\n\n`;
+    let msg = `${SEP}\n✅ <b>Purchase Complete</b>\n${SEP}\n\n`;
     if (country) msg += `${country.flag || '🌐'} <b>${country.country_name}</b> (${iso}) — ${seller ? seller.name : ''}\n`;
-    msg += `📦 Accounts: ${ids.length}/${qty}\n`;
+    msg += `📦 Accounts: <b>${ids.length}/${qty}</b>\n`;
     if (ids.length < qty) msg += `⚠️ ${qty - ids.length} could not be delivered (not charged)\n`;
     await tgSend(token, chatId, msg);
     await deliverSeasonZip(base44, token, chatId, ids);
