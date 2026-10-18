@@ -1,4 +1,10 @@
-import { t } from '../_shared/botTranslations.js';
+import { t, buildReplyKeyboard } from '../_shared/botTranslations.js';
+// The main menu also ships as the bot reply keyboard — Telegram then shows the
+// "four-dot" toggle in the input field. Presses route via buildAllReplyActions
+// in pollTelegramUpdates.
+export function mainReplyKeyboard(lang, opts) {
+  return buildReplyKeyboard(lang, opts);
+}
 // Keyboards and deposit addresses for the Telegram bot — unchanged port.
 // USDT deposit addresses (mirrors the app's Top-Up page)
 export const DEPOSIT_ADDRESSES = [
