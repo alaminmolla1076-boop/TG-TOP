@@ -532,7 +532,7 @@ export default async function handleCommand(base44, token, ctx) {
           if (data.error) throw new Error(data.error);
           await setState(base44, `session:${user.email}`, JSON.stringify({
             phone,
-            session_id: data.session_id,
+            request_id: data.request_id,
             status: 'code_sent'
           }));
           await tgSend(token, chatId, `✅ Code sent to ${phone}.\n\nReply with: <code>/verify [code]</code>`, replyTo);

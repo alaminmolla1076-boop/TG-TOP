@@ -260,13 +260,14 @@ export async function handleNumericFlows(base44, token, ctx) {
 // Shared success/rejection reporting for the guided sell flow.
 async function reportSellResult(base44, token, ctx, data, sellMsgs) {
   const { chatId, replyTo, tgUser } = ctx;
-  if (data.status === 'completed') {
+  if (data.status === 'completed' || data.success) {
     for (const mid of sellMsgs)await tgDeleteMessage(token, chatId, mid);
     let msg = `✅ <b>Account Received Successfully</b>\n\n`;
     msg += `🛡️ Spam check: <b>Passed</b>\n`;
-    msg += `🔐 2FA password: <b>${data.two_factor_error ? 'Failed' : 'Set'}</b>\n`;
+    msg += `🔐 2FA password: <b>Set</b>\n`;
     if (data.country) msg += `🌍 Country: ${data.country_flag || ''} ${data.country_name || data.country}\n`;
-    msg += `\nYour account has been added to the system.\nReward: $${data.reward_amount || 0} (credited after 12h verification)`;
+    if (data.phone) msg += `📱 Phone: <code>${data.phone}</code>\n`;
+    msg += `\nThe account has been added to your stock — it is now live in the Market.`;
     await tgSend(token, chatId, msg, replyTo);
     const logoutMsg = await tgSend(token, chatId, `⚠️ <b>Please logout from your devices</b> for security.`, replyTo);
     // Sell mode stays active so the next number needs no extra tap.
@@ -321,7 +322,7 @@ export async function handleSellFlow(base44, token, ctx, sellState) {
       if (data.error) throw new Error(data.error);
       await setState(base44, `sell:${tid}`, JSON.stringify({
         status: 'awaiting_code',
-        session_id: data.session_id,
+        request_id: data.request_id,
         phone,
         msgs: [
           connectingMsg?.result?.message_id
@@ -359,53 +360,20 @@ export async function handleSellFlow(base44, token, ctx, sellState) {
     ].filter(Boolean);
     try {
       const result = await base44.asServiceRole.functions.invoke('verifyLoginCode', {
-        session_id: sellState.session_id,
-        code,
+        request_id: sellState.request_id,
+        phone_code: code,
         user_email: user.email
       });
       const data = result.data || result;
       if (data.error) throw new Error(data.error);
-      if (data.needs_2fa) {
-        await setState(base44, `sell:${tid}`, JSON.stringify({
-          ...sellState,
-          status: 'awaiting_2fa',
-          msgs: sellMsgs
-        }));
-        await tgSend(token, chatId, `🔐 This account has 2FA enabled.\n\nPlease enter your 2FA password:`, replyTo);
-      } else {
-        await reportSellResult(base44, token, ctx, data, sellMsgs);
-      }
-    } catch (err) {
-      const m = (err.message || '').toLowerCase();
-      if (m.includes('code') || m.includes('invalid') || m.includes('expired')) {
-        await tgSend(token, chatId, `❌ <b>Wrong Code</b>\n\nPlease enter the correct OTP code:`, replyTo);
-      } else {
-        await clearState(base44, `sell:${tid}`);
-        await tgSend(token, chatId, `❌ Error: ${err.message}`, replyTo);
-      }
-    }
-    return true;
-  }
-  if (sellState.status === 'awaiting_2fa') {
-    const verify2faMsg = await tgSend(token, chatId, `🔄 Verifying 2FA...`, replyTo);
-    const sellMsgs = [
-      ...sellState.msgs || [],
-      verify2faMsg?.result?.message_id
-    ].filter(Boolean);
-    try {
-      const result = await base44.asServiceRole.functions.invoke('verify2faPassword', {
-        session_id: sellState.session_id,
-        password: rawText,
-        user_email: user.email
-      });
-      const data = result.data || result;
-      if (data.error) throw new Error(data.error);
-      if (data.status === 'completed') await clearState(base44, `sell:${tid}`);
       await reportSellResult(base44, token, ctx, data, sellMsgs);
     } catch (err) {
       const m = (err.message || '').toLowerCase();
-      if (m.includes('password') || m.includes('invalid') || m.includes('2fa')) {
-        await tgSend(token, chatId, `❌ <b>Wrong Password</b>\n\nPlease enter the correct 2FA password:`, replyTo);
+      if (m.includes('has 2fa')) {
+        await clearState(base44, `sell:${tid}`);
+        await tgSend(token, chatId, `❌ <b>This account has 2FA enabled</b>\n\nRemove 2FA from the account first, then sell it. Send another phone number to continue selling.`, replyTo);
+      } else if (m.includes('code') || m.includes('invalid') || m.includes('expired')) {
+        await tgSend(token, chatId, `❌ <b>Wrong Code</b>\n\nPlease enter the correct OTP code:`, replyTo);
       } else {
         await clearState(base44, `sell:${tid}`);
         await tgSend(token, chatId, `❌ Error: ${err.message}`, replyTo);
