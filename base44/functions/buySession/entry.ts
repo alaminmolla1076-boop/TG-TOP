@@ -33,6 +33,9 @@ export default async function (req) {
       initData: body.initData,
       country_iso: countryIso,
       quantity: qty,
+      // Batch purchases are delivered as session-format files (a ZIP in the
+      // buyer's Telegram chat); a single purchase returns just the phone.
+      ...(qty > 1 ? { mode: 'session' } : {}),
       ...(sellerEmail ? { seller_email: sellerEmail, owner_email: sellerEmail } : {}),
     }, 110000);
 
