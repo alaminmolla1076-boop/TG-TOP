@@ -30,10 +30,9 @@ export const DEPOSIT_ADDRESSES = [
   }
 ];
 // Main menu — the full app-feature set as INLINE buttons (two per row),
-// mirroring the old reply keyboard. hidePremium/hideStars drop those buttons.
+// mirroring the reply keyboard.
 export function mainMenuKeyboard(lang, opts) {
   const L = lang || 'en';
-  const o = opts || {};
   const btn = (label, data)=>({
       text: t(L, label),
       callback_data: data
@@ -46,29 +45,6 @@ export function mainMenuKeyboard(lang, opts) {
   kb.push([btn('menu.channel', 'menu_channel'), btn('menu.support', 'menu_support')]);
   kb.push([btn('menu.language', 'menu_language'), btn('menu.refer', 'menu_refer')]);
   return kb;
-}
-export function buyMenuKeyboard(lang) {
-  const L = lang || 'en';
-  return [
-    [
-      {
-        text: t(L, 'buy.buy1'),
-        callback_data: 'buy_single'
-      }
-    ],
-    [
-      {
-        text: t(L, 'buy.season'),
-        callback_data: 'buy_season'
-      }
-    ],
-    [
-      {
-        text: t(L, 'buy.back'),
-        callback_data: 'menu_main'
-      }
-    ]
-  ];
 }
 // The whole country list always fits within MAX_PAGES pages (2 per row).
 const MAX_PAGES = 6;

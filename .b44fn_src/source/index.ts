@@ -11,6 +11,7 @@ import createOkpayOrder from './fns/createOkpayOrder.ts';
 import okpayCallback from './fns/okpayCallback.ts';
 import checkOkpayOrder from './fns/checkOkpayOrder.ts';
 import purchaseProduct from './fns/purchaseProduct.ts';
+import getMarketSellers from './fns/getMarketSellers.ts';
 import getMyMoneyRecords from './fns/getMyMoneyRecords.ts';
 import getMyStats from './fns/getMyStats.ts';
 import getMySessions from './fns/getMySessions.ts';
@@ -43,6 +44,7 @@ setRegistry({
   okpayCallback,
   checkOkpayOrder,
   purchaseProduct,
+  getMarketSellers,
   getMyMoneyRecords,
   getMyStats,
   getMySessions,

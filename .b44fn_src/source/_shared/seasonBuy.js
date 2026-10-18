@@ -3,7 +3,7 @@
 // remainder, so a 1000+ account order never hits a function timeout.
 const CHUNK = 100;
 
-export async function buySeasonInChunks(base44, { country_iso, user_email, quantity, onChunk }) {
+export async function buySeasonInChunks(base44, { country_iso, user_email, quantity, owner_email, onChunk }) {
   const ids = [];
   let batchId = '';
   let error = null;
@@ -16,6 +16,7 @@ export async function buySeasonInChunks(base44, { country_iso, user_email, quant
         country_iso,
         quantity: ask,
         user_email,
+        owner_email: owner_email || undefined,
         purchase_type: 'season',
         batch_id: batchId || undefined,
       });

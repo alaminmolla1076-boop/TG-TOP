@@ -4,7 +4,8 @@ import { getRealBalance } from '../_shared/balance.ts';
 import { buildRewardsPage, buildUserRewards } from '../_shared/rewardViews.js';
 import { buySeasonInChunks } from '../_shared/seasonBuy.js';
 import { getState, setState, clearState, findUserByTelegramId, findUserByBindCode } from './state.ts';
-import { buildCountryKeyboard, mainReplyKeyboard } from './keyboards.ts';
+import { mainReplyKeyboard } from './keyboards.ts';
+import { marketMenu } from './market.ts';
 import { formatCountries, formatOrders, formatStatus } from './views.ts';
 import { deliverSeasonZip, handleBind, handleSeasonGen, errText } from './delivery.ts';
 // The bot's slash-command / reply-keyboard command switch.
@@ -278,18 +279,8 @@ export default async function handleCommand(base44, token, ctx) {
     case 'buy':
       {
         if (!await requireUser()) break;
-        await clearState(base44, `buypage_query:${String(tgUser.id)}`);
-        const countries = await base44.asServiceRole.entities.Country.filter({
-          active: true,
-          platform: 'tg'
-        });
-        if (!countries.length) {
-          await tgSend(token, chatId, '❌ No countries available.', replyTo);
-          break;
-        }
-        await tgSendMenu(token, chatId, `${t(lang, 'buy.title')}\n\n${t(lang, 'buy.prompt')}`, buildCountryKeyboard(countries, lang, null, 1), replyTo);
         // Direct purchase when args are given: /buy US 2
-        if (parts[1] && parts[2]) {
+        if (text.trim().startsWith('/') && parts[1] && parts[2]) {
           const iso = parts[1].toUpperCase();
           const qty = parseInt(parts[2]);
           if (qty > 0) {

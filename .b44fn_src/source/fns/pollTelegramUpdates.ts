@@ -42,6 +42,7 @@ async function processUpdate(base44, token, update) {
       `topup:${tid}`,
       `withdraw:${tid}`,
       `season:${tid}`,
+      `mkqty:${tid}`,
       `buysearch:${tid}`,
       `buypage_query:${tid}`
     ])
@@ -112,6 +113,7 @@ async function processUpdate(base44, token, update) {
       'topup',
       'withdraw',
       'season',
+      'mkqty',
       'buysearch'
     ]){
       await clearState(base44, `${key}:${tid}`);

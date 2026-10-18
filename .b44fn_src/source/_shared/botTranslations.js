@@ -16,7 +16,7 @@ export const BOT_LANGS = [
 
 const T = {
   en: {
-    'menu.buy': '🌍 Buy',
+    'menu.buy': '🌍 Market',
     'menu.topup': '💳 Top Up',
     'menu.sell': '📱 Sell',
     'menu.myaccount': '👤 My Account',
@@ -162,7 +162,7 @@ const T = {
     'stars.unavailable': '✨ Stars is temporarily unavailable.',
   },
   bn: {
-    'menu.buy': '🌍 কিনুন',
+    'menu.buy': '🌍 মার্কেট',
     'menu.topup': '💳 টপ-আপ',
     'menu.sell': '📱 বিক্রি',
     'menu.myaccount': '👤 আমার অ্যাকাউন্ট',
@@ -307,7 +307,7 @@ const T = {
     'stars.unavailable': '✨ স্টার সাময়িকভাবে অনুপলব্ধ।',
   },
   es: {
-    'menu.buy': '🌍 Comprar', 'menu.topup': '💳 Recargar', 'menu.sell': '📱 Vender',
+    'menu.buy': '🌍 Mercado', 'menu.topup': '💳 Recargar', 'menu.sell': '📱 Vender',
     'menu.myaccount': '👤 Mi Cuenta', 'menu.reward': '💰 Precio de Venta', 'menu.withdraw': '💸 Retirar',
     'menu.premium': '⭐ Premium', 'menu.stars': '⭐ Estrellas', 'menu.channel': '📢 Canal',
     'menu.support': '🛟 Soporte', 'menu.language': '🌐 Idioma', 'menu.refer': '🎁 Referir',
@@ -375,7 +375,7 @@ const T = {
     'help.body': '🌍 /buy — Comprar\n📦 /season — Temporada\n⭐ /premium — Premium\n✨ /stars — Estrellas\n💳 /topup — Recargar\n💸 /withdraw — Retirar\n💰 /balance — Saldo\n📊 /status — Estado\n📦 /orders — Pedidos\n🔑 /session — Sesión\n🔗 /bind — Vincular\n🌐 /countries — Países\n🎁 /rewards — Recompensas',
   },
   fr: {
-    'menu.buy': '🌍 Acheter', 'menu.topup': '💳 Recharger', 'menu.sell': '📱 Vendre',
+    'menu.buy': '🌍 Marché', 'menu.topup': '💳 Recharger', 'menu.sell': '📱 Vendre',
     'menu.myaccount': '👤 Mon Compte', 'menu.reward': '💰 Prix de Vente', 'menu.withdraw': '💸 Retirer',
     'menu.premium': '⭐ Premium', 'menu.stars': '⭐ Étoiles', 'menu.channel': '📢 Canal',
     'menu.support': '🛟 Support', 'menu.language': '🌐 Langue', 'menu.refer': '🎁 Parrainer',
@@ -439,7 +439,7 @@ const T = {
     'help.body': '🌍 /buy — Acheter\n📦 /season — Saison\n⭐ /premium — Premium\n✨ /stars — Étoiles\n💳 /topup — Recharger\n💸 /withdraw — Retirer\n💰 /balance — Solde\n📊 /status — Statut\n📦 /orders — Commandes\n🔑 /session — Session\n🔗 /bind — Lier\n🌐 /countries — Pays\n🎁 /rewards — Récompenses',
   },
   de: {
-    'menu.buy': '🌍 Kaufen', 'menu.topup': '💳 Aufladen', 'menu.sell': '📱 Verkaufen',
+    'menu.buy': '🌍 Markt', 'menu.topup': '💳 Aufladen', 'menu.sell': '📱 Verkaufen',
     'menu.myaccount': '👤 Mein Konto', 'menu.reward': '💰 Verkaufspreis', 'menu.withdraw': '💸 Auszahlen',
     'menu.premium': '⭐ Premium', 'menu.stars': '⭐ Sterne', 'menu.channel': '📢 Kanal',
     'menu.support': '🛟 Support', 'menu.language': '🌐 Sprache', 'menu.refer': '🎁 Werben',
@@ -503,7 +503,7 @@ const T = {
     'help.body': '🌍 /buy — Kaufen\n📦 /season — Saison\n⭐ /premium — Premium\n✨ /stars — Sterne\n💳 /topup — Aufladen\n💸 /withdraw — Auszahlen\n💰 /balance — Guthaben\n📊 /status — Status\n📦 /orders — Bestellungen\n🔑 /session — Sitzung\n🔗 /bind — Verknüpfen\n🌐 /countries — Länder\n🎁 /rewards — Belohnungen',
   },
   pt: {
-    'menu.buy': '🌍 Comprar', 'menu.topup': '💳 Recarregar', 'menu.sell': '📱 Vender',
+    'menu.buy': '🌍 Mercado', 'menu.topup': '💳 Recarregar', 'menu.sell': '📱 Vender',
     'menu.myaccount': '👤 Minha Conta', 'menu.reward': '💰 Preço de Venda', 'menu.withdraw': '💸 Sacar',
     'menu.premium': '⭐ Premium', 'menu.stars': '⭐ Estrelas', 'menu.channel': '📢 Canal',
     'menu.support': '🛟 Suporte', 'menu.language': '🌐 Idioma', 'menu.refer': '🎁 Indicar',
@@ -567,7 +567,7 @@ const T = {
     'help.body': '🌍 /buy — Comprar\n📦 /season — Temporada\n⭐ /premium — Premium\n✨ /stars — Estrelas\n💳 /topup — Recarregar\n💸 /withdraw — Sacar\n💰 /balance — Saldo\n📊 /status — Status\n📦 /orders — Pedidos\n🔑 /session — Sessão\n🔗 /bind — Vincular\n🌐 /countries — Países\n🎁 /rewards — Recompensas',
   },
   ru: {
-    'menu.buy': '🌍 Купить', 'menu.topup': '💳 Пополнить', 'menu.sell': '📱 Продать',
+    'menu.buy': '🌍 Маркет', 'menu.topup': '💳 Пополнить', 'menu.sell': '📱 Продать',
     'menu.myaccount': '👤 Мой Аккаунт', 'menu.reward': '💰 Цена Продажи', 'menu.withdraw': '💸 Вывод',
     'menu.premium': '⭐ Премиум', 'menu.stars': '⭐ Звёзды', 'menu.channel': '📢 Канал',
     'menu.support': '🛟 Поддержка', 'menu.language': '🌐 Язык', 'menu.refer': '🎁 Реферал',
@@ -631,7 +631,7 @@ const T = {
     'help.body': '🌍 /buy — Купить\n📦 /season — Сезон\n⭐ /premium — Премиум\n✨ /stars — Звёзды\n💳 /topup — Пополнить\n💸 /withdraw — Вывод\n💰 /balance — Баланс\n📊 /status — Статус\n📦 /orders — Заказы\n🔑 /session — Сессия\n🔗 /bind — Привязать\n🌐 /countries — Страны\n🎁 /rewards — Награды',
   },
   ar: {
-    'menu.buy': '🌍 شراء', 'menu.topup': '💳 شحن', 'menu.sell': '📱 بيع',
+    'menu.buy': '🌍 السوق', 'menu.topup': '💳 شحن', 'menu.sell': '📱 بيع',
     'menu.myaccount': '👤 حسابي', 'menu.reward': '💰 سعر البيع', 'menu.withdraw': '💸 سحب',
     'menu.premium': '⭐ بريميوم', 'menu.stars': '⭐ نجوم', 'menu.channel': '📢 قناة',
     'menu.support': '🛟 دعم', 'menu.language': '🌐 اللغة', 'menu.refer': '🎁 إحالة',
@@ -695,7 +695,7 @@ const T = {
     'help.body': '🌍 /buy — شراء\n📦 /season — موسم\n⭐ /premium — بريميوم\n✨ /stars — نجوم\n💳 /topup — شحن\n💸 /withdraw — سحب\n💰 /balance — الرصيد\n📊 /status — الحالة\n📦 /orders — الطلبات\n🔑 /session — جلسة\n🔗 /bind — ربط\n🌐 /countries — الدول\n🎁 /rewards — المكافآت',
   },
   hi: {
-    'menu.buy': '🌍 खरीदें', 'menu.topup': '💳 टॉप-अप', 'menu.sell': '📱 बेचें',
+    'menu.buy': '🌍 मार्केट', 'menu.topup': '💳 टॉप-अप', 'menu.sell': '📱 बेचें',
     'menu.myaccount': '👤 मेरा खाता', 'menu.reward': '💰 बिक्री मूल्य', 'menu.withdraw': '💸 निकासी',
     'menu.premium': '⭐ प्रीमियम', 'menu.stars': '⭐ स्टार', 'menu.channel': '📢 चैनल',
     'menu.support': '🛟 सहायता', 'menu.language': '🌐 भाषा', 'menu.refer': '🎁 रेफर',
@@ -759,7 +759,7 @@ const T = {
     'help.body': '🌍 /buy — खरीदें\n📦 /season — सीज़न\n⭐ /premium — प्रीमियम\n✨ /stars — स्टार\n💳 /topup — टॉप-अप\n💸 /withdraw — निकासी\n💰 /balance — बैलेंस\n📊 /status — स्थिति\n📦 /orders — ऑर्डर\n🔑 /session — सेशन\n🔗 /bind — बाइन्ड\n🌐 /countries — देश\n🎁 /rewards — इनाम',
   },
   zh: {
-    'menu.buy': '🌍 购买', 'menu.topup': '💳 充值', 'menu.sell': '📱 出售',
+    'menu.buy': '🌍 市场', 'menu.topup': '💳 充值', 'menu.sell': '📱 出售',
     'menu.myaccount': '👤 我的账户', 'menu.reward': '💰 售价', 'menu.withdraw': '💸 提现',
     'menu.premium': '⭐ 高级', 'menu.stars': '⭐ 星星', 'menu.channel': '📢 频道',
     'menu.support': '🛟 支持', 'menu.language': '🌐 语言', 'menu.refer': '🎁 推荐',

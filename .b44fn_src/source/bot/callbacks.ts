@@ -4,7 +4,8 @@ import { getRealBalance } from '../_shared/balance.ts';
 import { buildRewardsPage, buildUserRewards } from '../_shared/rewardViews.js';
 import { buySeasonInChunks } from '../_shared/seasonBuy.js';
 import { getState, setState, clearState, getUserContext, findUserByTelegramId } from './state.ts';
-import { mainMenuKeyboard, buyMenuKeyboard, buildCountryKeyboard, DEPOSIT_ADDRESSES } from './keyboards.ts';
+import { mainMenuKeyboard, buildCountryKeyboard, DEPOSIT_ADDRESSES } from './keyboards.ts';
+import { handleMarketCallback, marketMenu } from './market.ts';
 import { formatOrders, formatStatus, formatProducts } from './views.ts';
 import { deliverSeasonZip, handleBind, errText } from './delivery.ts';
 // Handles every inline-keyboard button press. Direct port of the callback
@@ -46,6 +47,11 @@ export default async function handleCallback(base44, token, cq) {
   // Maintenance mode blocks everyone but admins.
   if (cbSettings.maintenance_mode && (!cbUserRec || cbUserRec.role !== 'admin')) {
     await send(cbChatId, `${t(cbLang, 'maintenance.title')}\n\n${cbSettings.maintenance_message || t(cbLang, 'maintenance.body')}`);
+    return;
+  }
+  // Market — mirrors the app's Market page (sellers → countries → buy).
+  if (cbData.startsWith('mk_')) {
+    await handleMarketCallback(base44, token, cq, cbUserRec, cbLang, cbChatId, cbMsgId);
     return;
   }
   if (cbData.startsWith('buyctry:')) {
@@ -573,8 +579,15 @@ export default async function handleCallback(base44, token, cq) {
       }));
       break;
     case 'menu_buy':
-      await tgEditMenu(token, cbChatId, cbMsgId, t(cbLang, 'buy.menuMsg'), buyMenuKeyboard(cbLang));
-      break;
+      {
+        if (!cbUserRec) {
+          await send(cbChatId, t(cbLang, 'bind.required'));
+          break;
+        }
+        const market = await marketMenu(base44, cbUserRec);
+        await tgEditMenu(token, cbChatId, cbMsgId, market.text, market.keyboard);
+        break;
+      }
     case 'buy_single':
       {
         if (!cbUserRec) {
