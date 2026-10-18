@@ -258,9 +258,9 @@ async function buyOne(base44, token, user, chatId, msgId, sellerEmail, iso) {
     });
     const data = res.data || res;
     if (data.error) throw new Error(data.error);
-    let msg = `${SEP}\n✅ <b>Purchase Complete</b>\n${SEP}\n\n`;
+    let msg = `${SEP}\n<b>Purchase Complete</b>\n${SEP}\n\n`;
     if (country) msg += `${country.flag || '🌐'} <b>${country.country_name}</b> (${iso})\n`;
-    msg += `💰 Price: <b>${money(country ? country.price + feeOf(country.price) : 0)}</b> (incl. 5% fee)\n`;
+    msg += `💰 Amount: <b>${money(country ? country.price + feeOf(country.price) : 0)}</b> (incl. 5% fee)\n`;
     msg += `📱 Phone: <code>${data.phone || ''}</code>\n`;
     msg += `🛡️ 2FA: <b>Removed</b>\n`;
     msg += `💵 New balance: <b>${money(data.balance)}</b>\n`;
@@ -301,13 +301,12 @@ async function buyBatch(base44, token, user, chatId, msgId, sellerEmail, iso, qt
     const market = await fetchMarket(base44, user);
     const seller = findSeller(market, sellerEmail);
     const country = findCountry(seller, iso);
-    let msg = `${SEP}\n✅ <b>Purchase Complete</b>\n${SEP}\n\n`;
+    let msg = `${SEP}\n<b>Purchase Complete</b>\n${SEP}\n\n`;
     if (country) msg += `${country.flag || '🌐'} <b>${country.country_name}</b> (${iso}) — ${seller ? seller.name : ''}\n`;
     msg += `📦 Accounts: <b>${ids.length}/${qty}</b>\n`;
+    msg += `💰 Amount: <b>${money(ids.length * (country ? country.price + feeOf(country.price) : 0))}</b> (incl. 5% fee)\n`;
     if (ids.length < qty) msg += `⚠️ ${qty - ids.length} could not be delivered (not charged)\n`;
-    await tgSend(token, chatId, msg);
-    await deliverSeasonZip(base44, token, chatId, ids);
-    await tgSendMenu(token, chatId, `✅`, [
+    await tgSendMenu(token, chatId, msg, [
       [
         {
           text: '🔁 Buy Again',
@@ -315,6 +314,7 @@ async function buyBatch(base44, token, user, chatId, msgId, sellerEmail, iso, qt
         }
       ]
     ]);
+    await deliverSeasonZip(base44, token, chatId, ids);
   } catch (err) {
     await tgSend(token, chatId, `❌ ${errText(err)}`);
   }
@@ -414,7 +414,7 @@ export async function handleMarketCallback(base44, token, cq, user, lang, chatId
       });
       const data = res.data || res;
       if (data.error) throw new Error(data.error);
-      await tgSend(token, chatId, `✅ <b>Purchase complete</b>\n\n🛒 ${data.product_name || ''}\n💰 ${money(data.price)}\n💵 New balance: ${money(data.balance)}`);
+      await tgSend(token, chatId, `<b>Purchase Complete</b>\n\n🛒 ${data.product_name || ''}\n💰 Amount: <b>${money(data.price)}</b>\n💵 New balance: <b>${money(data.balance)}</b>`);
     } catch (err) {
       await tgSend(token, chatId, `❌ ${errText(err)}`);
     }
