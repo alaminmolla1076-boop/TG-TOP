@@ -124,40 +124,21 @@ async function showDepositPage(base44, token, user, chatId, msgId, amount, netwo
   const data = res.data || res;
   if (data.error) throw new Error(data.error);
   const req = data.request || {};
-  const net = netName(networkId);
   // QR code for the deposit address — scanned by any wallet app.
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=10&data=${encodeURIComponent(req.wallet_address || '')}`;
-  await tgSendPhoto(token, chatId, qrUrl, `${net.name} deposit address QR`);
-  const kb = [
+  await tgSendPhoto(token, chatId, qrUrl);
+  // Compact receipt — exactly the reference layout: header, amount, address,
+  // one instruction line, and a single "I Have Paid" button.
+  const title = networkId === 'BEP20' ? 'BNB (BEP-20) Recharge' : 'TRON (TRC-20) Recharge';
+  const text = `💰 <b>${title}</b>\n${SEP}\n` + `💵 Amount: <b>$${Number(req.identify_amount || 0).toFixed(4)} USDT</b>\n` + `⚠️ Send <b>EXACTLY</b> this amount\n` + `⏳ Reserved: <b>20 minutes</b>\n${SEP}\n` + `🔒 <b>Wallet Address:</b>\n${req.wallet_address}\n` + `☝️ <i>Tap the address to copy</i>\n${SEP}\n` + `After sending, tap ✅ <b>I Have Paid</b> below.`;
+  await tgSendMenu(token, chatId, text, [
     [
       {
-        text: '📋 Copy Address',
-        copy_text: {
-          text: req.wallet_address || ''
-        }
-      },
-      {
-        text: '💰 Copy Amount',
-        copy_text: {
-          text: String(req.identify_amount)
-        }
-      }
-    ],
-    [
-      {
-        text: '✅ Check Status',
+        text: '✅ I Have Paid',
         callback_data: `tp_chk:${req.request_id}`
       }
-    ],
-    [
-      {
-        text: '⬅️ Main Menu',
-        callback_data: 'menu_main'
-      }
     ]
-  ];
-  const text = `${SEP}\n💠 <b>USDT Deposit — ${net.name}</b>\n${SEP}\n\n` + `🌐 Network: <b>${net.name} (${net.badge})</b>\n` + `💵 Requested: <b>${money(amount)}</b>\n\n` + `${SEC('🔑 <b>Deposit Address</b>')}\n<code>${req.wallet_address}</code>\n\n` + `⚠️ Send only <b>USDT on ${net.id}</b> — other assets will be lost.\n\n` + `${SEC('💰 <b>Identify Amount</b>')}\n` + `Send exactly <b>${money(req.identify_amount)}</b>\n` + `The unique cents identify your top-up and verify it automatically on-chain — <b>no TXID needed</b>.\n\n` + `${SEP}\n⏳ <b>Status:</b> Awaiting payment\n${SEP}\n\n` + `After sending, tap <b>✅ Check Status</b> to confirm. Your balance updates within a few minutes of the transfer.`;
-  await tgSendMenu(token, chatId, text, kb);
+  ]);
 }
 // OKPay path — instant order, premium receipt.
 async function showOkpayPage(base44, token, user, chatId, msgId, amount) {
