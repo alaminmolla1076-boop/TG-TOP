@@ -65,9 +65,25 @@ export default function PurchasedAccounts({ purchases, emptyText }) {
                   {p.flag || p.country_iso}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-[15px] font-medium text-foreground">
-                    {p.phone_number || p.country_name}
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <p className="min-w-0 truncate text-[15px] font-medium text-foreground">
+                      {p.phone_number || p.country_name}
+                    </p>
+                    {p.phone_number && (
+                      <button
+                        type="button"
+                        onClick={() => handleCopy(p.phone_number)}
+                        className="flex shrink-0 cursor-pointer items-center justify-center rounded-full border border-[#A29BFE]/30 bg-[rgba(45,38,78,.7)] p-1.5 text-[#A29BFE] transition-[border-color] duration-200 hover:border-[#A29BFE]/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#A29BFE]"
+                        aria-label="Copy number"
+                      >
+                        {copied === p.phone_number ? (
+                          <Check className="h-3.5 w-3.5" strokeWidth={1.5} />
+                        ) : (
+                          <Copy className="h-3.5 w-3.5" strokeWidth={1.5} />
+                        )}
+                      </button>
+                    )}
+                  </div>
                   <p className="truncate text-[13px] text-[#a8a3cf]">
                     {p.country_name}
                     {!isSingle && " · session formats sent to your Telegram chat"}
