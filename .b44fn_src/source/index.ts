@@ -26,6 +26,7 @@ import getMyAdminStatus from './fns/getMyAdminStatus.ts';
 import getTelegramBotInfo from './fns/getTelegramBotInfo.ts';
 import setupTelegramWebhook from './fns/setupTelegramWebhook.ts';
 import enforceAdminRoles from './fns/enforceAdminRoles.ts';
+import topUpRequest from './fns/topUpRequest.ts';
 // Heavy MTProto/session functions are imported lazily (see the arrow handlers
 // below) so simple bot replies never pay their multi-megabyte startup cost.
 // Single Supabase Edge Function hosting every ported backend function.
@@ -68,7 +69,8 @@ setRegistry({
   getMyAdminStatus,
   getTelegramBotInfo,
   setupTelegramWebhook,
-  enforceAdminRoles
+  enforceAdminRoles,
+  topUpRequest
 });
 const CORS = {
   'Access-Control-Allow-Origin': '*',

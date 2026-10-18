@@ -6,6 +6,7 @@ import { buySeasonInChunks } from '../_shared/seasonBuy.js';
 import { getState, setState, clearState, getUserContext, findUserByTelegramId } from './state.ts';
 import { mainMenuKeyboard, buildCountryKeyboard, DEPOSIT_ADDRESSES } from './keyboards.ts';
 import { handleMarketCallback, marketMenu } from './market.ts';
+import { handleTopupCallback, topupAmountView } from './topup.ts';
 import { formatOrders, formatStatus, formatProducts } from './views.ts';
 import { deliverSeasonZip, handleBind, errText } from './delivery.ts';
 // Handles every inline-keyboard button press. Direct port of the callback
@@ -52,6 +53,11 @@ export default async function handleCallback(base44, token, cq) {
   // Market — mirrors the app's Market page (sellers → countries → buy).
   if (cbData.startsWith('mk_')) {
     await handleMarketCallback(base44, token, cq, cbUserRec, cbLang, cbChatId, cbMsgId);
+    return;
+  }
+  // Top Up wizard — mirrors the app's Top Up (amount → method → network → deposit).
+  if (cbData.startsWith('tp_')) {
+    await handleTopupCallback(base44, token, cq, cbUserRec, cbLang, cbChatId, cbMsgId);
     return;
   }
   if (cbData.startsWith('buyctry:')) {
@@ -631,15 +637,8 @@ export default async function handleCallback(base44, token, cq) {
           await send(cbChatId, t(cbLang, 'bind.required'));
           break;
         }
-        const topupPromptMsg = await send(cbChatId, `💳 <b>Top Up Balance</b>\n\nPlease type the amount you want to top up:\nExample: <code>50</code>`);
-        // Every message of this flow is tracked so it can be wiped on submit.
-        await setState(base44, `topup:${String(cbUser.id)}`, JSON.stringify({
-          amount: null,
-          status: 'awaiting_amount',
-          msgs: [
-            topupPromptMsg?.result?.message_id
-          ].filter(Boolean)
-        }));
+        const v = topupAmountView();
+        await tgEditMenu(token, cbChatId, cbMsgId, v.text, v.keyboard);
         break;
       }
     case 'topup_usdt':

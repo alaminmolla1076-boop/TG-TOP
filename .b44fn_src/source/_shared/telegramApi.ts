@@ -94,6 +94,15 @@ export async function tgSendDoc(token, chatId, fileUrl, caption) {
     caption: caption || undefined
   });
 }
+// Sends a photo by public URL (e.g. the deposit-address QR code).
+export async function tgSendPhoto(token, chatId, photoUrl, caption) {
+  return tgCall(token, 'sendPhoto', {
+    chat_id: chatId,
+    photo: photoUrl,
+    caption: caption || undefined,
+    parse_mode: 'HTML'
+  });
+}
 export async function tgSendMenu(token, chatId, text, keyboard, replyTo) {
   try {
     const r = await tgCall(token, 'sendMessage', {

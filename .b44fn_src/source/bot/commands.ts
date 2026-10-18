@@ -6,6 +6,7 @@ import { buySeasonInChunks } from '../_shared/seasonBuy.js';
 import { getState, setState, clearState, findUserByTelegramId, findUserByBindCode } from './state.ts';
 import { mainReplyKeyboard } from './keyboards.ts';
 import { marketMenu } from './market.ts';
+import { topupAmountView } from './topup.ts';
 import { formatCountries, formatOrders, formatStatus } from './views.ts';
 import { deliverSeasonZip, handleBind, handleSeasonGen, errText } from './delivery.ts';
 // The bot's slash-command / reply-keyboard command switch.
@@ -402,15 +403,8 @@ export default async function handleCommand(base44, token, ctx) {
           }
           break;
         }
-        const amountPromptMsg = await tgSend(token, chatId, `${t(lang, 'topup.title')}\n\n${t(lang, 'topup.prompt')}`, replyTo);
-        await setState(base44, `topup:${String(tgUser.id)}`, JSON.stringify({
-          amount: null,
-          status: 'awaiting_amount',
-          msgs: [
-            replyTo,
-            amountPromptMsg?.result?.message_id
-          ].filter(Boolean)
-        }));
+        const tpView = topupAmountView();
+        await tgSendMenu(token, chatId, tpView.text, tpView.keyboard, replyTo);
         break;
       }
     case 'sell':

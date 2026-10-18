@@ -7,6 +7,7 @@ import { selfTrigger } from '../_shared/selfInvoke.ts';
 import { getState, setState, clearState, getUserContext, findUserByTelegramId } from './state.ts';
 import { buildCountryKeyboard } from './keyboards.ts';
 import { showMarketConfirm } from './market.ts';
+import { topupMethodView } from './topup.ts';
 import { processSellSeasonBulk } from './delivery.ts';
 // Stateful conversation flows of the bot (file upload, top-up, withdraw, season
 // quantity, sell, admin upload). Each handler returns true when it consumed the
@@ -117,31 +118,9 @@ export async function handleNumericFlows(base44, token, ctx) {
         await tgSend(token, chatId, `❌ Minimum top-up amount is $1. Please enter an amount of $1 or more:`, replyTo);
         return true;
       }
-      const methodMsg = await tgSendMenu(token, chatId, t(lang, 'topup.choose', {
-        amount
-      }), [
-        [
-          {
-            text: t(lang, 'topup.usdt'),
-            callback_data: 'topup_usdt'
-          }
-        ],
-        [
-          {
-            text: t(lang, 'topup.okpay'),
-            callback_data: 'topup_okpay'
-          }
-        ]
-      ], replyTo);
-      await setState(base44, `topup:${tid}`, JSON.stringify({
-        amount,
-        status: 'awaiting_method',
-        msgs: [
-          ...topupState.msgs || [],
-          replyTo,
-          methodMsg?.result?.message_id
-        ].filter(Boolean)
-      }));
+      const tpView = topupMethodView(amount);
+      await tgSendMenu(token, chatId, tpView.text, tpView.keyboard, replyTo);
+      await clearState(base44, `topup:${tid}`);
       return true;
     }
   }
