@@ -3,7 +3,6 @@ import { admin } from '../_shared/entities.ts';
 import { deliverSeasonZip } from '../bot/delivery.ts';
 import { getRealBalance } from '../_shared/balance.ts';
 import { getAvailableAccounts, syncCountryStock } from '../_shared/inventory.js';
-import { readOtpFromSession } from '../_shared/readOtp.js';
 import { clearTwoFactorGuaranteed } from '../_shared/twoFactor.js';
 import { resolveUser } from '../_shared/resolveUser.ts';
 // Direct port of base44/functions/purchaseAccount — same budget/concurrency
@@ -127,26 +126,11 @@ export default async function(req) {
         status: 400
       });
     }
-    // Auto-read the login code only for single purchases.
-    if (!isSeason) {
-      const acc = delivered[0];
-      let code = '';
-      try {
-        const otp = await readOtpFromSession(acc.session_string);
-        if (otp) code = otp.code;
-      } catch  {}
-      if (code) {
-        await base44.asServiceRole.entities.OtpRequest.create({
-          account_id: acc.id,
-          user_email: user.email,
-          phone_number: acc.phone_number,
-          country_iso: country_iso,
-          otp_code: code,
-          pass: '',
-          status: 'fulfilled'
-        }).catch((error)=>console.error('OTP receipt failed', error.message));
-      }
-    }
+    // NOTE: no code is captured here on purpose. At purchase time the newest
+    // code in the account's history is the SELLER's own login code — already
+    // used and always invalid for the buyer. The buyer requests a fresh code
+    // on Telegram's login screen and reads it via fetchOtpCode (Get Code),
+    // which only accepts codes delivered after this purchase.
     if (country) await syncCountryStock(base44, country_iso).catch((error)=>console.error('Stock refresh failed', error.message));
     // Deliver session file(s) to the buyer's bot chat ONLY for "session" mode.
     // "single" mode (Buy 1) just returns the phone — the user fetches OTP manually.

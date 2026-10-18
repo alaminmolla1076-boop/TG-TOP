@@ -32,10 +32,13 @@ export default async function(req) {
         status: 400
       });
     }
-    const otp = await readOtpFromSession(account.session_string);
+    // Only a code Telegram delivered AFTER this purchase can be the buyer's;
+    // older ones are the seller's stale login codes and always invalid.
+    const sinceMs = account.updated_date ? new Date(account.updated_date).getTime() : 0;
+    const otp = await readOtpFromSession(account.session_string, sinceMs);
     if (!otp || !otp.code) {
       return Response.json({
-        error: 'OTP not available yet — try again shortly'
+        error: 'No code yet — open Telegram, enter this number on the login screen to request a code, then tap Get Code again'
       }, {
         status: 400
       });

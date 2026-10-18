@@ -2,10 +2,14 @@ import { Mt, history } from './mtproto.js';
 
 // Reads the most recent login/OTP code from a stored Telegram session.
 // Telegram sends login codes from the service account (id 777000).
-export async function readOtpFromSession(sessionString) {
+// sinceMs: ignore codes delivered before this moment — codes that predate the
+// purchase are the seller's own (already used) login codes and always invalid.
+export async function readOtpFromSession(sessionString, sinceMs = 0) {
   const mt = new Mt(sessionString);
   const messages = await history(mt, { _: 'inputPeerUser', user_id: 777000, access_hash: 0 }, 10);
   for (const msg of messages) {
+    // History comes newest-first: everything after an older message is older too.
+    if (sinceMs && msg?.date && msg.date * 1000 <= sinceMs) break;
     const text = msg?.message || '';
     const code = extractLoginCode(text);
     if (code) return { code, raw: text };
