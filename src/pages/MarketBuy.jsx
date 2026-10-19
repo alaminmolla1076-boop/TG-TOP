@@ -67,7 +67,7 @@ export default function MarketBuy() {
         });
       }
       fetchMyData(true).catch(() => {});
-      if (qty !== 1) navigate("/market");
+      if (qty !== 1) navigate("/");
       setBusy(false);
     } catch (err) {
       toast({

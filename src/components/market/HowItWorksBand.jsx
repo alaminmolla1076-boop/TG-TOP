@@ -1,9 +1,9 @@
 import React from "react";
 
 const steps = [
-  { no: "01", title: "Top up your balance", desc: "Top Up USDT from the Account tab — top-ups are verified automatically on-chain." },
-  { no: "02", title: "Browse the market", desc: "Pick a seller below and buy their accounts — all prices are in USDT." },
-  { no: "03", title: "Buy instantly", desc: "Your balance is charged and the order is completed immediately." },
+  { no: "01", title: "Top up your balance", desc: "Add USDT with OKPay, Keeper Wallet or on-chain USDT (TRC20 / ERC20 / BEP20) — every top-up is verified automatically." },
+  { no: "02", title: "Pick a seller", desc: "Browse the directory, search sellers by name, and open a profile to see live country stock and prices." },
+  { no: "03", title: "Buy in one tap", desc: "Choose a country and quantity — your balance is charged and the accounts are delivered instantly." },
 ];
 
 // Capsule List — full-bleed dark band closing the page with the process steps.

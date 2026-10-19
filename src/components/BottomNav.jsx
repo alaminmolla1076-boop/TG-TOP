@@ -3,8 +3,8 @@ import { NavLink } from "react-router-dom";
 import { LayoutDashboard, Store, Upload, User } from "lucide-react";
 
 const tabs = [
-  { to: "/", label: "Dashboard", icon: LayoutDashboard, end: true },
-  { to: "/market", label: "Market", icon: Store },
+  { to: "/", label: "Market", icon: Store, end: true },
+  { to: "/home", label: "Dashboard", icon: LayoutDashboard },
   { to: "/sell", label: "Sell", icon: Upload },
   { to: "/account", label: "Account", icon: User },
 ];

@@ -1,7 +1,7 @@
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
@@ -56,8 +56,9 @@ const AuthenticatedApp = () => {
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route element={<TgShell />}>
         <Route element={<AppLayout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/market" element={<Market />} />
+          <Route path="/" element={<Market />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/market" element={<Navigate to="/" replace />} />
           <Route path="/market/seller/:sellerId" element={<MarketSeller />} />
           <Route path="/market/buy/:sellerId/:countryIso" element={<MarketBuy />} />
           <Route path="/sell" element={<Sell />} />
