@@ -1,5 +1,6 @@
-import { getAccessToken } from '@base44/sdk';
-
+// App parameters for the standalone (self-hosted) build.
+// The previous Base44 SDK access token is gone — the app's identity is the
+// Telegram initData, exactly as it already was for every real user.
 const isNode = typeof window === 'undefined';
 
 const isClearAccessTokenRequested = () =>
@@ -10,19 +11,13 @@ const clearStoredAccessToken = () => {
 	window.localStorage.removeItem('token');
 }
 
-const getAppParams = () => {
-	if (isClearAccessTokenRequested()) {
-		clearStoredAccessToken();
-	}
-	return {
-		appId: import.meta.env.VITE_BASE44_APP_ID,
-		token: getAccessToken(),
-		functionsVersion: (!isNode && new URLSearchParams(window.location.search).get("functions_version")?.trim()) || import.meta.env.VITE_BASE44_FUNCTIONS_VERSION,
-		appBaseUrl: import.meta.env.VITE_BASE44_APP_BASE_URL,
-	}
+if (!isNode && isClearAccessTokenRequested()) {
+	clearStoredAccessToken();
 }
 
-
 export const appParams = {
-	...getAppParams()
+	appId: 'tg-top',
+	token: undefined,
+	functionsVersion: undefined,
+	appBaseUrl: !isNode ? window.location.origin : ''
 }

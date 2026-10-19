@@ -27,6 +27,33 @@ import getTelegramBotInfo from './fns/getTelegramBotInfo.ts';
 import setupTelegramWebhook from './fns/setupTelegramWebhook.ts';
 import enforceAdminRoles from './fns/enforceAdminRoles.ts';
 import topUpRequest from './fns/topUpRequest.ts';
+// Web-API handlers — the frontend (Vercel-hosted) calls these directly under
+// /functions/v1/b44fn/web<Name>. Byte-for-byte ports of the previous
+// Base44-hosted functions; business logic lives in the same place as the bot.
+import webGetMyData from './webfns/getMyData.ts';
+import webGetMarketProducts from './webfns/getMarketProducts.ts';
+import webTelegramAuth from './webfns/telegramAuth.ts';
+import webAdminData from './webfns/adminData.ts';
+import webAdminUsers from './webfns/adminUsers.ts';
+import webAdminUserAction from './webfns/adminUserAction.ts';
+import webAdminUserHistory from './webfns/adminUserHistory.ts';
+import webGetPurchases from './webfns/getPurchases.ts';
+import webGetAccountCode from './webfns/getAccountCode.ts';
+import webBuySession from './webfns/buySession.ts';
+import webBuyProduct from './webfns/buyProduct.ts';
+import webSetStockPrice from './webfns/setStockPrice.ts';
+import webReportSeller from './webfns/reportSeller.ts';
+import webSellSendCode from './webfns/sellSendCode.ts';
+import webSellVerifyCode from './webfns/sellVerifyCode.ts';
+import webDownloadSessions from './webfns/downloadSessions.ts';
+import webCreateOkpayOrder from './webfns/createOkpayOrder.ts';
+import webCheckOkpayOrder from './webfns/checkOkpayOrder.ts';
+import webRequestWithdrawal from './webfns/requestWithdrawal.ts';
+import webReviewTopUp from './webfns/reviewTopUp.ts';
+import webReviewWithdrawal from './webfns/reviewWithdrawal.ts';
+import webTonTopUp from './webfns/tonTopUp.ts';
+import webVerifyUsdtDeposit from './webfns/verifyUsdtDeposit.ts';
+import webPing from './webfns/ping.ts';
 // Heavy MTProto/session functions are imported lazily (see the arrow handlers
 // below) so simple bot replies never pay their multi-megabyte startup cost.
 // Single Supabase Edge Function hosting every ported backend function.
@@ -70,7 +97,31 @@ setRegistry({
   getTelegramBotInfo,
   setupTelegramWebhook,
   enforceAdminRoles,
-  topUpRequest
+  topUpRequest,
+  webGetMyData,
+  webGetMarketProducts,
+  webTelegramAuth,
+  webAdminData,
+  webAdminUsers,
+  webAdminUserAction,
+  webAdminUserHistory,
+  webGetPurchases,
+  webGetAccountCode,
+  webBuySession,
+  webBuyProduct,
+  webSetStockPrice,
+  webReportSeller,
+  webSellSendCode,
+  webSellVerifyCode,
+  webDownloadSessions,
+  webCreateOkpayOrder,
+  webCheckOkpayOrder,
+  webRequestWithdrawal,
+  webReviewTopUp,
+  webReviewWithdrawal,
+  webTonTopUp,
+  webVerifyUsdtDeposit,
+  webPing
 });
 const CORS = {
   'Access-Control-Allow-Origin': '*',
