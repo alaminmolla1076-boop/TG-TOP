@@ -2,7 +2,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, ShieldCheck } from "lucide-react";
 import { formatMoney } from "@/lib/format";
-import OkpayLogo from "../OkpayLogo";
+import { LOGOS } from "@/components/deposit/logos";
 
 // Final step of the OKPay top-up — opens the hosted OKPay checkout and lets
 // the user confirm once they've paid. The balance is credited automatically
@@ -20,7 +20,7 @@ export default function OkpayStep({ request, status, checking, onCheck, onCancel
     <div className="grid gap-4">
       <div className="grid gap-4 rounded-2xl border border-primary/25 bg-card p-4">
         <div className="flex items-center gap-3 rounded-xl bg-primary/10 p-3">
-          <OkpayLogo className="h-9 w-9" />
+          <img src={LOGOS.okpay} alt="OKPay" className="h-9 w-9 rounded-lg object-cover" />
           <div className="min-w-0 flex-1">
             <p className="text-sm font-bold text-primary">Top Up with Okpay</p>
             <p className="text-[11px] text-muted-foreground">instant USDT payment</p>

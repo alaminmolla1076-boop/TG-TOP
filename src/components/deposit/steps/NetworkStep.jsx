@@ -1,7 +1,6 @@
 import React from "react";
 import { ChevronRight, Loader2 } from "lucide-react";
 import { LOGOS } from "@/components/deposit/logos";
-import OkpayLogo from "../OkpayLogo";
 
 const CHAINS = [
   { value: "OKPAY", name: "Top Up with Okpay", okpay: true, badge: "USDT · Instant", desc: "Pay with OKPay — instant top-up, no network fees" },
@@ -35,9 +34,13 @@ export default function NetworkStep({ amount, network, creating, onSelect }) {
                 : "border-border/50 bg-card hover:border-primary/40"
             }`}
           >
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-secondary/60 p-2">
-              {c.okpay ? <OkpayLogo className="h-8 w-8" /> : <img src={c.logo} alt={c.name} className="h-8 w-8" />}
-            </span>
+            {c.okpay ? (
+              <img src={LOGOS.okpay} alt={c.name} className="h-12 w-12 shrink-0 rounded-xl object-cover" />
+            ) : (
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-secondary/60 p-2">
+                <img src={c.logo} alt={c.name} className="h-8 w-8" />
+              </span>
+            )}
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
                 <p className="text-sm font-bold">{c.name}</p>
