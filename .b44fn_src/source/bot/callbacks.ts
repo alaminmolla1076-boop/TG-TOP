@@ -1,10 +1,10 @@
 import { t, langName, BOT_LANGS } from '../_shared/botTranslations.js';
-import { tgSend, tgDeleteMessage, tgSendMenu, tgAnswerCallback, tgEditMenu } from '../_shared/telegramApi.ts';
+import { tgSend, tgDeleteMessage, tgSendMenu, tgAnswerCallback, tgEditMenu, tgSendReplyKeyboard } from '../_shared/telegramApi.ts';
 import { getRealBalance } from '../_shared/balance.ts';
 import { buildRewardsPage, buildUserRewards } from '../_shared/rewardViews.js';
 import { buySeasonInChunks } from '../_shared/seasonBuy.js';
 import { getState, setState, clearState, getUserContext, findUserByTelegramId } from './state.ts';
-import { mainMenuKeyboard, buildCountryKeyboard, DEPOSIT_ADDRESSES } from './keyboards.ts';
+import { mainMenuKeyboard, mainReplyKeyboard, buildCountryKeyboard, DEPOSIT_ADDRESSES } from './keyboards.ts';
 import { handleMarketCallback, marketMenu } from './market.ts';
 import { handleTopupCallback, topupAmountView } from './topup.ts';
 import { handleWithdrawCallback, withdrawAmountView } from './withdraw.ts';
@@ -313,6 +313,12 @@ export default async function handleCallback(base44, token, cq) {
       hidePremium: cbSettings.premium_hidden,
       hideStars: cbSettings.stars_hidden
     }));
+    // The reply keyboard (bottom of the screen) keeps whatever language it was
+    // last sent in — re-send it so the menu buttons follow the new language too.
+    await tgSendReplyKeyboard(token, cbChatId, `${t(langCode, 'menu.title')}\n\n${t(langCode, 'menu.prompt')}`, mainReplyKeyboard(langCode, {
+      hidePremium: cbSettings.premium_hidden,
+      hideStars: cbSettings.stars_hidden
+    }));
     return;
   }
   if (cbData.startsWith('buyprodconfirm:')) {
@@ -598,7 +604,7 @@ export default async function handleCallback(base44, token, cq) {
           await send(cbChatId, t(cbLang, 'bind.required'));
           break;
         }
-        const market = await marketMenu(base44, cbUserRec);
+        const market = await marketMenu(base44, cbUserRec, cbLang);
         await tgEditMenu(token, cbChatId, cbMsgId, market.text, market.keyboard);
         break;
       }
