@@ -2,8 +2,9 @@ import React from "react";
 
 const steps = [
   { no: "01", title: "Top up your balance", desc: "Add USDT with OKPay, Keeper Wallet or on-chain USDT (TRC20 / ERC20 / BEP20) — every top-up is verified automatically." },
-  { no: "02", title: "Pick a seller", desc: "Browse the directory, search sellers by name, and open a profile to see live country stock and prices." },
-  { no: "03", title: "Buy in one tap", desc: "Choose a country and quantity — your balance is charged and the accounts are delivered instantly." },
+  { no: "02", title: "Buy in one tap", desc: "Pick a seller, search by name, choose a country and quantity — your balance is charged and the accounts are delivered instantly." },
+  { no: "03", title: "Sell & earn", desc: "List accounts from the Sell tab — approved accounts go straight to your market stock and earn you on every sale." },
+  { no: "04", title: "Withdraw anytime", desc: "Cash out your balance in USDT from the Withdraw page — minimum $1, flat $0.10 network fee per withdrawal." },
 ];
 
 // Capsule List — full-bleed dark band closing the page with the process steps.
