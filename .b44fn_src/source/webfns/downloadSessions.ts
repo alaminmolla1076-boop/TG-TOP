@@ -3,8 +3,8 @@ import { resolveIdentity } from '../_shared/webIdentity.ts';
 
 // Redelivers a purchased batch's session-format ZIP to the buyer's Telegram
 // chat. Reuses Supabase's existing generateSeasonZip — one ZIP holding every
-// account's .session file (2FA already removed at purchase) plus the 2FA
-// passwords note file. The caller must own the batch.
+// account's .session file (2FA already removed at purchase). The caller
+// must own the batch.
 export default async function (req) {
   try {
     const body = await req.json().catch(() => ({}));

@@ -33,7 +33,6 @@ export default async function(req) {
       });
     }
     const files = [];
-    const passwordLines = [];
     const accounts = [];
     for(let i = 0; i < account_ids.length; i += 200){
       const part = await base44.asServiceRole.entities.TgAccount.filter({
@@ -59,7 +58,6 @@ export default async function(req) {
           serverAddress: session.serverAddress || ''
         })
       });
-      passwordLines.push(`${acc.phone_number} | 2FA: ${acc.password || '(none)'}`);
     }
     if (files.length === 0) {
       return Response.json({
@@ -68,14 +66,7 @@ export default async function(req) {
         status: 400
       });
     }
-    // The notes file must never be counted as an account.
     const sessionCount = files.length;
-    if (passwordLines.some((l)=>!l.includes('(none)'))) {
-      files.push({
-        name: '2fa_passwords.txt',
-        data: new TextEncoder().encode(`TG Top — 2FA passwords (${sessionCount} accounts)\n\n${passwordLines.join('\n')}\n`)
-      });
-    }
     const zipFile = new File([
       createZip(files)
     ], `sessions_${sessionCount}.zip`, {
