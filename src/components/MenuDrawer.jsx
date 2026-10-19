@@ -10,6 +10,7 @@ import {
   LifeBuoy,
   Languages,
   Gift,
+  Flag,
 } from "lucide-react";
 import { useAppLang } from "@/lib/AppLanguageContext";
 
@@ -23,6 +24,7 @@ export default function MenuDrawer() {
     { to: "/support", label: t("menu.support"), icon: LifeBuoy },
     { to: "/language", label: t("menu.language"), icon: Languages },
     { to: "/refer", label: t("menu.refer"), icon: Gift },
+    { to: "/report-seller", label: t("menu.report"), icon: Flag },
   ];
 
   return (

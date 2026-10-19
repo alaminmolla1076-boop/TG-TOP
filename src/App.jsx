@@ -20,6 +20,7 @@ import Withdraw from '@/pages/Withdraw';
 import Support from '@/pages/Support';
 import Language from '@/pages/Language';
 import Refer from '@/pages/Refer';
+import ReportSeller from '@/pages/ReportSeller';
 import PrivacyPolicy from '@/pages/PrivacyPolicy';
 import Terms from '@/pages/Terms';
 import Login from '@/pages/Login';
@@ -71,6 +72,7 @@ const AuthenticatedApp = () => {
           <Route path="/support" element={<Support />} />
           <Route path="/language" element={<Language />} />
           <Route path="/refer" element={<Refer />} />
+          <Route path="/report-seller" element={<ReportSeller />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<Terms />} />
         </Route>
