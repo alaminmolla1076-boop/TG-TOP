@@ -27,7 +27,6 @@ import getTelegramBotInfo from './fns/getTelegramBotInfo.ts';
 import setupTelegramWebhook from './fns/setupTelegramWebhook.ts';
 import enforceAdminRoles from './fns/enforceAdminRoles.ts';
 import topUpRequest from './fns/topUpRequest.ts';
-import cronProbe from './fns/cronProbe.ts';
 // Web-API handlers — the frontend (Vercel-hosted) calls these directly under
 // /functions/v1/b44fn/web<Name>. Byte-for-byte ports of the previous
 // Base44-hosted functions; business logic lives in the same place as the bot.
@@ -99,7 +98,6 @@ setRegistry({
   setupTelegramWebhook,
   enforceAdminRoles,
   topUpRequest,
-  cronProbe,
   webGetMyData,
   webGetMarketProducts,
   webTelegramAuth,
