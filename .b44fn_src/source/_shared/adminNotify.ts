@@ -15,7 +15,7 @@ async function getAdminChatIds(base44) {
   return chatIds;
 }
 // Resolves a user's Telegram chat id from their (possibly synthetic) email.
-async function resolveUserChatId(base44, email) {
+export async function resolveUserChatId(base44, email) {
   if (!email) return null;
   const m = /^tg(\d+)@telegram\.local$/i.exec(email.trim());
   if (m) return m[1];
@@ -77,14 +77,14 @@ export async function notifyOnce(base44, email, text, keyboard) {
     console.error('notifyOnce failed:', e.message);
   }
 }
-export async function notifyAdmins(base44, text) {
+export async function notifyAdmins(base44, text, keyboard) {
   try {
     const botToken = secrets.get('TELEGRAM_BOT_TOKEN');
     if (!botToken) return;
     const chatIds = await getAdminChatIds(base44);
     for (const chatId of chatIds){
       try {
-        await send(botToken, chatId, text);
+        await send(botToken, chatId, text, keyboard);
       } catch (e) {
         console.error('Failed to notify admin chat:', chatId, e.message);
       }
@@ -96,14 +96,14 @@ export async function notifyAdmins(base44, text) {
 // Sends a text notification to a single user's Telegram bot chat, looked up by
 // email. Handles Telegram identity keys (tg<id>@telegram.local) directly —
 // those users may not have a User row at all.
-export async function notifyUser(base44, email, text) {
+export async function notifyUser(base44, email, text, keyboard) {
   try {
     if (!email) return;
     const botToken = secrets.get('TELEGRAM_BOT_TOKEN');
     if (!botToken) return;
     const chatId = await resolveUserChatId(base44, email);
     if (!chatId) return;
-    await send(botToken, chatId, text);
+    await send(botToken, chatId, text, keyboard);
   } catch (e) {
     console.error('notifyUser failed:', e.message);
   }

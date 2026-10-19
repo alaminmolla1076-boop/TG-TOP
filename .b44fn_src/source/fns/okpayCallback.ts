@@ -1,7 +1,8 @@
 import { makeB44, secrets } from '../_shared/b44.ts';
 import { signParams, safeEqual } from '../_shared/okpay.ts';
 import { syncUserBalance } from '../_shared/balance.ts';
-import { notifyAdmins, notifyUser } from '../_shared/adminNotify.ts';
+import { notifyAdmins } from '../_shared/adminNotify.ts';
+import { notifyTopUpDecision } from '../_shared/moneyNotify.ts';
 // Public webhook — no user auth. Authenticity verified by HMAC-SHA256 signature.
 export default async function(req) {
   try {
@@ -55,11 +56,16 @@ export default async function(req) {
         await base44.asServiceRole.entities.TopUp.update(t.id, {
           status: 'approved'
         });
+        let okpayBalance = null;
         if (t.user_email) {
-          await syncUserBalance(base44, t.user_email);
+          okpayBalance = await syncUserBalance(base44, t.user_email);
         }
         await notifyAdmins(base44, `✅ <b>Deposit Approved (OKPay)</b>\n\nUser: ${t.user_email || '-'}\nAmount: $${(t.amount || 0).toFixed(2)} ${t.coin || ''}\nOrder: <code>${orderId}</code>`);
-        await notifyUser(base44, t.user_email, `✅ <b>Deposit Approved</b>\n\nAmount: $${(t.amount || 0).toFixed(2)} ${t.coin || ''}\nOrder: <code>${orderId}</code>\n\nYour deposit has been credited.`);
+        try {
+          await notifyTopUpDecision(base44, t.user_email, 'approved', t, okpayBalance);
+        } catch (notifyErr) {
+          console.error('notify failed', notifyErr?.message);
+        }
       }
     }
     // always 200 so OKPay stops retrying

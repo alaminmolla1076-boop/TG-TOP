@@ -1,6 +1,6 @@
 import { makeB44 } from '../_shared/b44.ts';
 import { admin } from '../_shared/entities.ts';
-import { notifyOnce } from '../_shared/adminNotify.ts';
+import { adminIdentityLine, notifyWithdrawalRequest } from '../_shared/moneyNotify.ts';
 import { resolveUser } from '../_shared/resolveUser.ts';
 export default async function(req) {
   try {
@@ -49,7 +49,14 @@ export default async function(req) {
       status: 400
     });
     try {
-      await notifyOnce(base44, user.email, `Withdrawal submitted\n\nAmount: $${amount.toFixed(2)}\nFee: $0.10\nNetwork: ${network}\nAddress: ${address}\nNew balance: $${Number(data.balance ?? 0).toFixed(2)}\nStatus: Pending`);
+      // Professional alert to the admin chats with a one-tap copy-address button.
+      await notifyWithdrawalRequest(base44, {
+        identity: adminIdentityLine(user),
+        amount,
+        network,
+        address,
+        id: data.withdrawal?.id ?? data.withdrawal ?? '-'
+      });
     } catch (notificationError) {
       console.error('Withdrawal notification failed', notificationError.message);
     }

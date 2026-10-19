@@ -1,6 +1,7 @@
 import { makeB44, secrets } from '../_shared/b44.ts';
 import { callOkpay } from '../_shared/okpay.ts';
 import { syncUserBalance } from '../_shared/balance.ts';
+import { notifyTopUpDecision } from '../_shared/moneyNotify.ts';
 import { resolveUser } from '../_shared/resolveUser.ts';
 // Polling fallback — called by the frontend after the user returns from OKPay.
 // Verifies the order is paid via checkTransferByTxid, then approves the TopUp
@@ -56,8 +57,14 @@ export default async function(req) {
       await base44.asServiceRole.entities.TopUp.update(topup.id, {
         status: 'approved'
       });
+      let okpayBalance = null;
       if (topup.user_email) {
-        await syncUserBalance(base44, topup.user_email);
+        okpayBalance = await syncUserBalance(base44, topup.user_email);
+      }
+      try {
+        await notifyTopUpDecision(base44, topup.user_email, 'approved', topup, okpayBalance);
+      } catch (notifyErr) {
+        console.error('notify failed', notifyErr?.message);
       }
       return Response.json({
         status: 'approved'

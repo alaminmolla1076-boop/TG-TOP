@@ -1,6 +1,6 @@
 import { makeB44 } from '../_shared/b44.ts';
 import { syncUserBalance } from '../_shared/balance.ts';
-import { notifyOnce, supportKeyboard } from '../_shared/adminNotify.ts';
+import { notifyTopUpDecision } from '../_shared/moneyNotify.ts';
 import { isAdminRequest } from '../_shared/isAdmin.ts';
 export default async function(req) {
   try {
@@ -39,10 +39,8 @@ export default async function(req) {
       balance = await syncUserBalance(base44, topup.user_email);
     }
     try {
-      // Rejected top-ups get a "Contact Support" button (uses the support link
-      // configured by an admin via /set_support).
-      const keyboard = status === 'rejected' ? await supportKeyboard(base44) : null;
-      await notifyOnce(base44, topup.user_email, `${status === 'approved' ? '✅' : '❌'} <b>Top Up ${status === 'approved' ? 'Approved' : 'Rejected'}</b>\n\nAmount: $${(topup.amount || 0).toFixed(2)} ${topup.coin || ''}\nAddress/Tx: <code>${topup.tx_hash || '-'}</code>\nStatus: ${status === 'approved' ? 'Approved' : 'Rejected'}${balance !== null ? `\nBalance: $${balance.toFixed(2)}` : ''}`, keyboard);
+      // Professional localized notice in the user's own bot chat.
+      await notifyTopUpDecision(base44, topup.user_email, status, topup, balance);
     } catch (notifyErr) {
       // Notifications are best-effort — never fail the approval.
       console.error('notify failed', notifyErr?.message);
