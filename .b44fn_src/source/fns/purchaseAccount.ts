@@ -1,5 +1,6 @@
-import { makeB44, secrets } from '../_shared/b44.ts';
+import { makeB44, secrets, waitUntil } from '../_shared/b44.ts';
 import { admin } from '../_shared/entities.ts';
+import { notifySellerOfPurchase } from '../_shared/saleNotify.ts';
 import { deliverSeasonZip } from '../bot/delivery.ts';
 import { getRealBalance } from '../_shared/balance.ts';
 import { getAvailableAccounts, syncCountryStock } from '../_shared/inventory.js';
@@ -154,6 +155,35 @@ export default async function(req) {
         zip_error = e.message || String(e);
       }
     }
+    // Seller notification — a professional "New Sale" message with the buyer's
+    // name, sold account count, sale amount and country flag goes to each
+    // seller's Telegram chat. Runs after the response; never blocks the buy.
+    const bySeller = {};
+    for (const acc of delivered){
+      const email = acc.owner_email || owner_email || '';
+      if (!email) continue;
+      // A seller never gets a "new sale" alert for their own purchase.
+      if (email.toLowerCase() === (user.email || '').toLowerCase()) continue;
+      if (!bySeller[email]) bySeller[email] = {
+        count: 0,
+        total: 0,
+        spam: acc.spam
+      };
+      bySeller[email].count += 1;
+      bySeller[email].total += accountPrice(acc);
+    }
+    const buyerNameParts = [user.telegram_first_name, user.telegram_last_name].join(' ').trim();
+    waitUntil(Promise.all(Object.entries(bySeller).map(([email, s])=>notifySellerOfPurchase(base44, {
+        seller_email: email,
+        buyer: {
+          username: user.telegram_username,
+          name: buyerNameParts || user.full_name || ''
+        },
+        count: s.count,
+        total: Number(s.total.toFixed(2)),
+        country_iso,
+        spam: s.spam
+      }))));
     return Response.json({
       success: true,
       balance: settledBalance,
