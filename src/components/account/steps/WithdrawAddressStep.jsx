@@ -4,8 +4,10 @@ import { Input } from "@/components/ui/input";
 import { Loader2, AlertTriangle } from "lucide-react";
 import { LOGOS } from "@/components/deposit/logos";
 import { NETWORK_META } from "../withdrawNetworks";
+import { useAppLang } from "@/lib/AppLanguageContext";
 
 export default function WithdrawAddressStep({ amount, network, address, submitting, onAddress, onSubmit }) {
+  const { t } = useAppLang();
   const meta = NETWORK_META[network] || NETWORK_META.BEP20;
   const trimmed = address.trim();
   const error = trimmed && !meta.validate(trimmed) ? meta.error : "";
@@ -13,9 +15,11 @@ export default function WithdrawAddressStep({ amount, network, address, submitti
   return (
     <div className="grid gap-5">
       <div className="grid gap-1">
-        <h2 className="font-heading text-2xl font-bold">Your {meta.label} Address</h2>
+        <h2 className="font-heading text-2xl font-bold">{t("wd.addrTitle", { label: meta.label })}</h2>
         <p className="text-xs text-muted-foreground">
-          <span className="font-bold text-primary">${amount}</span>{network === "TON" ? " USD equivalent in TON" : " USDT"} will be sent to this address after admin approval.
+          {network === "TON"
+            ? t("wd.addrDescTon", { amount: `$${amount}` })
+            : t("wd.addrDesc", { amount: `$${amount}` })}
         </p>
       </div>
 
@@ -43,7 +47,7 @@ export default function WithdrawAddressStep({ amount, network, address, submitti
           </p>
         ) : (
           <p className="text-[11px] text-muted-foreground">
-            Double-check the address — on-chain transfers cannot be reversed.
+            {t("wd.checkHint")}
           </p>
         )}
       </div>
@@ -54,7 +58,7 @@ export default function WithdrawAddressStep({ amount, network, address, submitti
         disabled={submitting || !trimmed || !!error}
         className="h-12 rounded-full bg-primary text-base font-semibold text-primary-foreground shadow-lg hover:bg-primary/90"
       >
-        {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : `Submit Withdrawal Request`}
+        {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : t("wd.submit")}
       </Button>
     </div>
   );

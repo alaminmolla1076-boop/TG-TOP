@@ -1,29 +1,31 @@
 import React from "react";
 import { AlertTriangle } from "lucide-react";
+import { useAppLang } from "@/lib/AppLanguageContext";
 
 export default function TopUpInstructions({ network }) {
+  const { t } = useAppLang();
   const steps = [
     {
-      title: "Open your wallet",
-      text: `Open Keeper Wallet (or any USDT wallet) and choose Send USDT on the ${network} network.`,
+      title: t("ti.s1t"),
+      text: t("ti.s1d", { network }),
     },
     {
-      title: "Paste the address",
-      text: "Paste the top-up address above — or scan the QR code directly with your wallet app.",
+      title: t("ti.s2t"),
+      text: t("ti.s2d"),
     },
     {
-      title: "Send the exact amount",
-      text: "Send the unique amount shown above, unchanged. The extra cents identify your top-up — do not round or edit them.",
+      title: t("ti.s3t"),
+      text: t("ti.s3d"),
     },
     {
-      title: "Wait for confirmation",
-      text: "Your balance is credited automatically once the transfer is confirmed on-chain — usually within a few minutes. No TXID needed.",
+      title: t("ti.s4t"),
+      text: t("ti.s4d"),
     },
   ];
 
   return (
     <div className="grid gap-3 rounded-2xl border border-border/50 bg-card p-4">
-      <p className="text-xs font-bold uppercase tracking-wider text-primary">How to top up</p>
+      <p className="text-xs font-bold uppercase tracking-wider text-primary">{t("ti.title")}</p>
       <ol className="grid gap-3">
         {steps.map((s, i) => (
           <li key={i} className="flex items-start gap-3">
@@ -39,7 +41,7 @@ export default function TopUpInstructions({ network }) {
       </ol>
       <p className="flex items-start gap-2 rounded-xl bg-red-500/10 p-3 text-xs text-red-300">
         <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
-        Sending on a different network or editing the unique amount cannot be credited. Double-check the network before sending.
+        {t("ti.warn")}
       </p>
     </div>
   );

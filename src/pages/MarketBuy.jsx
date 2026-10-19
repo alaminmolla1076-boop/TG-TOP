@@ -69,7 +69,7 @@ export default function MarketBuy() {
         );
         toast({
           title: t("mk.accountPurchased"),
-          description: t("mk.purchaseDoneDesc", { name: "", balance: formatMoney(res.data.balance) }).replace(" — ", ""),
+          description: t("mk.newBalance", { balance: formatMoney(res.data.balance) }),
         });
       } else {
         toast({
@@ -82,7 +82,7 @@ export default function MarketBuy() {
       setBusy(false);
     } catch (err) {
       toast({
-        title: "Purchase failed",
+        title: t("mk.purchaseFailed"),
         description: err.response?.data?.error || err.message,
         variant: "destructive",
       });
@@ -91,12 +91,12 @@ export default function MarketBuy() {
   }
 
   if (entry === undefined) {
-    return <p className="mk-fade text-[13px] text-[#a8a3cf]">Loading…</p>;
+    return <p className="mk-fade text-[13px] text-[#a8a3cf]">{t("c.loading")}</p>;
   }
   if (entry === null) {
     return (
       <div className="mk-fade rounded-[22px] border border-dashed border-[#A29BFE]/30 bg-[rgba(45,38,78,.3)] p-[18px] text-[13px] text-[#a8a3cf]">
-        Country not found — the stock may have just sold out.
+        {t("bp.notFound")}
       </div>
     );
   }
@@ -115,7 +115,7 @@ export default function MarketBuy() {
           onClick={() => navigate(-1)}
           className="mk-fade -ml-1 flex w-fit cursor-pointer items-center gap-1 rounded-full px-2 py-1 text-[13px] font-semibold text-[#a8a3cf] transition-colors duration-200 hover:text-[#A29BFE] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#A29BFE]"
         >
-          <ChevronLeft className="h-4 w-4" strokeWidth={1.5} /> Back
+          <ChevronLeft className="h-4 w-4" strokeWidth={1.5} /> {t("c.back")}
         </button>
 
         <div className="mk-cap flex items-center gap-3.5 rounded-[30px] border border-[#A29BFE]/30 bg-gradient-to-br from-[rgba(45,38,78,.85)] to-[rgba(33,28,56,.9)] p-5">
@@ -126,13 +126,13 @@ export default function MarketBuy() {
             <div className="truncate text-[10px] font-semibold uppercase tracking-[.14em] text-[#A29BFE]">
               {country.country_name}
               <span className="ml-1.5 normal-case tracking-normal">{dial}</span>
-               · from {seller.name}
-            </div>
+              {t("bp.fromLine", { name: seller.name })}
+              </div>
             <div className="mt-1 bg-gradient-to-r from-[#A29BFE] to-[#6C5CE7] bg-clip-text font-display text-[34px] font-bold leading-none text-transparent tabular-nums">
               {formatMoney(country.price)}
             </div>
             <p className="mt-1 text-[13px] text-[#a8a3cf]">
-              {pool === "spam" ? "🚫 Spam stock" : "🐦 Non-Spam stock"} · {stock} in stock
+              {pool === "spam" ? t("bp.spamStock") : t("bp.nonSpamStock")} · {stock} {t("c.inStock")}
             </p>
           </div>
         </div>
@@ -147,11 +147,11 @@ export default function MarketBuy() {
 
         {seller.is_self ? (
           <div className="mk-sec rounded-[22px] border border-dashed border-[#A29BFE]/30 bg-[rgba(45,38,78,.3)] p-[18px] text-[13px] text-[#a8a3cf]">
-            This is your own listing — you can't buy your own stock. Buyers will see this page with the purchase buttons.
+            {t("bp.ownListing")}
           </div>
         ) : (
         <section className="mk-sec flex flex-col gap-3">
-          <div className="text-[10px] font-semibold uppercase tracking-[.14em] text-[#A29BFE]">Buy</div>
+          <div className="text-[10px] font-semibold uppercase tracking-[.14em] text-[#A29BFE]">{t("bp.buySection")}</div>
           <div className="flex flex-col gap-2.5 rounded-[26px] border border-[#A29BFE]/[.22] bg-[rgba(45,38,78,.5)] p-3.5">
             <button
               type="button"
@@ -159,7 +159,7 @@ export default function MarketBuy() {
               onClick={() => buy(1)}
               className="w-full cursor-pointer rounded-full border-0 bg-gradient-to-br from-[#6C5CE7] to-[#8E7DFF] px-[18px] py-3 text-[13px] font-semibold text-white shadow-[0_6px_18px_rgba(108,92,231,.5)] transition-opacity duration-200 hover:opacity-90 active:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A29BFE] disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {busy ? "Buying…" : "Buy 1"}
+              {busy ? t("c.buying") : t("bp.buy1")}
             </button>
 
             <button
@@ -171,12 +171,11 @@ export default function MarketBuy() {
               }}
               className="w-full cursor-pointer rounded-full border border-[#A29BFE]/40 bg-[rgba(108,92,231,.22)] px-[18px] py-3 text-[13px] font-semibold text-[#A29BFE] transition-[border-color,background-color] duration-200 hover:border-[#A29BFE]/70 hover:bg-[rgba(108,92,231,.35)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A29BFE] disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Buy Session Formats
+              {t("bp.buyFormats")}
             </button>
 
             <p className="px-1 text-center text-[11px] text-[#a8a3cf]">
-              + 5% service fee on every purchase (e.g. {formatMoney(country.price)} →{" "}
-              {formatMoney(country.price + feeOf(country.price))})
+              {t("bp.feeNote", { a: formatMoney(country.price), b: formatMoney(country.price + feeOf(country.price)) })}
             </p>
 
             {formatsOpen && (
@@ -190,7 +189,7 @@ export default function MarketBuy() {
                       onClick={() => setPendingQty(n)}
                       className="cursor-pointer rounded-full border border-[#A29BFE]/30 bg-[rgba(45,38,78,.7)] py-2.5 text-xs font-semibold text-foreground transition-[border-color] duration-200 hover:border-[#A29BFE]/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#A29BFE] disabled:cursor-not-allowed disabled:opacity-40"
                     >
-                      Buy {n}
+                      {t("bp.buyN", { n })}
                     </button>
                   ))}
                 </div>
@@ -204,7 +203,7 @@ export default function MarketBuy() {
                   <input
                     value={custom}
                     onChange={(e) => setCustom(e.target.value.replace(/[^0-9]/g, ""))}
-                    placeholder={`Custom quantity (max ${stock})`}
+                    placeholder={t("bp.customQty", { max: stock })}
                     inputMode="numeric"
                     disabled={busy}
                     className="h-[42px] min-w-0 flex-1 rounded-full border border-[#A29BFE]/30 bg-[rgba(45,38,78,.7)] px-4 text-[13px] text-foreground placeholder:text-[#a8a3cf] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#A29BFE] disabled:cursor-not-allowed disabled:opacity-50"
@@ -223,25 +222,25 @@ export default function MarketBuy() {
             {pendingQty != null && (
               <div className="flex flex-col gap-3 rounded-[22px] border border-[#A29BFE]/35 bg-[rgba(45,38,78,.85)] p-[16px]">
                 <div>
-                  <p className="text-[13px] font-semibold text-foreground">Confirm purchase</p>
+                  <p className="text-[13px] font-semibold text-foreground">{t("bp.confirmTitle")}</p>
                   <div className="mt-1.5 space-y-1 text-[12px] leading-relaxed text-[#a8a3cf]">
                     <div className="flex justify-between gap-2">
                       <span>{pendingQty} × {formatMoney(country.price)}</span>
                       <span className="tabular-nums">{formatMoney(pendingQty * country.price)}</span>
                     </div>
                     <div className="flex justify-between gap-2">
-                      <span>Service fee (5%)</span>
+                      <span>{t("bp.serviceFee")}</span>
                       <span className="tabular-nums">{formatMoney(feeOf(pendingQty * country.price))}</span>
                     </div>
                     <div className="flex justify-between gap-2 font-semibold text-[#A29BFE]">
-                      <span>Total charge</span>
+                      <span>{t("bp.totalCharge")}</span>
                       <span className="tabular-nums">
                         {formatMoney(pendingQty * country.price + feeOf(pendingQty * country.price))}
                       </span>
                     </div>
                   </div>
                   <p className="mt-1.5 text-[12px] leading-relaxed text-[#a8a3cf]">
-                    Session formats will be delivered to your Telegram chat, with 2FA removed.
+                    {t("bp.deliveryNote")}
                   </p>
                 </div>
                 <div className="flex gap-2">
@@ -251,7 +250,7 @@ export default function MarketBuy() {
                     onClick={() => buy(pendingQty)}
                     className="flex-1 cursor-pointer rounded-full border-0 bg-gradient-to-br from-[#6C5CE7] to-[#8E7DFF] px-[18px] py-3 text-[13px] font-semibold text-white shadow-[0_6px_18px_rgba(108,92,231,.5)] transition-opacity duration-200 hover:opacity-90 active:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A29BFE] disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    {busy ? "Buying…" : "Confirm"}
+                    {busy ? t("c.buying") : t("c.confirm")}
                   </button>
                   <button
                     type="button"
@@ -259,7 +258,7 @@ export default function MarketBuy() {
                     onClick={() => setPendingQty(null)}
                     className="flex-1 cursor-pointer rounded-full border border-[#A29BFE]/30 bg-[rgba(45,38,78,.7)] px-[18px] py-3 text-[13px] font-semibold text-foreground transition-[border-color] duration-200 hover:border-[#A29BFE]/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#A29BFE] disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    Cancel
+                    {t("c.cancel")}
                   </button>
                 </div>
               </div>

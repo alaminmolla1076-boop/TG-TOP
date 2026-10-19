@@ -8,12 +8,14 @@ import WithdrawList from "@/components/account/WithdrawList";
 import AdminWithdrawals from "@/components/account/AdminWithdrawals";
 import WithdrawWizard from "@/components/account/WithdrawWizard";
 import { useTgIdentity } from "@/lib/TgIdentityContext";
+import { useAppLang } from "@/lib/AppLanguageContext";
 
 const BACKDROP_URL =
   "https://media.base44.com/images/public/6ad1ec4d9f3d182acc871a46/53007f17e_generated_64743059.jpg";
 
 export default function Account() {
   const { identity, fetchMyData } = useTgIdentity();
+  const { t } = useAppLang();
   const [data, setData] = useState(null);
   const [wizardOpen, setWizardOpen] = useState(false);
 
@@ -62,7 +64,7 @@ export default function Account() {
 
         <section className="og-rise flex flex-col gap-2.5 [animation-delay:.55s]">
           <SectionHeader icon={<Wallet className="h-3.5 w-3.5 text-ring" strokeWidth={1.5} />}>
-            My Withdrawals
+            {t("wl.mine")}
           </SectionHeader>
           <WithdrawList withdrawals={data?.withdrawals || []} />
         </section>
@@ -72,7 +74,7 @@ export default function Account() {
         {data?.role === "admin" && (
           <section className="og-rise flex flex-col gap-2.5 [animation-delay:.8s]">
             <SectionHeader icon={<ShieldCheck className="h-3.5 w-3.5 text-ring" strokeWidth={1.5} />}>
-              Pending Withdrawals — All Users
+              {t("wd.all")}
             </SectionHeader>
             <AdminWithdrawals pending={data?.pending_withdrawals || []} onChanged={() => load(true)} />
           </section>

@@ -1,10 +1,12 @@
 import React from "react";
+import { useAppLang } from "@/lib/AppLanguageContext";
 
 // Nordic Frost Glass — twin pill bubbles with gradient numerals.
 export default function StatsLedger({ orders, sales }) {
+  const { t } = useAppLang();
   const items = [
-    { label: "Orders", value: orders },
-    { label: "Sales", value: sales },
+    { label: t("a.orders"), value: orders },
+    { label: t("a.sales"), value: sales },
   ];
 
   return (

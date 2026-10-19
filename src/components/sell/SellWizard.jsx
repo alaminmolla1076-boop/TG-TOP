@@ -2,6 +2,7 @@ import React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Smartphone, KeyRound, ShieldCheck, PackageCheck } from "lucide-react";
 import useSellFlow from "@/components/sell/useSellFlow";
+import { useAppLang } from "@/lib/AppLanguageContext";
 import SellPhoneStep from "./steps/SellPhoneStep";
 import SellCodeStep from "./steps/SellCodeStep";
 import SellProcessStep from "./steps/SellProcessStep";
@@ -20,13 +21,14 @@ const WATERMARKS = {
 // stock steps appear one at a time, like the Top Up and Withdraw wizards.
 export default function SellWizard({ onDone }) {
   const { step, phone, setPhone, code, setCode, requestId, result, busy, error, sendCode, verifyCode, back, reset } = useSellFlow(onDone);
+  const { t } = useAppLang();
   const WatermarkIcon = WATERMARKS[step] || Smartphone;
 
   return (
     <section>
       <header>
         <p className="text-[10px] font-bold uppercase tracking-[.08em] text-ring">
-          02 · Sell Account
+          {t("sw.section")}
         </p>
       </header>
       {error && <p role="alert" className="mt-4 rounded-2xl border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">{error}</p>}

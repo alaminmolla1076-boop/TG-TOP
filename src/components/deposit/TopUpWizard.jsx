@@ -10,10 +10,12 @@ import SendStep from "@/components/deposit/steps/SendStep";
 import TonStep from "@/components/deposit/steps/TonStep";
 import OkpayStep from "@/components/deposit/steps/OkpayStep";
 import connectKeeperWallet from "@/components/deposit/connectKeeperWallet";
+import { useAppLang } from "@/lib/AppLanguageContext";
 
 export default function TopUpWizard({ onDone, onClose }) {
   const { toast } = useToast();
   const { invoke } = useTgIdentity();
+  const { t } = useAppLang();
   const [step, setStep] = useState("amount");
   const [amount, setAmount] = useState("");
   const [preset, setPreset] = useState(null);
@@ -51,18 +53,18 @@ export default function TopUpWizard({ onDone, onClose }) {
       );
       setStatus(res.data.status);
       if (res.data.status === "approved") {
-        toast({ title: "Top-up confirmed", description: "Your balance has been credited." });
+        toast({ title: t("td.confirmed"), description: t("td.confirmedDesc") });
         stopPolling();
         onDone && onDone();
       } else if (res.data.status === "rejected") {
-        toast({ title: "Top-up rejected", variant: "destructive" });
+        toast({ title: t("dp.rejectedToast"), variant: "destructive" });
         stopPolling();
         onDone && onDone();
       }
     } catch (err) {
       if (!quiet) {
         toast({
-          title: "Could not check status",
+          title: t("td.checkFailed"),
           description: err.response?.data?.error || err.message,
           variant: "destructive",
         });
@@ -81,7 +83,7 @@ export default function TopUpWizard({ onDone, onClose }) {
         const wallet = await connectKeeperWallet();
         if (!wallet) return;
         if (wallet.account.chain !== "-239") {
-          throw new Error("Switch Keeper to TON mainnet, then reconnect.");
+          throw new Error(t("td.mainnet"));
         }
       }
       if (selectedNetwork === "OKPAY") {
@@ -105,7 +107,7 @@ export default function TopUpWizard({ onDone, onClose }) {
       startPolling();
     } catch (err) {
       toast({
-        title: "Could not create top-up request",
+        title: t("td.createFailed"),
         description: err.response?.data?.error || err.message,
         variant: "destructive",
       });
@@ -124,19 +126,19 @@ export default function TopUpWizard({ onDone, onClose }) {
   const stepIndex = steps.indexOf(step);
   const stepTitle =
     step === "send" || step === "ton" || step === "okpay"
-      ? "Complete Your Top-Up"
-      : `Step ${stepIndex + 1} of ${steps.length}`;
+      ? t("tw.complete")
+      : t("tw.step", { i: stepIndex + 1, n: steps.length });
 
   return (
     <div className="grid gap-6">
       <div className="flex items-center gap-3">
         {stepIndex > 0 && step !== "send" && step !== "ton" && step !== "okpay" && (
-          <Button type="button" variant="ghost" size="icon" onClick={goBack} disabled={creating} aria-label="Back">
+          <Button type="button" variant="ghost" size="icon" onClick={goBack} disabled={creating} aria-label={t("c.back")}>
             <ChevronLeft className="h-5 w-5" />
           </Button>
         )}
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-primary">Top Up USDT</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-primary">{t("tw.title")}</p>
           <h1 className="font-heading text-lg font-bold leading-tight">{stepTitle}</h1>
         </div>
         <div className="flex gap-1.5">

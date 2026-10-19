@@ -1,5 +1,6 @@
 import React from "react";
 import { formatDate, formatMoney } from "@/lib/format";
+import { useAppLang } from "@/lib/AppLanguageContext";
 
 const panelClass =
   "flex items-start gap-3 rounded-3xl border border-ring/[.22] bg-card/75 px-[18px] py-4 text-[13px] text-muted-foreground shadow-[inset_0_1px_0_rgba(255,255,255,.06),0_6px_16px_rgba(0,0,0,.28)]";
@@ -11,11 +12,12 @@ const statusStyle = {
 };
 
 export default function WithdrawList({ withdrawals }) {
+  const { t } = useAppLang();
   if (!withdrawals.length) {
     return (
       <div className={`${panelClass} items-center`}>
         <span className="h-[7px] w-[7px] shrink-0 rounded-full bg-ring shadow-[0_0_8px_#6C5CE7]" />
-        No withdrawals yet.
+        {t("wl.none")}
       </div>
     );
   }

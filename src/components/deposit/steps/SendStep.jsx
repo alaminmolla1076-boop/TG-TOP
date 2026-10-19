@@ -4,8 +4,10 @@ import TopUpInstructions from "../TopUpInstructions";
 import { Check, Copy, Timer, Zap } from "lucide-react";
 import { formatMoney } from "@/lib/format";
 import { LOGOS } from "@/components/deposit/logos";
+import { useAppLang } from "@/lib/AppLanguageContext";
 
 export default function SendStep({ request, status, checking, onCheck, onCancel }) {
+  const { t } = useAppLang();
   const [copied, setCopied] = useState(null);
 
   function copy(text, key) {
@@ -22,14 +24,14 @@ export default function SendStep({ request, status, checking, onCheck, onCancel 
         <div className="flex items-center gap-3 rounded-xl bg-primary/10 p-3">
           <img src={LOGOS[request.network]} alt={request.network} className="h-9 w-9" />
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-bold text-primary">Send USDT ({request.network})</p>
-            <p className="text-[11px] text-muted-foreground">manual transfer</p>
+            <p className="text-sm font-bold text-primary">{t("ts.send", { network: request.network })}</p>
+            <p className="text-[11px] text-muted-foreground">{t("ts.manual")}</p>
           </div>
           <Zap className="h-4 w-4 shrink-0 text-emerald-400" />
         </div>
 
         <div className="grid gap-1.5">
-          <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Top-Up Address</p>
+          <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t("ts.address")}</p>
           <div className="flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/10 p-3">
             <p className="min-w-0 flex-1 break-all font-mono text-xs">{request.wallet_address}</p>
             <Button type="button" size="icon" variant="ghost" onClick={() => copy(request.wallet_address, "addr")} aria-label="Copy address">
@@ -43,12 +45,12 @@ export default function SendStep({ request, status, checking, onCheck, onCancel 
             <img src={qrUrl} alt="Top-up address QR code" className="h-full w-full" />
           </span>
           <p className="text-[11px] text-muted-foreground">
-            Scan this QR code with your wallet to fill the address automatically.
+            {t("ts.qrHint")}
           </p>
         </div>
 
         <div className="grid gap-1.5">
-          <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Exact Amount to Send</p>
+          <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t("ts.exact")}</p>
           <div className="flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/10 p-3">
             <p className="flex-1 font-heading text-lg font-bold text-primary">
               {formatMoney(request.identify_amount)}
@@ -58,16 +60,16 @@ export default function SendStep({ request, status, checking, onCheck, onCancel 
             </Button>
           </div>
           <p className="text-[11px] text-muted-foreground">
-            Send exactly this amount — the unique cents identify your top-up and verify it automatically on-chain.
+            {t("ts.exactHint")}
           </p>
         </div>
 
         <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
           <Timer className="h-3.5 w-3.5" />
-          Request expires: {new Date(request.expires_at).toLocaleString()}
+          {t("ts.expires", { date: new Date(request.expires_at).toLocaleString() })}
         </p>
         <div className="flex items-center justify-between rounded-xl bg-secondary px-3 py-2 text-sm">
-          <span className="text-muted-foreground">Status</span>
+          <span className="text-muted-foreground">{t("c.status")}</span>
           <span className="font-medium capitalize">{status || "pending"}</span>
         </div>
       </div>
@@ -80,10 +82,10 @@ export default function SendStep({ request, status, checking, onCheck, onCancel 
         disabled={checking}
         className="h-12 rounded-full bg-primary text-base font-semibold text-primary-foreground shadow-lg hover:bg-primary/90"
       >
-        {checking ? "Checking…" : "Check Status"}
+        {checking ? t("c.checking") : t("ts.check")}
       </Button>
       <Button type="button" variant="outline" onClick={onCancel} className="rounded-full">
-        Cancel Request
+        {t("ts.cancel")}
       </Button>
     </div>
   );

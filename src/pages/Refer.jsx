@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { Gift, Copy, Check } from "lucide-react";
 import { useTgIdentity } from "@/lib/TgIdentityContext";
 import { useToast } from "@/components/ui/use-toast";
+import { useAppLang } from "@/lib/AppLanguageContext";
 
 export default function Refer() {
   const { identity } = useTgIdentity();
   const { toast } = useToast();
+  const { t } = useAppLang();
   const [copied, setCopied] = useState(false);
 
   const referralLink = identity?.telegram_id
@@ -18,9 +20,9 @@ export default function Refer() {
       await navigator.clipboard.writeText(referralLink);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-      toast({ title: "Referral link copied", description: "Share it with friends to earn rewards." });
+      toast({ title: t("sb.copied"), description: t("sb.copiedDesc") });
     } catch {
-      toast({ title: "Copy failed", description: "Select the link to copy it manually.", variant: "destructive" });
+      toast({ title: t("c.copyFailed"), description: t("c.copyFailedHint", { what: t("ref.title") }), variant: "destructive" });
     }
   }
 
@@ -31,14 +33,13 @@ export default function Refer() {
           <Gift className="h-5 w-5 text-[#A29BFE]" strokeWidth={1.5} />
         </span>
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-[#A29BFE]">Refer</p>
-          <h1 className="font-heading text-lg font-bold text-foreground">Refer &amp; Earn</h1>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-[#A29BFE]">{t("ref.title")}</p>
+          <h1 className="font-heading text-lg font-bold text-foreground">{t("sb.refer")}</h1>
         </div>
       </div>
 
       <div className="rounded-[26px] border border-[#A29BFE]/[.22] bg-[rgba(45,38,78,.5)] p-[18px] text-[13px] leading-relaxed text-[#a8a3cf]">
-        Share your invite link with friends. When they join TG TOP through it,
-        you earn rewards.
+        {t("ref.desc")}
       </div>
 
       {referralLink ? (
@@ -52,11 +53,11 @@ export default function Refer() {
             className="flex shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-full border border-[#A29BFE]/30 bg-[rgba(45,38,78,.7)] px-[18px] text-xs font-semibold text-[#A29BFE] transition-[border-color] duration-200 hover:border-[#A29BFE]/70"
           >
             {copied ? <Check className="h-4 w-4" strokeWidth={1.5} /> : <Copy className="h-4 w-4" strokeWidth={1.5} />}
-            Copy
+            {t("c.copy")}
           </button>
         </div>
       ) : (
-        <p className="text-[13px] text-[#a8a3cf]">Open the app from Telegram to get your invite link.</p>
+        <p className="text-[13px] text-[#a8a3cf]">{t("ref.none")}</p>
       )}
     </div>
   );

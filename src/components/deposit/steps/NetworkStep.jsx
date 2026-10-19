@@ -1,6 +1,7 @@
 import React from "react";
 import { ChevronRight, Loader2 } from "lucide-react";
 import { LOGOS } from "@/components/deposit/logos";
+import { useAppLang } from "@/lib/AppLanguageContext";
 
 const CHAINS = [
   { value: "OKPAY", name: "Top Up with Okpay", okpay: true, badge: "USDT · Instant", desc: "Pay with OKPay — instant top-up, no network fees" },
@@ -11,17 +12,25 @@ const CHAINS = [
 ];
 
 export default function NetworkStep({ amount, network, creating, onSelect }) {
+  const { t } = useAppLang();
+  const chains = [
+    { value: "OKPAY", name: t("tn.okpay"), okpay: true, badge: t("tn.okpayBadge"), desc: t("tn.okpayDesc") },
+    { value: "TON", name: "Keeper Wallet", logo: LOGOS.keeper, badge: "TON Coin", desc: t("tn.keeperDesc") },
+    { value: "TRC20", name: "Tron", logo: LOGOS.TRC20, badge: "USDT TRC20", desc: t("tn.tronDesc") },
+    { value: "ERC20", name: "Ethereum", logo: LOGOS.ERC20, badge: "USDT ERC20", desc: t("tn.ethDesc") },
+    { value: "BEP20", name: "BNB Chain", logo: LOGOS.BEP20, badge: "USDT BEP20", desc: t("tn.bnbDesc") },
+  ];
   return (
     <div className="grid gap-5">
       <div className="grid gap-1">
-        <h2 className="font-heading text-2xl font-bold">Select Network</h2>
+        <h2 className="font-heading text-2xl font-bold">{t("tn.title")}</h2>
         <p className="text-xs text-muted-foreground">
-          You&apos;re topping up <span className="font-bold text-primary">${amount}</span> — pick how you&apos;ll pay.
+          {t("tn.desc", { amount: `$${amount}` })}
         </p>
       </div>
 
       <div className="grid gap-2.5">
-        {CHAINS.map((c) => (
+        {chains.map((c) => (
           <button
             key={c.value}
             type="button"
@@ -58,7 +67,7 @@ export default function NetworkStep({ amount, network, creating, onSelect }) {
       </div>
 
       <p className="text-[11px] text-muted-foreground">
-        AVAX network is coming soon. Top-ups are verified automatically on-chain — no TXID needed.
+        {t("tn.note")}
       </p>
 
     </div>

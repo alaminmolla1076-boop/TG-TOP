@@ -1,9 +1,11 @@
 import React from "react";
 import { FileText } from "lucide-react";
+import { useAppLang } from "@/lib/AppLanguageContext";
 
 // Shared layout for legal documents (Privacy Policy, Terms & Conditions),
 // rendered in the app's capsule style so every legal page looks consistent.
 export default function LegalPage({ eyebrow, title, intro, sections }) {
+  const { t } = useAppLang();
   return (
     <div className="mk-sec flex flex-col gap-4 pb-4">
       <div className="flex items-center gap-3">
@@ -45,7 +47,7 @@ export default function LegalPage({ eyebrow, title, intro, sections }) {
       ))}
 
       <p className="px-1 text-center text-[11px] text-muted-foreground">
-        Questions about this document? Reach us at t.me/tgtop_official
+        {t("legal.questions")}
       </p>
     </div>
   );

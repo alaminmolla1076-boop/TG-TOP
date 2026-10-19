@@ -4,10 +4,12 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { Check, X } from "lucide-react";
 import { formatDate, formatMoney } from "@/lib/format";
+import { useAppLang } from "@/lib/AppLanguageContext";
 
 export default function AdminDeposits({ pending, onChanged }) {
   const { toast } = useToast();
   const { invoke } = useTgIdentity();
+  const { t } = useAppLang();
   const [busyId, setBusyId] = useState(null);
 
   async function review(d, action) {
@@ -15,13 +17,13 @@ export default function AdminDeposits({ pending, onChanged }) {
     try {
       await invoke("reviewTopUp", { id: d.id, action });
       toast({
-        title: action === "approve" ? "Top-up approved" : "Top-up rejected",
-        description: action === "approve" ? `${formatMoney(Number(d.amount))} credited to balance.` : undefined,
+        title: action === "approve" ? t("dp.approvedToast") : t("dp.rejectedToast"),
+        description: action === "approve" ? t("dp.credited", { amount: formatMoney(Number(d.amount)) }) : undefined,
       });
       onChanged && onChanged();
     } catch (err) {
       toast({
-        title: "Action failed",
+        title: t("c.actionFailed"),
         description: err.response?.data?.error || err.message,
         variant: "destructive",
       });
@@ -29,7 +31,7 @@ export default function AdminDeposits({ pending, onChanged }) {
     setBusyId(null);
   }
 
-  if (!pending || pending.length === 0) return <p className="text-sm text-muted-foreground">No pending top-ups.</p>;
+  if (!pending || pending.length === 0) return <p className="text-sm text-muted-foreground">{t("dp.noPending")}</p>;
 
   return (
     <div className="space-y-3">
@@ -44,10 +46,10 @@ export default function AdminDeposits({ pending, onChanged }) {
                 disabled={busyId === d.id}
                 className="rounded-full bg-primary font-semibold text-primary-foreground hover:bg-primary/90"
               >
-                <Check className="h-4 w-4" /> Approve
+                <Check className="h-4 w-4" /> {t("c.approve")}
               </Button>
               <Button size="sm" variant="destructive" onClick={() => review(d, "reject")} disabled={busyId === d.id} className="rounded-full">
-                <X className="h-4 w-4" /> Reject
+                <X className="h-4 w-4" /> {t("c.reject")}
               </Button>
             </div>
           </div>

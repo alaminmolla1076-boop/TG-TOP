@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import SellWizard from "@/components/sell/SellWizard";
 import StockPricesPanel from "@/components/sell/StockPricesPanel";
 import { formatMoney } from "@/lib/format";
+import { useAppLang } from "@/lib/AppLanguageContext";
 
 // Nordic Frost Glass — frosted status badges for account sales.
 const saleStatusStyle = {
@@ -27,6 +28,7 @@ const statusDot = {
 
 export default function Sell() {
   const { fetchMyData } = useTgIdentity();
+  const { t } = useAppLang();
   const [sales, setSales] = useState(null);
   const [stock, setStock] = useState(null);
 
@@ -55,17 +57,17 @@ export default function Sell() {
 
       <section className="og-rise flex flex-col gap-2.5 [animation-delay:.35s]">
         <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[.08em] text-ring">
-          <h2 className="leading-[1.3]">My Account Sales</h2>
+          <h2 className="leading-[1.3]">{t("ss.title")}</h2>
         </div>
         {sales === null ? (
           <div className={`${panelClass} items-center`}>
             <span className="h-[7px] w-[7px] shrink-0 rounded-full bg-ring shadow-[0_0_8px_#6C5CE7]" />
-            Loading…
+            {t("c.loading")}
           </div>
         ) : sales.length === 0 ? (
           <div className={`${panelClass} items-center`}>
             <span className="h-[7px] w-[7px] shrink-0 rounded-full bg-ring shadow-[0_0_8px_#6C5CE7]" />
-            No accounts submitted yet.
+            {t("ss.none")}
           </div>
         ) : (
           <div className="flex flex-col gap-2.5">
@@ -82,7 +84,7 @@ export default function Sell() {
                     </Badge>
                   </div>
                   <p className="mt-1 text-[11px] text-muted-foreground">
-                    Reward: {formatMoney(Number(s.reward_amount))} · {s.reward_status}
+                    {t("ss.reward", { amount: formatMoney(Number(s.reward_amount)), status: s.reward_status })}
                   </p>
                 </div>
               </div>

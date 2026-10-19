@@ -1,6 +1,7 @@
 import React from "react";
 import { Send, Gift, ChevronRight } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { useAppLang } from "@/lib/AppLanguageContext";
 
 const CHANNEL_URL = "https://t.me/tgtop_official";
 
@@ -13,11 +14,12 @@ const rowClass =
 // Nordic Frost Glass — floating lozenge shortcuts.
 export default function ServiceBand({ referralLink }) {
   const { toast } = useToast();
+  const { t } = useAppLang();
 
   function copyReferral() {
     if (!referralLink) return;
     navigator.clipboard.writeText(referralLink);
-    toast({ title: "Referral link copied", description: "Share it with friends to earn rewards." });
+    toast({ title: t("sb.copied"), description: t("sb.copiedDesc") });
   }
 
   return (
@@ -25,16 +27,16 @@ export default function ServiceBand({ referralLink }) {
       <a href={CHANNEL_URL} target="_blank" rel="noreferrer" className={rowClass}>
         <Send className="h-5 w-5 shrink-0 text-ring" strokeWidth={1.5} />
         <span className="min-w-0 flex-1">
-          <span className="block text-sm font-semibold text-foreground">Follow Channel</span>
-          <span className="mt-0.5 block text-[11px] text-muted-foreground">Updates &amp; offers</span>
+          <span className="block text-sm font-semibold text-foreground">{t("sb.channel")}</span>
+          <span className="mt-0.5 block text-[11px] text-muted-foreground">{t("sb.channelDesc")}</span>
         </span>
         <ChevronRight className="h-4 w-4 shrink-0 text-[#8d88b4]" strokeWidth={2} />
       </a>
       <button type="button" onClick={copyReferral} className={rowClass}>
         <Gift className="h-5 w-5 shrink-0 text-ring" strokeWidth={1.5} />
         <span className="min-w-0 flex-1">
-          <span className="block text-sm font-semibold text-foreground">Refer &amp; Earn</span>
-          <span className="mt-0.5 block text-[11px] text-muted-foreground">Copy invite link</span>
+          <span className="block text-sm font-semibold text-foreground">{t("sb.refer")}</span>
+          <span className="mt-0.5 block text-[11px] text-muted-foreground">{t("sb.referDesc")}</span>
         </span>
         <ChevronRight className="h-4 w-4 shrink-0 text-[#8d88b4]" strokeWidth={2} />
       </button>

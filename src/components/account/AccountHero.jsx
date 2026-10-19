@@ -4,14 +4,16 @@ import { BadgeCheck, Plus, ArrowUpRight } from "lucide-react";
 import { Image } from "@/components/ui/image";
 import { useCountUp } from "@/components/account/useCountUp";
 import { formatMoney } from "@/lib/format";
+import { useAppLang } from "@/lib/AppLanguageContext";
 
 // Nordic Frost Glass — floating identity capsule + frosted balance pod.
 export default function AccountHero({ identity, data, onWithdraw }) {
+  const { t } = useAppLang();
   const balance = data?.balance ?? null;
   const animated = useCountUp(balance);
   const name =
     [identity?.first_name, identity?.last_name].filter(Boolean).join(" ") ||
-    (identity?.username ? `@${identity.username}` : "Telegram User");
+    (identity?.username ? `@${identity.username}` : t("a.telegramUser"));
 
   const avatarBase =
     "h-[52px] w-[52px] shrink-0 rounded-full bg-gradient-to-br from-[#6C5CE7] to-[#A29BFE] " +
@@ -46,13 +48,13 @@ export default function AccountHero({ identity, data, onWithdraw }) {
 
       <section className="nf-pod rounded-[30px] border border-ring/30 bg-gradient-to-br from-[#2D264E]/85 to-card/90 px-5 py-[22px] outline outline-[6px] outline-primary/10">
         <div className="text-[10px] font-semibold uppercase tracking-[.08em] text-ring">
-          USDT Balance
+          {t("a.balance")}
         </div>
         <p className="mt-2 bg-gradient-to-r from-ring to-primary bg-clip-text font-display text-[52px] font-bold leading-none text-transparent">
           {balance === null ? "…" : formatMoney(Number(animated.toFixed(2)))}
         </p>
         <p className="mt-2.5 text-[11px] text-muted-foreground">
-          Available for trading &amp; withdrawals
+          {t("a.available")}
         </p>
 
         <div className="mt-[18px] grid grid-cols-2 gap-2.5">
@@ -60,14 +62,14 @@ export default function AccountHero({ identity, data, onWithdraw }) {
             to="/deposit"
             className="flex items-center justify-center gap-2 rounded-full bg-gradient-to-br from-primary to-[#8E7DFF] px-3.5 py-[13px] text-[13px] font-semibold uppercase tracking-[.08em] no-underline text-primary-foreground shadow-[0_6px_18px_rgba(108,92,231,.5)] transition-[opacity,box-shadow,background-color] duration-200 hover:opacity-90 active:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           >
-            <Plus className="h-4 w-4" strokeWidth={2} /> Top Up
+            <Plus className="h-4 w-4" strokeWidth={2} /> {t("menu.topUp")}
           </Link>
           <button
             type="button"
             onClick={onWithdraw}
             className="flex items-center justify-center gap-2 rounded-full border border-ring/40 bg-ring/[.14] px-3.5 py-[13px] text-[13px] font-semibold uppercase tracking-[.08em] text-[#C9C4FF] transition-[opacity,box-shadow,background-color] duration-200 hover:bg-ring/[.24] active:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           >
-            <ArrowUpRight className="h-4 w-4" strokeWidth={2} /> Withdraw
+            <ArrowUpRight className="h-4 w-4" strokeWidth={2} /> {t("menu.withdraw")}
           </button>
         </div>
       </section>

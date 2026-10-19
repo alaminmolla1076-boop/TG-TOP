@@ -3,10 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowRight } from "lucide-react";
 import { LOGOS } from "../logos";
+import { useAppLang } from "@/lib/AppLanguageContext";
 
 const PRESETS = [5, 10, 25, 50, 100, 250, 500, 1000];
 
 export default function AmountStep({ amount, preset, onPick, onCustom, onNext }) {
+  const { t } = useAppLang();
   return (
     <div className="grid gap-6">
       <div className="flex flex-col items-center gap-3 pt-2 text-center">
@@ -15,9 +17,9 @@ export default function AmountStep({ amount, preset, onPick, onCustom, onNext })
             <img src={LOGOS.usdt} alt="USDT" className="h-14 w-14" />
           </span>
         </span>
-        <h2 className="font-heading text-2xl font-bold">How much USDT?</h2>
+        <h2 className="font-heading text-2xl font-bold">{t("ta.title")}</h2>
         <p className="max-w-[270px] text-xs text-muted-foreground">
-          Choose a preset amount or enter a custom one — you&apos;ll select the network next.
+          {t("ta.desc")}
         </p>
       </div>
 
@@ -39,7 +41,7 @@ export default function AmountStep({ amount, preset, onPick, onCustom, onNext })
       </div>
 
       <div className="grid gap-1.5">
-        <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Custom amount</p>
+        <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t("c.customAmount")}</p>
         <div className="relative">
           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold text-primary">$</span>
           <Input
@@ -60,7 +62,7 @@ export default function AmountStep({ amount, preset, onPick, onCustom, onNext })
         disabled={!amount}
         className="h-12 rounded-full bg-primary text-base font-semibold text-primary-foreground shadow-lg hover:bg-primary/90"
       >
-        Continue <ArrowRight className="h-4 w-4" />
+        {t("c.continue")} <ArrowRight className="h-4 w-4" />
       </Button>
     </div>
   );

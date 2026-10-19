@@ -111,6 +111,11 @@ export const MARKET = {
     en: "Account purchased", bn: "অ্যাকাউন্ট কেনা হয়েছে", zh: "账户已购买", es: "Cuenta comprada", hi: "खाता खरीदा गया",
     ar: "تم شراء الحساب", fr: "Compte acheté", ru: "Аккаунт куплен", pt: "Conta comprada", de: "Konto gekauft",
   },
+  "mk.newBalance": {
+    en: "New balance {balance}", bn: "নতুন ব্যালেন্স {balance}", zh: "新余额 {balance}", es: "Nuevo saldo {balance}",
+    hi: "नया बैलेंस {balance}", ar: "الرصيد الجديد {balance}", fr: "Nouveau solde {balance}",
+    ru: "Новый баланс {balance}", pt: "Novo saldo {balance}", de: "Neues Guthaben {balance}",
+  },
   "mk.batchDone": {
     en: "{count} accounts — session formats were sent to your Telegram chat. New balance {balance}",
     bn: "{count}টি অ্যাকাউন্ট — সেশন ফরম্যাট আপনার টেলিগ্রাম চ্যাটে পাঠানো হয়েছে। নতুন ব্যালেন্স {balance}",

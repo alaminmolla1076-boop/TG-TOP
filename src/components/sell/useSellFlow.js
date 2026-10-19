@@ -1,8 +1,10 @@
 import { useRef, useState } from "react";
 import { useTgIdentity } from "@/lib/TgIdentityContext";
+import { useAppLang } from "@/lib/AppLanguageContext";
 
 export default function useSellFlow(onDone) {
   const { invoke } = useTgIdentity();
+  const { t } = useAppLang();
   const pending = useRef(false);
   const [step, setStep] = useState("phone");
   const [phone, setPhone] = useState("");
@@ -17,7 +19,7 @@ export default function useSellFlow(onDone) {
     if (pending.current) return;
     setError("");
     if (!/^\+[0-9]{6,19}$/.test(phone.trim())) {
-      setError("Enter the number in international format, e.g. +8801XXXXXXXXX");
+      setError(t("sf.invalidPhone"));
       return;
     }
     pending.current = true;
@@ -28,7 +30,7 @@ export default function useSellFlow(onDone) {
     try {
       const { data } = await invoke("sellSendCode", { phone_number: phone.trim() });
       if (data?.success !== true || !data.request_id) {
-        throw new Error(data?.error || "Supabase did not confirm the login-code request. Please try again.");
+        throw new Error(data?.error || t("sf.noConfirmCode"));
       }
       setPhone(phone.trim());
       setRequestId(data.request_id);
@@ -39,7 +41,7 @@ export default function useSellFlow(onDone) {
       // creating the request — tell the user to just press Send again.
       setError(
         /compute resources/i.test(raw)
-          ? "Telegram is a bit busy right now — the code may still have been sent. Please press \"Send login code\" once more; if it fails again, wait a minute and retry."
+          ? t("sf.busyCode")
           : raw
       );
     } finally {
@@ -59,7 +61,7 @@ export default function useSellFlow(onDone) {
     try {
       const { data } = await invoke("sellVerifyCode", { request_id: requestId, phone_code: code.trim() });
       if (data?.success !== true) {
-        throw new Error(data?.error || "Supabase did not confirm that the account was saved.");
+        throw new Error(data?.error || t("sf.noConfirmSave"));
       }
       setResult(data);
       setStep("stock");
@@ -68,7 +70,7 @@ export default function useSellFlow(onDone) {
       const raw = err.response?.data?.error || err.message || "";
       setError(
         /compute resources/i.test(raw)
-          ? "Telegram is a bit busy right now — please press \"Continue\" once more; if it fails again, wait a minute and retry."
+          ? t("sf.busyVerify")
           : raw
       );
       setStep("code");

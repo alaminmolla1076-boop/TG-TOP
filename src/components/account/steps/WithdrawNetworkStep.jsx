@@ -1,20 +1,21 @@
 import React from "react";
 import { ChevronRight } from "lucide-react";
 import { LOGOS } from "@/components/deposit/logos";
-
-const NETWORKS = [
-  { value: "BEP20", name: "BNB Chain", logo: LOGOS.BEP20, badge: "USDT BEP20", desc: "USDT on BNB Chain — low fees, fast confirmation" },
-  { value: "POLYGON", name: "Polygon PoS", logo: LOGOS.POLYGON, badge: "USDT POLYGON", desc: "USDT on Polygon — very low fees" },
-  { value: "TON", name: "TON Network", logo: LOGOS.TON, badge: "TON (GRAM)", desc: "Toncoin (formerly Gram) — sent to your TON address" },
-];
+import { useAppLang } from "@/lib/AppLanguageContext";
 
 export default function WithdrawNetworkStep({ amount, network, onSelect }) {
+  const { t } = useAppLang();
+  const NETWORKS = [
+    { value: "BEP20", name: "BNB Chain", logo: LOGOS.BEP20, badge: "USDT BEP20", desc: t("tn.bnbDesc") },
+    { value: "POLYGON", name: "Polygon PoS", logo: LOGOS.POLYGON, badge: "USDT POLYGON", desc: "USDT on Polygon — low fees" },
+    { value: "TON", name: "TON Network", logo: LOGOS.TON, badge: "TON (GRAM)", desc: "Toncoin (formerly Gram) — sent to your TON address" },
+  ];
   return (
     <div className="grid gap-5">
       <div className="grid gap-1">
-        <h2 className="font-heading text-2xl font-bold">Select Network</h2>
+        <h2 className="font-heading text-2xl font-bold">{t("tn.title")}</h2>
         <p className="text-xs text-muted-foreground">
-          You&apos;re withdrawing <span className="font-bold text-primary">${amount}</span> — pick where to receive it.
+          {t("wn.desc", { amount: `$${amount}` })}
         </p>
       </div>
 
@@ -48,7 +49,7 @@ export default function WithdrawNetworkStep({ amount, network, onSelect }) {
       </div>
 
       <p className="text-[11px] text-muted-foreground">
-        Send only on the selected network — a wrong-network address can lose funds. USDT TRC20 and ERC20 withdrawals are no longer supported.
+        {t("wn.note")}
       </p>
     </div>
   );

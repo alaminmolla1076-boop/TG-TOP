@@ -8,10 +8,12 @@ import WithdrawAmountStep from "@/components/account/steps/WithdrawAmountStep";
 import WithdrawNetworkStep from "@/components/account/steps/WithdrawNetworkStep";
 import WithdrawAddressStep from "@/components/account/steps/WithdrawAddressStep";
 import { NETWORK_META } from "./withdrawNetworks";
+import { useAppLang } from "@/lib/AppLanguageContext";
 
 export default function WithdrawWizard({ balance, onDone }) {
   const { toast } = useToast();
   const { invoke } = useTgIdentity();
+  const { t } = useAppLang();
   const [step, setStep] = useState("amount");
   const [amount, setAmount] = useState("");
   const [preset, setPreset] = useState(null);
@@ -22,11 +24,11 @@ export default function WithdrawWizard({ balance, onDone }) {
   function goNextFromAmount() {
     const value = Number(amount);
     if (!Number.isFinite(value) || value < 3 || Math.abs(value * 100 - Math.round(value * 100)) > 0.000001) {
-      toast({ title: "Enter at least $3 with up to two decimal places", variant: "destructive" });
+      toast({ title: t("wr.min"), variant: "destructive" });
       return;
     }
     if (value > balance) {
-      toast({ title: "Insufficient balance", description: `You can withdraw up to $${balance.toFixed(2)}.`, variant: "destructive" });
+      toast({ title: t("wr.insufficient"), description: t("wr.upTo", { amount: `$${balance.toFixed(2)}` }), variant: "destructive" });
       return;
     }
     setStep("network");
@@ -47,13 +49,13 @@ export default function WithdrawWizard({ balance, onDone }) {
         wallet_address: address.trim(),
       });
       toast({
-        title: "Withdrawal requested",
-        description: "Your request is pending review — funds are sent after approval.",
+        title: t("wr.requested"),
+        description: t("wr.requestedDesc"),
       });
       onDone && onDone();
     } catch (err) {
       toast({
-        title: "Could not request withdrawal",
+        title: t("wr.failed"),
         description: err.response?.data?.error || err.message,
         variant: "destructive",
       });
@@ -64,7 +66,7 @@ export default function WithdrawWizard({ balance, onDone }) {
 
   const steps = ["amount", "network", "address"];
   const stepIndex = steps.indexOf(step);
-  const stepTitle = `Step ${stepIndex + 1} of ${steps.length}`;
+  const stepTitle = t("tw.step", { i: stepIndex + 1, n: steps.length });
 
   return (
     <div className="grid gap-6">
@@ -75,13 +77,13 @@ export default function WithdrawWizard({ balance, onDone }) {
             variant="ghost"
             size="icon"
             onClick={() => setStep(steps[Math.max(0, stepIndex - 1)])}
-            aria-label="Back"
+            aria-label={t("c.back")}
           >
             <ChevronLeft className="h-5 w-5" />
           </Button>
         )}
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-primary">Withdraw Funds</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-primary">{t("wd.title")}</p>
           <h1 className="font-heading text-lg font-bold leading-tight">{stepTitle}</h1>
         </div>
         <div className="flex gap-1.5">

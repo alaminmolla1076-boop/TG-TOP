@@ -1,5 +1,6 @@
 import React from "react";
 import { formatDate, formatMoney } from "@/lib/format";
+import { useAppLang } from "@/lib/AppLanguageContext";
 
 const statusStyle = {
   pending: { dot: "bg-primary", label: "text-primary" },
@@ -8,8 +9,9 @@ const statusStyle = {
 };
 
 export default function DepositList({ deposits }) {
+  const { t } = useAppLang();
   if (!deposits.length) {
-    return <p className="text-sm text-muted-foreground">No top-ups yet — create your first top-up above.</p>;
+    return <p className="text-sm text-muted-foreground">{t("dp.none")}</p>;
   }
   return (
     <div className="space-y-3">

@@ -3,6 +3,7 @@ import { useTgIdentity } from "@/lib/TgIdentityContext";
 import { useToast } from "@/components/ui/use-toast";
 import { Check, X } from "lucide-react";
 import { formatDate, formatMoney } from "@/lib/format";
+import { useAppLang } from "@/lib/AppLanguageContext";
 
 const panelClass =
   "rounded-3xl border border-ring/[.22] bg-card/75 px-[18px] py-4 text-[13px] text-muted-foreground shadow-[inset_0_1px_0_rgba(255,255,255,.06),0_6px_16px_rgba(0,0,0,.28)]";
@@ -19,6 +20,7 @@ const rejectBtn =
 export default function AdminWithdrawals({ pending, onChanged }) {
   const { toast } = useToast();
   const { invoke } = useTgIdentity();
+  const { t } = useAppLang();
   const [busyId, setBusyId] = useState(null);
 
   async function review(w, action) {
@@ -26,13 +28,13 @@ export default function AdminWithdrawals({ pending, onChanged }) {
     try {
       await invoke("reviewWithdrawal", { id: w.id, action });
       toast({
-        title: action === "approve" ? "Withdrawal approved" : "Withdrawal rejected",
-        description: action === "approve" ? `${formatMoney(Number(w.amount))} will be sent to the user's wallet.` : undefined,
+        title: action === "approve" ? t("wd.approvedToast") : t("wd.rejectedToast"),
+        description: action === "approve" ? t("wd.sentDesc", { amount: formatMoney(Number(w.amount)) }) : undefined,
       });
       onChanged && onChanged();
     } catch (err) {
       toast({
-        title: "Action failed",
+        title: t("c.actionFailed"),
         description: err.response?.data?.error || err.message,
         variant: "destructive",
       });
@@ -44,7 +46,7 @@ export default function AdminWithdrawals({ pending, onChanged }) {
     return (
       <div className={`${panelClass} flex items-center gap-2.5`}>
         <span className="h-[5px] w-[5px] shrink-0 rounded-full bg-primary" />
-        No pending withdrawals.
+        {t("wd.nonePending")}
       </div>
     );
   }
@@ -70,7 +72,7 @@ export default function AdminWithdrawals({ pending, onChanged }) {
               disabled={busyId === w.id}
               className={approveBtn}
             >
-              <Check className="h-[13px] w-[13px]" strokeWidth={2} /> Approve
+              <Check className="h-[13px] w-[13px]" strokeWidth={2} /> {t("c.approve")}
             </button>
             <button
               type="button"
@@ -78,7 +80,7 @@ export default function AdminWithdrawals({ pending, onChanged }) {
               disabled={busyId === w.id}
               className={rejectBtn}
             >
-              <X className="h-[13px] w-[13px]" strokeWidth={2} /> Reject
+              <X className="h-[13px] w-[13px]" strokeWidth={2} /> {t("c.reject")}
             </button>
           </div>
         </div>
