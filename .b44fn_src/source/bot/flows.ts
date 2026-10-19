@@ -235,7 +235,8 @@ export async function handleNumericFlows(base44, token, ctx) {
     if (user && mkState.status === 'awaiting_qty') {
       await showMarketConfirm(base44, token, user, chatId, mkState.seller_email, mkState.iso, parseInt(rawText), {
         replyTo,
-        lang
+        lang,
+        pool: mkState.pool
       });
       return true;
     }
@@ -249,11 +250,11 @@ async function reportSellResult(base44, token, ctx, data, sellMsgs) {
   if (data.status === 'completed' || data.success) {
     for (const mid of sellMsgs)await tgDeleteMessage(token, chatId, mid);
     let msg = `${t(L, 'sf.received')}\n\n`;
-    msg += `${t(L, 'sf.spamPassed')}\n`;
+    msg += `${t(L, data.spam ? 'sf.spamFlagged' : 'sf.spamPassed')}\n`;
     msg += `${t(L, 'sf.twofaSet')}\n`;
     if (data.country) msg += `${t(L, 'sf.country', { flag: data.country_flag || '', country: data.country_name || data.country })}\n`;
     if (data.phone) msg += `${t(L, 'mk.phone', { phone: data.phone })}\n`;
-    msg += `\n${t(L, 'sf.addedToStock')}`;
+    msg += `\n${t(L, data.spam ? 'sf.spamAdded' : 'sf.nonSpamAdded')}`;
     await tgSend(token, chatId, msg, replyTo);
     const logoutMsg = await tgSend(token, chatId, t(L, 'sf.logout'), replyTo);
     // Sell mode stays active so the next number needs no extra tap.

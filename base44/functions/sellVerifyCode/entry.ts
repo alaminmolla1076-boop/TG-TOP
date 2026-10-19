@@ -41,6 +41,7 @@ export default async function(req) {
       phone: res.phone,
       country: res.country,
       country_iso: res.country_iso,
+      spam: res.spam === true,
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 400 });

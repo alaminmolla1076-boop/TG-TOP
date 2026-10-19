@@ -34,6 +34,8 @@ export default async function(req) {
                 coalesce(r.dial_code, c.dial_code, '') as dial_code,
                 min(a.price) as price,
                 count(*) as stock,
+                count(*) filter (where a.spam is true) as spam_stock,
+                count(*) filter (where a.spam is false) as nonspam_stock,
                 -- Sales the seller completed: a sold account's original seller
                 -- is its session_requests row (owner_email moves to the buyer).
                 (select count(*) from tg_accounts a2
@@ -94,6 +96,8 @@ export default async function(req) {
         dial_code: row.dial_code,
         price: Number(row.price),
         stock: Number(row.stock),
+        spam_stock: Number(row.spam_stock || 0),
+        nonspam_stock: Number(row.nonspam_stock || 0),
       });
     }
 

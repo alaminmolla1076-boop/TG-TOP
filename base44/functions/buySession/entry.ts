@@ -22,6 +22,9 @@ export default async function (req) {
     // When buying from a specific seller (market seller list), pass the seller
     // through — Supabase's purchaseAccount claims that seller's accounts.
     const sellerEmail = String(body.seller_email || '').trim();
+    // Spam / Non-Spam stock pool chosen on the seller's page.
+    const spamPool = String(body.spam_pool || '').trim().toLowerCase();
+    const pool = ['spam', 'nonspam'].includes(spamPool) ? spamPool : '';
     // Your own listings are visible to you on the market but can't be bought.
     if (sellerEmail) {
       const identity = await resolveIdentity(body.initData);
@@ -37,6 +40,7 @@ export default async function (req) {
       // buyer's Telegram chat); a single purchase returns just the phone.
       ...(qty > 1 ? { mode: 'session' } : {}),
       ...(sellerEmail ? { seller_email: sellerEmail, owner_email: sellerEmail } : {}),
+      ...(pool ? { spam_pool: pool } : {}),
     }, 110000);
 
     const ids = (Array.isArray(res.accounts)

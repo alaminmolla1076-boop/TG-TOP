@@ -15,8 +15,8 @@ export default function SellDoneStep({ result, onReset }) {
       </h1>
       <p className="m-0 text-[11px] leading-[1.55] text-muted-foreground">
         {result?.country ? `${result.country} · ` : ""}
-        <strong className="font-semibold text-foreground">{result?.phone}</strong> is now in your stock with a
-        system 2FA password.
+        <strong className="font-semibold text-foreground">{result?.phone}</strong> was checked by @SpamBot and is now
+        in your {result?.spam ? "Spam" : "Non-Spam"} stock with a system 2FA password.
       </p>
       <div className="mt-6 pt-4">
         <button

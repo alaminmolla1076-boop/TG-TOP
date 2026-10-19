@@ -6,13 +6,22 @@ import SectionHead from "@/components/market/SectionHead";
 import MarketBackdrop from "@/components/market/MarketBackdrop";
 import { formatMoney } from "@/lib/format";
 
-// Capsule List — seller page: the countries this seller has in stock. Each
-// country row opens the standalone purchase page.
+// Stock pools: accounts are filed as Spam or Non-Spam at login (SpamBot
+// verdict); the buyer picks which pool to browse.
+const poolStockOf = (c, pool) =>
+  pool === "spam" ? c.spam_stock ?? 0 : c.nonspam_stock ?? c.stock ?? 0;
+
+// Capsule List — seller page: a Spam / Non-Spam stock choice, then the
+// countries this seller has in that pool. Each country row opens the
+// standalone purchase page.
 export default function MarketSeller() {
   const { sellerId } = useParams();
   const navigate = useNavigate();
   const { invoke } = useTgIdentity();
   const [seller, setSeller] = useState(undefined); // undefined = loading, null = not found
+  const [pool, setPool] = useState(
+    new URLSearchParams(window.location.search).get("pool") === "spam" ? "spam" : "nonspam"
+  );
 
   useEffect(() => {
     invoke("getMarketProducts", {})
@@ -21,6 +30,11 @@ export default function MarketSeller() {
       })
       .catch(() => setSeller(null));
   }, [sellerId]);
+
+  function choosePool(next) {
+    setPool(next);
+    navigate(`/market/seller/${sellerId}?pool=${next}`, { replace: true });
+  }
 
   if (seller === undefined) {
     return <p className="mk-fade text-[13px] text-[#a8a3cf]">Loading…</p>;
@@ -32,6 +46,8 @@ export default function MarketSeller() {
       </div>
     );
   }
+
+  const countries = (seller.countries || []).filter((c) => poolStockOf(c, pool) > 0);
 
   return (
     <div className="relative">
@@ -77,12 +93,38 @@ export default function MarketSeller() {
           <SectionHead
             icon={<Globe className="h-4 w-4" strokeWidth={1.5} />}
             title="Country Stock"
-            badge={`${seller.countries.length} ${seller.countries.length === 1 ? "country" : "countries"}`}
+            badge={`${countries.length} ${countries.length === 1 ? "country" : "countries"}`}
           />
-          {seller.countries.map((c) => (
+          <div className="grid grid-cols-2 gap-2.5" role="tablist">
+            {[
+              { key: "nonspam", label: "🐦 Non-Spam" },
+              { key: "spam", label: "🚫 Spam" },
+            ].map((p) => (
+              <button
+                key={p.key}
+                type="button"
+                role="tab"
+                aria-selected={pool === p.key}
+                onClick={() => pool !== p.key && choosePool(p.key)}
+                className={
+                  pool === p.key
+                    ? "cursor-pointer rounded-full border border-[#A29BFE]/60 bg-[rgba(108,92,231,.3)] py-2.5 text-[13px] font-semibold text-[#A29BFE] shadow-[inset_0_1px_0_rgba(255,255,255,.07)]"
+                    : "cursor-pointer rounded-full border border-[#A29BFE]/25 bg-[rgba(45,38,78,.5)] py-2.5 text-[13px] font-semibold text-[#a8a3cf] transition-[border-color,background-color] duration-200 hover:border-[#A29BFE]/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#A29BFE]"
+                }
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+          {countries.length === 0 ? (
+            <div className="rounded-[22px] border border-dashed border-[#A29BFE]/30 bg-[rgba(45,38,78,.3)] p-[18px] text-[13px] text-[#a8a3cf]">
+              {pool === "spam" ? "No Spam stock yet — clean accounts land in Non-Spam." : "No Non-Spam stock right now."}
+            </div>
+          ) : null}
+          {countries.map((c) => (
             <Link
               key={c.country_iso}
-              to={`/market/buy/${seller.id}/${c.country_iso}`}
+              to={`/market/buy/${seller.id}/${c.country_iso}?pool=${pool}`}
               className="flex w-full items-center gap-3 rounded-full border border-[#A29BFE]/25 bg-[rgba(45,38,78,.5)] py-2.5 pl-2.5 pr-4 text-left text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,.07)] transition-[border-color,background-color] duration-200 no-underline hover:border-[#A29BFE]/60 hover:bg-[rgba(45,38,78,.8)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A29BFE] active:opacity-85"
             >
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#A29BFE]/40 bg-[rgba(108,92,231,.14)] text-base font-bold text-[#A29BFE]">
@@ -97,7 +139,7 @@ export default function MarketSeller() {
                     </span>
                   ) : null}
                 </span>
-                <span className="block truncate text-[11px] text-[#a8a3cf]">{c.stock} in stock</span>
+                <span className="block truncate text-[11px] text-[#a8a3cf]">{poolStockOf(c, pool)} in stock</span>
               </span>
               <span className="shrink-0 rounded-full border border-[#A29BFE]/40 bg-[rgba(108,92,231,.22)] px-3 py-1 text-[11px] font-semibold text-[#A29BFE]">
                 Buy

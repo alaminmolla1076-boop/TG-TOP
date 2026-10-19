@@ -5,10 +5,11 @@ import { buySeasonInChunks } from '../_shared/seasonBuy.js';
 import { deliverSeasonZip, errText } from './delivery.ts';
 import { setState, clearState } from './state.ts';
 // The bot's Market — a direct mirror of the app's Market page: the seller
-// directory (each seller opens their country stock), products and
-// the same purchase options (Buy 1, or Buy Session Formats with quick and
-// custom quantities — every purchase + 5% service fee, confirmed first).
-// Every screen is localized through t(lang, ...) with English fallback.
+// directory (each seller opens a Spam / Non-Spam stock choice, then their
+// country stock), products and the same purchase options (Buy 1, or Buy
+// Session Formats with quick and custom quantities — every purchase + 5%
+// service fee, confirmed first). Every screen is localized through
+// t(lang, ...) with English fallback.
 const QUICK_QTY = [
   5,
   10,
@@ -24,6 +25,11 @@ const SEC = (title)=>`┈┈┈┈ ${title} ┈┈┈┈`;
 const feeOf = (amount)=>Math.round(amount * 5) / 100;
 const money = (n)=>`$${Number(n || 0).toFixed(2)}`;
 const dial = (code)=>code ? ` +${String(code).replace(/^\+/, '')}` : '';
+// Stock pools: a seller's accounts are filed as Spam or Non-Spam at login
+// (SpamBot verdict), and buyers browse one pool at a time.
+const poolOf = (raw)=>raw === 'spam' ? 'spam' : 'nonspam';
+const poolStock = (c, pool)=>pool === 'spam' ? Number(c.spam_stock || 0) : Number(c.nonspam_stock || c.stock || 0);
+const poolTitle = (L, pool)=>t(L, pool === 'spam' ? 'mk.spamTitle' : 'mk.nonSpamTitle');
 async function fetchMarket(base44, user, query) {
   const res = await base44.asServiceRole.functions.invoke('getMarketSellers', {
     user_email: user.email,
@@ -87,7 +93,7 @@ export async function marketMenu(base44, user, lang) {
     keyboard: kb
   };
 }
-// One seller's country stock — mirrors the app's seller page.
+// One seller — the seller header plus the Spam / Non-Spam stock choice.
 async function sellerView(base44, user, sellerEmail, lang) {
   const L = lang || 'en';
   const market = await fetchMarket(base44, user);
@@ -98,20 +104,58 @@ async function sellerView(base44, user, sellerEmail, lang) {
   };
   let text = `${SEP}\n👤 <b>${seller.name}</b>${seller.is_self ? t(L, 'c.you') : ''}\n${SEP}\n\n`;
   if (seller.username) text += `🔗 @${seller.username}\n`;
-  text += `${t(L, 'mk.soldLine', { sold: seller.sold })}\n\n${SEC(t(L, 'mk.stockSec'))}\n${t(L, 'mk.tapCountry')}`;
+  text += `${t(L, 'mk.soldLine', { sold: seller.sold })}\n\n${SEC(t(L, 'mk.stockSec'))}\n${t(L, 'mk.poolPrompt')}`;
+  const kb = [
+    [
+      {
+        text: t(L, 'mk.poolNonSpam'),
+        callback_data: `mk_pool:${sellerEmail}:nonspam`
+      }
+    ],
+    [
+      {
+        text: t(L, 'mk.poolSpam'),
+        callback_data: `mk_pool:${sellerEmail}:spam`
+      }
+    ],
+    [
+      {
+        text: t(L, 'c.back'),
+        callback_data: 'menu_buy'
+      }
+    ]
+  ];
+  return {
+    text,
+    keyboard: kb
+  };
+}
+// One seller's country stock within a pool (Spam or Non-Spam).
+async function poolView(base44, user, sellerEmail, pool, lang) {
+  const L = lang || 'en';
+  const P = poolOf(pool);
+  const market = await fetchMarket(base44, user);
+  const seller = findSeller(market, sellerEmail);
+  if (!seller) return {
+    text: t(L, 'mk.sellerNotFound'),
+    keyboard: gone(L, null)
+  };
+  const rows = (seller.countries || []).filter((c)=>poolStock(c, P) > 0);
+  let text = `${SEP}\n👤 <b>${seller.name}</b>${seller.is_self ? t(L, 'c.you') : ''}\n${SEP}\n\n${poolTitle(L, P)}\n\n${SEC(t(L, 'mk.stockSec'))}\n${t(L, 'mk.tapCountry')}`;
+  if (!rows.length) text += `\n\n${t(L, 'mk.sellerNotFound')}`;
   const kb = [];
-  for (const c of seller.countries || []){
+  for (const c of rows){
     kb.push([
       {
-        text: `${c.flag || '🌐'} ${c.country_name}${dial(c.dial_code)} — ${money(c.price)} (${c.stock})`,
-        callback_data: `mk_c:${sellerEmail}:${c.country_iso}`
+        text: `${c.flag || '🌐'} ${c.country_name}${dial(c.dial_code)} — ${money(c.price)} (${poolStock(c, P)})`,
+        callback_data: `mk_c:${sellerEmail}:${c.country_iso}:${P}`
       }
     ]);
   }
   kb.push([
     {
       text: t(L, 'c.back'),
-      callback_data: 'menu_buy'
+      callback_data: `mk_s:${sellerEmail}`
     }
   ]);
   return {
@@ -119,9 +163,10 @@ async function sellerView(base44, user, sellerEmail, lang) {
     keyboard: kb
   };
 }
-// Purchase page for one seller's country — mirrors the app's buy page.
-async function buyView(base44, user, sellerEmail, iso, lang) {
+// Purchase page for one seller's country and pool — mirrors the app's buy page.
+async function buyView(base44, user, sellerEmail, iso, pool, lang) {
   const L = lang || 'en';
+  const P = poolOf(pool);
   const market = await fetchMarket(base44, user);
   const seller = findSeller(market, sellerEmail);
   const country = findCountry(seller, iso);
@@ -129,12 +174,13 @@ async function buyView(base44, user, sellerEmail, iso, lang) {
     text: t(L, 'mk.countryNotFound'),
     keyboard: gone(L, sellerEmail)
   };
+  const stock = poolStock(country, P);
   const bal = await getRealBalance(base44, user.email);
-  let text = `${SEP}\n${country.flag || '🌐'} <b>${country.country_name}</b>${dial(country.dial_code)}\n${SEP}\n\n`;
+  let text = `${SEP}\n${country.flag || '🌐'} <b>${country.country_name}</b>${dial(country.dial_code)} — ${poolTitle(L, P).replace(/<[^>]+>/g, '')}\n${SEP}\n\n`;
   text += `${t(L, 'mk.seller', { name: seller.name })}\n`;
   text += `${t(L, 'mk.price', { price: money(country.price) })}\n`;
   text += `${t(L, 'mk.totalEach', { total: money(country.price + feeOf(country.price)) })}\n`;
-  text += `${t(L, 'mk.stockAvail', { stock: country.stock })}\n`;
+  text += `${t(L, 'mk.stockAvail', { stock })}\n`;
   text += `${t(L, 'mk.balance', { balance: money(bal) })}\n\n${SEC(t(L, 'mk.purchaseSec'))}`;
   if (seller.is_self) {
     text += `\n\n${t(L, 'mk.ownListing')}`;
@@ -149,27 +195,28 @@ async function buyView(base44, user, sellerEmail, iso, lang) {
       [
         {
           text: t(L, 'buy.buy1'),
-          callback_data: `mk_b1:${sellerEmail}:${iso}`
+          callback_data: `mk_b1:${sellerEmail}:${iso}:${P}`
         }
       ],
       [
         {
           text: t(L, 'mk.buyFormats'),
-          callback_data: `mk_f:${sellerEmail}:${iso}`
+          callback_data: `mk_f:${sellerEmail}:${iso}:${P}`
         }
       ],
       [
         {
           text: t(L, 'c.back'),
-          callback_data: `mk_s:${sellerEmail}`
+          callback_data: `mk_pool:${sellerEmail}:${P}`
         }
       ]
     ]
   };
 }
 // Session-format quantities — mirrors the app's Buy Session Formats sheet.
-async function formatsView(base44, user, sellerEmail, iso, lang) {
+async function formatsView(base44, user, sellerEmail, iso, pool, lang) {
   const L = lang || 'en';
+  const P = poolOf(pool);
   const market = await fetchMarket(base44, user);
   const seller = findSeller(market, sellerEmail);
   const country = findCountry(seller, iso);
@@ -181,19 +228,19 @@ async function formatsView(base44, user, sellerEmail, iso, lang) {
   for(let i = 0; i < QUICK_QTY.length; i += 4){
     kb.push(QUICK_QTY.slice(i, i + 4).map((q)=>({
         text: `📦 ${q}`,
-        callback_data: `mk_q:${sellerEmail}:${iso}:${q}`
+        callback_data: `mk_q:${sellerEmail}:${iso}:${q}:${P}`
       })));
   }
   kb.push([
     {
       text: t(L, 'mk.customQty'),
-      callback_data: `mk_x:${sellerEmail}:${iso}`
+      callback_data: `mk_x:${sellerEmail}:${iso}:${P}`
     }
   ]);
   kb.push([
     {
       text: t(L, 'c.back'),
-      callback_data: `mk_c:${sellerEmail}:${iso}`
+      callback_data: `mk_c:${sellerEmail}:${iso}:${P}`
     }
   ]);
   return {
@@ -201,7 +248,7 @@ async function formatsView(base44, user, sellerEmail, iso, lang) {
         flag: country.flag || '🌐',
         country: country.country_name,
         total: money(country.price + feeOf(country.price))
-      })}\n${t(L, 'mk.stockAvail', { stock: country.stock })}\n\n${SEC(t(L, 'mk.chooseQty'))}`,
+      })}\n${t(L, 'mk.stockAvail', { stock: poolStock(country, P) })}\n\n${SEC(t(L, 'mk.chooseQty'))}`,
     keyboard: kb
   };
 }
@@ -210,6 +257,7 @@ export async function showMarketConfirm(base44, token, user, chatId, sellerEmail
   }) {
   const lang = opts.lang || 'en';
   const L = lang;
+  const P = poolOf(opts.pool);
   const reply = async (text, kb)=>{
     if (opts.editMsgId) await tgEditMenu(token, chatId, opts.editMsgId, text, kb);
     else await tgSendMenu(token, chatId, text, kb, opts.replyTo);
@@ -221,15 +269,23 @@ export async function showMarketConfirm(base44, token, user, chatId, sellerEmail
     await reply(t(L, 'mk.countryNotFound'), gone(L, sellerEmail));
     return;
   }
+  const stock = poolStock(country, P);
   if (!Number.isInteger(qty) || qty < 1 || qty > 3000) {
     await reply(t(L, 'mk.qtyRange'), gone(L, sellerEmail));
     return;
   }
-  if (country.stock < qty) {
+  if (stock < qty) {
     await reply(t(L, 'mk.onlyStock', {
-      stock: country.stock,
+      stock,
       country: country.country_name
-    }), gone(L, sellerEmail));
+    }), [
+      [
+        {
+          text: t(L, 'c.back'),
+          callback_data: `mk_c:${sellerEmail}:${iso}:${P}`
+        }
+      ]
+    ]);
     return;
   }
   const subtotal = Number((country.price * qty).toFixed(2));
@@ -250,13 +306,13 @@ export async function showMarketConfirm(base44, token, user, chatId, sellerEmail
       [
         {
           text: t(L, 'c.back'),
-          callback_data: `mk_c:${sellerEmail}:${iso}`
+          callback_data: `mk_c:${sellerEmail}:${iso}:${P}`
         }
       ]
     ]);
     return;
   }
-  await reply(`${SEP}\n${t(L, 'mk.confirmTitle')}\n${SEP}\n\n👤 ${seller.name}\n${country.flag || '🌐'} <b>${country.country_name}</b> (${iso})\n\n` + `${t(L, 'mk.confirmQty', { qty })}\n` + `${t(L, 'mk.confirmSub', {
+  await reply(`${SEP}\n${t(L, 'mk.confirmTitle')}\n${SEP}\n\n👤 ${seller.name}\n${country.flag || '🌐'} <b>${country.country_name}</b> (${iso}) — ${poolTitle(L, P)}\n\n` + `${t(L, 'mk.confirmQty', { qty })}\n` + `${t(L, 'mk.confirmSub', {
       qty,
       price: money(country.price),
       subtotal: money(subtotal)
@@ -264,20 +320,21 @@ export async function showMarketConfirm(base44, token, user, chatId, sellerEmail
     [
       {
         text: t(L, 'c.confirm'),
-        callback_data: `mk_ok:${sellerEmail}:${iso}:${qty}`
+        callback_data: `mk_ok:${sellerEmail}:${iso}:${qty}:${P}`
       }
     ],
     [
       {
         text: t(L, 'c.cancel'),
-        callback_data: `mk_c:${sellerEmail}:${iso}`
+        callback_data: `mk_c:${sellerEmail}:${iso}:${P}`
       }
     ]
   ]);
 }
 // Buy 1 — claims one account and returns the phone number.
-async function buyOne(base44, token, user, chatId, msgId, sellerEmail, iso, lang) {
+async function buyOne(base44, token, user, chatId, msgId, sellerEmail, iso, pool, lang) {
   const L = lang || 'en';
+  const P = poolOf(pool);
   try {
     await tgDeleteMessage(token, chatId, msgId).catch(()=>{});
   } catch  {}
@@ -288,7 +345,8 @@ async function buyOne(base44, token, user, chatId, msgId, sellerEmail, iso, lang
       user_email: user.email,
       country_iso: iso,
       quantity: 1,
-      owner_email: sellerEmail
+      owner_email: sellerEmail,
+      spam_pool: P
     });
     const data = res.data || res;
     if (data.error) throw new Error(data.error);
@@ -308,7 +366,7 @@ async function buyOne(base44, token, user, chatId, msgId, sellerEmail, iso, lang
       [
         {
           text: t(L, 'buy.buyAgain'),
-          callback_data: `mk_b1:${sellerEmail}:${iso}`
+          callback_data: `mk_b1:${sellerEmail}:${iso}:${P}`
         }
       ]
     ]);
@@ -317,8 +375,9 @@ async function buyOne(base44, token, user, chatId, msgId, sellerEmail, iso, lang
   }
 }
 // Batch purchase — session formats delivered to this chat.
-async function buyBatch(base44, token, user, chatId, msgId, sellerEmail, iso, qty, lang) {
+async function buyBatch(base44, token, user, chatId, msgId, sellerEmail, iso, qty, pool, lang) {
   const L = lang || 'en';
+  const P = poolOf(pool);
   try {
     await tgDeleteMessage(token, chatId, msgId);
   } catch  {}
@@ -328,6 +387,7 @@ async function buyBatch(base44, token, user, chatId, msgId, sellerEmail, iso, qt
       user_email: user.email,
       quantity: qty,
       owner_email: sellerEmail,
+      spam_pool: P,
       onChunk: qty > 100 ? async ({ done, total })=>{
         await tgSend(token, chatId, t(L, 'mk.ready', { done, total }));
       } : null
@@ -345,7 +405,7 @@ async function buyBatch(base44, token, user, chatId, msgId, sellerEmail, iso, qt
       [
         {
           text: t(L, 'buy.buyAgain'),
-          callback_data: `mk_ok:${sellerEmail}:${iso}:${qty}`
+          callback_data: `mk_ok:${sellerEmail}:${iso}:${qty}:${P}`
         }
       ]
     ]);
@@ -384,28 +444,36 @@ export async function handleMarketCallback(base44, token, cq, user, lang, chatId
     await tgEditMenu(token, chatId, msgId, v.text, v.keyboard);
     return;
   }
+  if (cbData.startsWith('mk_pool:')) {
+    const [, sellerEmail, poolRaw] = cbData.split(':');
+    const v = await poolView(base44, user, sellerEmail, poolRaw, L);
+    await tgEditMenu(token, chatId, msgId, v.text, v.keyboard);
+    return;
+  }
   if (cbData.startsWith('mk_c:')) {
-    const [, sellerEmail, iso] = cbData.split(':');
-    const v = await buyView(base44, user, sellerEmail, iso, L);
+    const [, sellerEmail, iso, poolRaw] = cbData.split(':');
+    const v = await buyView(base44, user, sellerEmail, iso, poolRaw, L);
     await tgEditMenu(token, chatId, msgId, v.text, v.keyboard);
     return;
   }
   if (cbData.startsWith('mk_f:')) {
-    const [, sellerEmail, iso] = cbData.split(':');
-    const v = await formatsView(base44, user, sellerEmail, iso, L);
+    const [, sellerEmail, iso, poolRaw] = cbData.split(':');
+    const v = await formatsView(base44, user, sellerEmail, iso, poolRaw, L);
     await tgEditMenu(token, chatId, msgId, v.text, v.keyboard);
     return;
   }
   if (cbData.startsWith('mk_q:')) {
-    const [, sellerEmail, iso, qtyRaw] = cbData.split(':');
+    const [, sellerEmail, iso, qtyRaw, poolRaw] = cbData.split(':');
     await showMarketConfirm(base44, token, user, chatId, sellerEmail, iso, parseInt(qtyRaw), {
       editMsgId: msgId,
-      lang: L
+      lang: L,
+      pool: poolRaw
     });
     return;
   }
   if (cbData.startsWith('mk_x:')) {
-    const [, sellerEmail, iso] = cbData.split(':');
+    const [, sellerEmail, iso, poolRaw] = cbData.split(':');
+    const P = poolOf(poolRaw);
     const market = await fetchMarket(base44, user);
     const country = findCountry(findSeller(market, sellerEmail), iso);
     if (!country) {
@@ -415,19 +483,20 @@ export async function handleMarketCallback(base44, token, cq, user, lang, chatId
     await setState(base44, `mkqty:${tid}`, JSON.stringify({
       seller_email: sellerEmail,
       iso,
+      pool: P,
       status: 'awaiting_qty'
     }));
-    await tgSend(token, chatId, t(L, 'mk.qtyPrompt', { max: country.stock }));
+    await tgSend(token, chatId, t(L, 'mk.qtyPrompt', { max: poolStock(country, P) }));
     return;
   }
   if (cbData.startsWith('mk_b1:')) {
-    const [, sellerEmail, iso] = cbData.split(':');
-    await buyOne(base44, token, user, chatId, msgId, sellerEmail, iso, L);
+    const [, sellerEmail, iso, poolRaw] = cbData.split(':');
+    await buyOne(base44, token, user, chatId, msgId, sellerEmail, iso, poolRaw, L);
     return;
   }
   if (cbData.startsWith('mk_ok:')) {
-    const [, sellerEmail, iso, qtyRaw] = cbData.split(':');
-    await buyBatch(base44, token, user, chatId, msgId, sellerEmail, iso, parseInt(qtyRaw) || 1, L);
+    const [, sellerEmail, iso, qtyRaw, poolRaw] = cbData.split(':');
+    await buyBatch(base44, token, user, chatId, msgId, sellerEmail, iso, parseInt(qtyRaw) || 1, poolRaw, L);
     return;
   }
   if (cbData.startsWith('mk_p:')) {

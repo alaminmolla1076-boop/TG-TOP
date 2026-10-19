@@ -6,6 +6,7 @@ import { TC } from './botTlC.js';
 import { TD } from './botTlD.js';
 import { TE } from './botTlE.js';
 import { TF } from './botTlF.js';
+import { TG } from './botTlG.js';
 
 export const BOT_LANGS = [
   { code: 'en', label: 'English', flag: '🇬🇧' },
@@ -841,7 +842,7 @@ const LANG_NAMES = {
 
 // Translate a key for a given language, with optional params.
 // Checks the core table first, then the flow tables (A/B/C), then English.
-const FLOW_TABLES = [TA, TB, TC, TD, TE, TF];
+const FLOW_TABLES = [TA, TB, TC, TD, TE, TF, TG];
 export function t(lang, key, params) {
   let str = (T[lang] && T[lang][key]);
   if (str === undefined) {

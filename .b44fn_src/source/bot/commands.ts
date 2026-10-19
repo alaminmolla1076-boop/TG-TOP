@@ -558,7 +558,7 @@ export default async function handleCommand(base44, token, ctx) {
           const data = result.data || result;
           if (data.error) throw new Error(data.error);
           await clearState(base44, `session:${user.email}`);
-          await tgSend(token, chatId, `${t(lang, 'sf.received')}\n\n${t(lang, 'sf.country', { flag: '', country: `${data.country || ''}${data.country_iso ? ` (${data.country_iso})` : ''}` })}\n${t(lang, 'mk.phone', { phone: data.phone || '' })}\n\n${t(lang, 'sf.addedToStock')}`, replyTo);
+          await tgSend(token, chatId, `${t(lang, 'sf.received')}\n\n${t(lang, 'sf.country', { flag: '', country: `${data.country || ''}${data.country_iso ? ` (${data.country_iso})` : ''}` })}\n${t(lang, 'mk.phone', { phone: data.phone || '' })}\n\n${t(lang, data.spam ? 'sf.spamAdded' : 'sf.nonSpamAdded')}`, replyTo);
         } catch (err) {
           await tgSend(token, chatId, t(lang, 'c.error', { msg: err.message }), replyTo);
         }

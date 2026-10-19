@@ -21,7 +21,7 @@ export default async function(req) {
     }, {
       status: 401
     });
-    const { country_iso, quantity, owner_email, mode } = body;
+    const { country_iso, quantity, owner_email, mode, spam_pool } = body;
     const qty = quantity == null ? 1 : Number(quantity);
     if (!Number.isInteger(qty) || qty < 1 || qty > 3000) return Response.json({
       error: 'Quantity must be a whole number between 1 and 3000'
@@ -36,8 +36,9 @@ export default async function(req) {
     const country = countries.find((c)=>c.platform === 'tg' || !c.platform) || countries[0] || null;
     // Pull spares so accounts whose 2FA cannot be cleared can be swapped out.
     // When owner_email is given, buy from that specific seller — so the buyer
-    // pays the seller's own price (per-seller pricing).
-    const stockBuffer = await getAvailableAccounts(base44, country_iso, qty * 3, owner_email || null);
+    // pays the seller's own price (per-seller pricing). When spam_pool is
+    // given, claim from that stock pool (Spam / Non-Spam) only.
+    const stockBuffer = await getAvailableAccounts(base44, country_iso, qty * 3, owner_email || null, spam_pool || null);
     if (stockBuffer.length < qty) {
       return Response.json({
         error: 'Out of stock — no available numbers for this country',

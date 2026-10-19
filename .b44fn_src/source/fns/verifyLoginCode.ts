@@ -3,6 +3,7 @@ import { Mt, errorMessageOf, srpCheck } from '../_shared/mtproto.js';
 import { resolveUser } from '../_shared/resolveUser.ts';
 import { findAcceptedCountry } from '../_shared/acceptedCountries.js';
 import { generatePassword, setTwoFactorPassword } from '../_shared/twoFactor.js';
+import { checkSpamBotStatus } from '../_shared/spamBot.js';
 // Verifies the Telegram OTP code, sets a system 2FA password, and adds the
 // account to the SELLER'S OWN stock (TgAccount with owner_email = seller).
 // No reward is created — the account simply goes to the user's inventory.
@@ -145,6 +146,10 @@ export default async function(req) {
         status: 500
       });
     }
+    // Spam check right at login: start @SpamBot, read its verdict, and file the
+    // account into the seller's Spam or Non-Spam stock based on it.
+    const spamCheck = await checkSpamBotStatus(mt);
+    const spam = spamCheck.status !== 'clean';
     const finalSession = await mt.save();
     let phone = sr.phone_number;
     try {
@@ -163,7 +168,8 @@ export default async function(req) {
       password: storedPassword,
       status: 'available',
       owner_email: email,
-      purchase_type: 'season'
+      purchase_type: 'season',
+      spam
     });
     await base44.asServiceRole.entities.SessionRequest.update(sr.id, {
       status: 'completed',
@@ -174,7 +180,8 @@ export default async function(req) {
       success: true,
       phone,
       country: countryName,
-      country_iso: countryIso
+      country_iso: countryIso,
+      spam
     });
   } catch (error) {
     return Response.json({

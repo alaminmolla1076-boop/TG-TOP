@@ -41,7 +41,9 @@ export default async function(req) {
         flag: row.flag,
         dial_code: row.dial_code,
         price: Number(row.price),
-        stock: Number(row.stock)
+        stock: Number(row.stock),
+        spam_stock: Number(row.spam_stock),
+        nonspam_stock: Number(row.nonspam_stock)
       });
     }
     let sellers = Array.from(sellersMap.values());

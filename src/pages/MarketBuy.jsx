@@ -20,6 +20,9 @@ export default function MarketBuy() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { invoke, fetchMyData } = useTgIdentity();
+  // Stock pool chosen on the seller's page (?pool=spam) — Non-Spam by default.
+  const pool =
+    new URLSearchParams(window.location.search).get("pool") === "spam" ? "spam" : "nonspam";
   const [entry, setEntry] = useState(undefined); // undefined = loading, null = not found
   const [custom, setCustom] = useState("");
   const [formatsOpen, setFormatsOpen] = useState(false);
@@ -37,7 +40,12 @@ export default function MarketBuy() {
       .catch(() => setEntry(null));
   }, [sellerId, countryIso]);
 
-  const stock = entry?.country?.stock || 0;
+  const stock =
+    entry?.country == null
+      ? 0
+      : pool === "spam"
+        ? entry.country.spam_stock ?? entry.country.stock ?? 0
+        : entry.country.nonspam_stock ?? entry.country.stock ?? 0;
   const parsed = parseInt(custom, 10);
   const customValid = Number.isInteger(parsed) && parsed >= 1 && parsed <= stock;
 
@@ -49,6 +57,7 @@ export default function MarketBuy() {
         country_iso: entry.country.country_iso,
         quantity: qty,
         seller_email: entry.seller.email,
+        spam_pool: pool,
       });
       const bought = res.data.accounts || [];
       if (qty === 1 && bought[0]?.phone_number) {
@@ -120,7 +129,9 @@ export default function MarketBuy() {
             <div className="mt-1 bg-gradient-to-r from-[#A29BFE] to-[#6C5CE7] bg-clip-text font-display text-[34px] font-bold leading-none text-transparent tabular-nums">
               {formatMoney(country.price)}
             </div>
-            <p className="mt-1 text-[13px] text-[#a8a3cf]">{country.stock} in stock</p>
+            <p className="mt-1 text-[13px] text-[#a8a3cf]">
+              {pool === "spam" ? "🚫 Spam stock" : "🐦 Non-Spam stock"} · {stock} in stock
+            </p>
           </div>
         </div>
 
