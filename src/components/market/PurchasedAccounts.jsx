@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { Check, Copy, Download, KeyRound, Package } from "lucide-react";
 import { useTgIdentity } from "@/lib/TgIdentityContext";
+import { useAppLang } from "@/lib/AppLanguageContext";
 import SectionHead from "./SectionHead";
 
 // Capsule List — purchase history. Single purchases fetch their captured
@@ -10,6 +11,7 @@ import SectionHead from "./SectionHead";
 export default function PurchasedAccounts({ purchases, batches = [], emptyText }) {
   const { toast } = useToast();
   const { invoke } = useTgIdentity();
+  const { t } = useAppLang();
   const [codes, setCodes] = useState({}); // { [accountId]: { loading, code, error } }
   const [downloads, setDownloads] = useState({}); // { [batchId]: { loading } }
   const [copied, setCopied] = useState(null);
@@ -28,7 +30,7 @@ export default function PurchasedAccounts({ purchases, batches = [], emptyText }
     } catch (err) {
       const msg = err.response?.data?.error || err.message;
       setCodes((prev) => ({ ...prev, [account.id]: { loading: false, error: msg } }));
-      toast({ title: "No code yet", description: msg, variant: "destructive" });
+      toast({ title: t("c.noCodeYet"), description: msg, variant: "destructive" });
     }
   }
 
@@ -38,19 +40,19 @@ export default function PurchasedAccounts({ purchases, batches = [], emptyText }
       const res = await invoke("downloadSessions", { batch_id: batch.batch_id });
       if (res.data.telegram_sent) {
         toast({
-          title: "ZIP sent to your Telegram chat",
-          description: `${res.data.count} session file${res.data.count === 1 ? "" : "s"} delivered — 2FA already removed.`,
+          title: t("pr.zipSent"),
+          description: t("pr.zipSentDesc", { n: res.data.count }),
         });
       } else {
         toast({
-          title: "Delivery failed",
-          description: res.data.telegram_error || "The ZIP could not be sent to your chat.",
+          title: t("pr.deliveryFailed"),
+          description: res.data.telegram_error || t("pr.deliveryFailedDesc"),
           variant: "destructive",
         });
       }
     } catch (err) {
       toast({
-        title: "Download failed",
+        title: t("pr.downloadFailed"),
         description: err.response?.data?.error || err.message,
         variant: "destructive",
       });
@@ -64,7 +66,7 @@ export default function PurchasedAccounts({ purchases, batches = [], emptyText }
       setCopied(code);
       setTimeout(() => setCopied(null), 2000);
     } catch {
-      toast({ title: "Copy failed", description: "Select the code to copy it manually.", variant: "destructive" });
+      toast({ title: t("c.copyFailed"), description: t("c.copyFailedHint", { what: t("sc.label") }), variant: "destructive" });
     }
   }
 
@@ -72,14 +74,14 @@ export default function PurchasedAccounts({ purchases, batches = [], emptyText }
     <section className="mk-sec flex flex-col gap-3">
       <SectionHead
         icon={<Package className="h-4 w-4" strokeWidth={1.5} />}
-        title="My Purchases"
+        title={t("pr.mine")}
         badge={(purchases?.length ?? 0) + batches.length}
       />
       {loading ? (
-        <p className="text-[13px] text-[#a8a3cf]">Loading…</p>
+        <p className="text-[13px] text-[#a8a3cf]">{t("c.loading")}</p>
       ) : empty ? (
         <div className="rounded-[22px] border border-dashed border-[#A29BFE]/30 bg-[rgba(45,38,78,.3)] p-[18px] text-[13px] text-[#a8a3cf]">
-          {emptyText || "No purchases yet — buy an account from a seller above."}
+          {emptyText || t("pr.none")}
         </div>
       ) : (
         <>
@@ -95,10 +97,10 @@ export default function PurchasedAccounts({ purchases, batches = [], emptyText }
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="min-w-0 truncate text-[15px] font-medium text-foreground">
-                    {b.account_count} session formats
+                    {t("pr.sessions", { n: b.account_count })}
                   </p>
                   <p className="truncate text-[13px] text-[#a8a3cf]">
-                    {b.country_name} · one ZIP with all sessions
+                    {t("pr.zipLine", { country: b.country_name })}
                   </p>
                 </div>
                 <button
@@ -108,7 +110,7 @@ export default function PurchasedAccounts({ purchases, batches = [], emptyText }
                   className="flex shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-full border-0 bg-gradient-to-br from-[#6C5CE7] to-[#8E7DFF] px-[16px] py-2.5 text-xs font-semibold text-white shadow-[0_6px_18px_rgba(108,92,231,.5)] transition-opacity duration-200 hover:opacity-90 active:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A29BFE] disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <Download className="h-4 w-4" strokeWidth={1.5} />
-                  {dl?.loading ? "Sending…" : "Download"}
+                  {dl?.loading ? t("c.sending") : t("pr.download")}
                 </button>
               </div>
             );
@@ -161,7 +163,7 @@ export default function PurchasedAccounts({ purchases, batches = [], emptyText }
                       aria-label="Copy code"
                     >
                       {copied === state.code ? <Check className="h-4 w-4" strokeWidth={1.5} /> : <Copy className="h-4 w-4" strokeWidth={1.5} />}
-                      Copy code
+                      {t("c.copyCode")}
                     </button>
                   </div>
                 ) : (
@@ -172,7 +174,7 @@ export default function PurchasedAccounts({ purchases, batches = [], emptyText }
                     className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-full border-0 bg-gradient-to-br from-[#6C5CE7] to-[#8E7DFF] px-[18px] py-3 text-[13px] font-semibold text-white shadow-[0_6px_18px_rgba(108,92,231,.5)] transition-opacity duration-200 hover:opacity-90 active:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A29BFE] disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <KeyRound className="h-4 w-4" strokeWidth={1.5} />
-                    {state?.loading ? "Fetching code…" : "Get Code"}
+                    {state?.loading ? t("c.fetchingCode") : t("c.getCode")}
                   </button>
                 )}
                 {state?.error && !state?.loading && (

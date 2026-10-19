@@ -2,22 +2,22 @@ import React from "react";
 import { Gem } from "lucide-react";
 import SectionHead from "./SectionHead";
 import { formatMoney } from "@/lib/format";
+import { useAppLang } from "@/lib/AppLanguageContext";
 
 // Capsule List — Products section with gradient Buy buttons.
 export default function ProductsList({ products, buyingId, onBuy }) {
+  const { t } = useAppLang();
   return (
     <section className="mk-sec flex flex-col gap-3">
       <SectionHead
         icon={<Gem className="h-4 w-4" strokeWidth={1.5} />}
-        title="Products"
-        badge={products?.length > 0 ? `${products.length} items` : undefined}
+        title={t("mk.products")}
+        badge={products?.length > 0 ? t("mk.items", { n: products.length }) : undefined}
       />
       {products === null ? (
-        <p className="text-[13px] text-[#a8a3cf]">Loading…</p>
+        <p className="text-[13px] text-[#a8a3cf]">{t("c.loading")}</p>
       ) : products.length === 0 ? (
-        <p className="text-[13px] text-[#a8a3cf]">
-          No products are available right now — check back soon.
-        </p>
+        <p className="text-[13px] text-[#a8a3cf]">{t("mk.noProducts")}</p>
       ) : (
         products.map((p) => (
           <div
@@ -30,7 +30,7 @@ export default function ProductsList({ products, buyingId, onBuy }) {
             <div className="min-w-0 flex-1">
               <p className="truncate text-[15px] font-medium text-foreground">{p.name}</p>
               <p className="truncate text-[13px] text-[#a8a3cf]">
-                {p.description || p.unit_label || p.category || "General"}
+                {p.description || p.unit_label || p.category || t("mk.general")}
               </p>
             </div>
             <div className="flex shrink-0 flex-col items-end gap-1.5">
@@ -41,7 +41,7 @@ export default function ProductsList({ products, buyingId, onBuy }) {
                 disabled={buyingId === p.id}
                 className="cursor-pointer rounded-full bg-gradient-to-br from-[#6C5CE7] to-[#8E7DFF] px-4 py-2 text-xs font-semibold text-white shadow-[0_6px_18px_rgba(108,92,231,.5)] transition-opacity duration-200 hover:opacity-90 active:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A29BFE] disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {buyingId === p.id ? "Buying…" : "Buy"}
+                {buyingId === p.id ? t("c.buying") : t("c.buy")}
               </button>
             </div>
           </div>

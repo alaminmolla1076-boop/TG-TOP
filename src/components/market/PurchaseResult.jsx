@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { Check, Copy, KeyRound } from "lucide-react";
 import { useTgIdentity } from "@/lib/TgIdentityContext";
+import { useAppLang } from "@/lib/AppLanguageContext";
 
 // Purchase success card shown right on the buy page: the bought number with a
 // copy button and Get Code, so the buyer can log in without leaving the page.
 export default function PurchaseResult({ account, flag, countryName }) {
   const { toast } = useToast();
   const { invoke } = useTgIdentity();
+  const { t } = useAppLang();
   const [code, setCode] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -22,24 +24,24 @@ export default function PurchaseResult({ account, flag, countryName }) {
     } catch (err) {
       const msg = err.response?.data?.error || err.message;
       setError(msg);
-      toast({ title: "No code yet", description: msg, variant: "destructive" });
+      toast({ title: t("c.noCodeYet"), description: msg, variant: "destructive" });
     }
     setLoading(false);
   }
 
-  async function handleCopy(text) {
+  async function handleCopy(text, what) {
     try {
       await navigator.clipboard.writeText(text);
       setCopied(text);
       setTimeout(() => setCopied(null), 2000);
     } catch {
-      toast({ title: "Copy failed", description: "Select the number to copy it manually.", variant: "destructive" });
+      toast({ title: t("c.copyFailed"), description: t("c.copyFailedHint", { what }), variant: "destructive" });
     }
   }
 
   return (
     <section className="mk-sec flex flex-col gap-3">
-      <div className="text-[10px] font-semibold uppercase tracking-[.14em] text-[#A29BFE]">Purchased</div>
+      <div className="text-[10px] font-semibold uppercase tracking-[.14em] text-[#A29BFE]">{t("pr.purchased")}</div>
       <div className="flex flex-col gap-2.5 rounded-[26px] border border-[#A29BFE]/[.22] bg-[rgba(45,38,78,.5)] p-3.5">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#A29BFE]/40 bg-[rgba(108,92,231,.14)] text-base font-bold text-[#A29BFE]">
@@ -52,9 +54,9 @@ export default function PurchaseResult({ account, flag, countryName }) {
               </p>
               <button
                 type="button"
-                onClick={() => handleCopy(account.phone_number)}
+                onClick={() => handleCopy(account.phone_number, t("sc.label"))}
                 className="flex shrink-0 cursor-pointer items-center justify-center rounded-full border border-[#A29BFE]/30 bg-[rgba(45,38,78,.7)] p-1.5 text-[#A29BFE] transition-[border-color] duration-200 hover:border-[#A29BFE]/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#A29BFE]"
-                aria-label="Copy number"
+                aria-label={t("c.copy")}
               >
                 {copied === account.phone_number ? (
                   <Check className="h-3.5 w-3.5" strokeWidth={1.5} />
@@ -74,12 +76,12 @@ export default function PurchaseResult({ account, flag, countryName }) {
             </p>
             <button
               type="button"
-              onClick={() => handleCopy(code)}
+              onClick={() => handleCopy(code, t("sc.label"))}
               className="flex shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-full border border-[#A29BFE]/30 bg-[rgba(45,38,78,.7)] px-[18px] text-xs font-semibold text-[#A29BFE] transition-[border-color] duration-200 hover:border-[#A29BFE]/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#A29BFE]"
-              aria-label="Copy code"
+              aria-label={t("c.copyCode")}
             >
               {copied === code ? <Check className="h-4 w-4" strokeWidth={1.5} /> : <Copy className="h-4 w-4" strokeWidth={1.5} />}
-              Copy code
+              {t("c.copyCode")}
             </button>
           </div>
         ) : (
@@ -90,7 +92,7 @@ export default function PurchaseResult({ account, flag, countryName }) {
             className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-full border-0 bg-gradient-to-br from-[#6C5CE7] to-[#8E7DFF] px-[18px] py-3 text-[13px] font-semibold text-white shadow-[0_6px_18px_rgba(108,92,231,.5)] transition-opacity duration-200 hover:opacity-90 active:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A29BFE] disabled:cursor-not-allowed disabled:opacity-50"
           >
             <KeyRound className="h-4 w-4" strokeWidth={1.5} />
-            {loading ? "Fetching code…" : "Get Code"}
+            {loading ? t("c.fetchingCode") : t("c.getCode")}
           </button>
         )}
         {error && !loading && <p className="text-[11px] text-[#a8a3cf]">{error}</p>}

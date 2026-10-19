@@ -2,24 +2,24 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { ChevronRight, Users } from "lucide-react";
 import SectionHead from "./SectionHead";
+import { useAppLang } from "@/lib/AppLanguageContext";
 
 // Capsule List — seller name directory. Each name row navigates to the
 // seller's own country-stock page (page-based, not an accordion).
 export default function SellerList({ sellers, query }) {
+  const { t } = useAppLang();
   return (
     <section className="mk-sec flex flex-col gap-3">
       <SectionHead
         icon={<Users className="h-4 w-4" strokeWidth={1.5} />}
-        title="Account Sellers"
-        badge={`${sellers?.length ?? 0} sellers`}
+        title={t("mk.sellers")}
+        badge={t("mk.sellersCount", { n: sellers?.length ?? 0 })}
       />
       {sellers === null ? (
-        <p className="text-[13px] text-[#a8a3cf]">Loading…</p>
+        <p className="text-[13px] text-[#a8a3cf]">{t("c.loading")}</p>
       ) : sellers.length === 0 ? (
         <div className="rounded-[22px] border border-dashed border-[#A29BFE]/30 bg-[rgba(45,38,78,.3)] p-[18px] text-[13px] text-[#a8a3cf]">
-          {query
-            ? `No sellers found for “${query}” — try another username.`
-            : "No sellers with stock right now — check back soon."}
+          {query ? t("mk.searchNone", { query }) : t("mk.noSellers")}
         </div>
       ) : (
         sellers.map((s) => (
@@ -44,13 +44,16 @@ export default function SellerList({ sellers, query }) {
                 <span className="truncate text-[15px] font-medium text-foreground">{s.name}</span>
                 {s.is_self && (
                   <span className="shrink-0 rounded-full bg-[rgba(108,92,231,.22)] px-[7px] py-px text-[10px] font-semibold text-[#A29BFE]">
-                    You
+                    {t("c.you")}
                   </span>
                 )}
               </span>
               <span className="block truncate text-[11px] text-[#a8a3cf]">
-                {s.username ? `@${s.username} · ` : ""}ID {s.telegram_id || s.id.slice(0, 8)} ·{" "}
-                {s.countries.reduce((n, c) => n + (c.stock || 0), 0)} in stock
+                {s.username ? `@${s.username} · ` : ""}
+                {t("mk.idInStock", {
+                  id: s.telegram_id || s.id.slice(0, 8),
+                  n: s.countries.reduce((n, c) => n + (c.stock || 0), 0),
+                })}
               </span>
             </span>
             <ChevronRight className="h-4 w-4 shrink-0 text-[#a8a3cf]" strokeWidth={1.5} />

@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
 import { useTgIdentity } from "@/lib/TgIdentityContext";
 import { useToast } from "@/components/ui/use-toast";
+import { useAppLang } from "@/lib/AppLanguageContext";
 import MarketBackdrop from "@/components/market/MarketBackdrop";
 import PurchaseResult from "@/components/market/PurchaseResult";
 import { formatMoney } from "@/lib/format";
@@ -20,6 +21,7 @@ export default function MarketBuy() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { invoke, fetchMyData } = useTgIdentity();
+  const { t } = useAppLang();
   // Stock pool chosen on the seller's page (?pool=spam) — Non-Spam by default.
   const pool =
     new URLSearchParams(window.location.search).get("pool") === "spam" ? "spam" : "nonspam";
@@ -66,13 +68,13 @@ export default function MarketBuy() {
           prev ? { ...prev, country: { ...prev.country, stock: Math.max(0, prev.country.stock - 1) } } : prev
         );
         toast({
-          title: "Account purchased",
-          description: `New balance ${formatMoney(res.data.balance)}`,
+          title: t("mk.accountPurchased"),
+          description: t("mk.purchaseDoneDesc", { name: "", balance: formatMoney(res.data.balance) }).replace(" — ", ""),
         });
       } else {
         toast({
-          title: "Purchase completed",
-          description: `${res.data.count ?? bought.length} accounts — session formats were sent to your Telegram chat. New balance ${formatMoney(res.data.balance)}`,
+          title: t("mk.purchaseDone"),
+          description: t("mk.batchDone", { count: res.data.count ?? bought.length, balance: formatMoney(res.data.balance) }),
         });
       }
       fetchMyData(true).catch(() => {});

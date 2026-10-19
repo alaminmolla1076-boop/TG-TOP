@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useTgIdentity } from "@/lib/TgIdentityContext";
+import { useAppLang } from "@/lib/AppLanguageContext";
 import PurchasedAccounts from "@/components/market/PurchasedAccounts";
 
 // Dashboard — minimal for now: only the My Purchases history.
 export default function Home() {
   const { invoke } = useTgIdentity();
+  const { t } = useAppLang();
   const [purchases, setPurchases] = useState(null);
   const [batches, setBatches] = useState(null);
 
@@ -25,7 +27,7 @@ export default function Home() {
       <PurchasedAccounts
         purchases={purchases}
         batches={batches === null ? [] : batches}
-        emptyText="No purchases yet — open the Market to buy an account."
+        emptyText={t("pr.homeNone")}
       />
     </div>
   );
