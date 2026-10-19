@@ -1,0 +1,55 @@
+{
+  "function_slug": "b44fn",
+  "base_version": 63,
+  "entrypoint_path": "source/index.ts",
+  "module_overrides": {
+    "source/fns/requestWithdrawal.ts": "import { makeB44 } from '../_shared/b44.ts';\nimport { admin } from '../_shared/entities.ts';\nimport { notifyOnce } from '../_shared/adminNotify.ts';\nimport { resolveUser } from '../_shared/resolveUser.ts';\nexport default async function(req) {\n  try {\n    const base44 = makeB44(req);\n    const body = await req.json();\n    const user = await resolveUser(base44, body);\n    if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });\n    const amount = Number(body.amount);\n    const network = String(body.network || 'BEP20').toUpperCase();\n    const address = String(body.wallet_address || '').trim();\n    if (!Number.isFinite(amount) || amount < 3 || Math.abs(amount * 100 - Math.round(amount * 100)) > 0.000001) {\n      return Response.json({ error: 'Minimum withdrawal is $3; use at most two decimal places' }, { status: 400 });\n    }\n    if (!['BEP20', 'POLYGON', 'TON'].includes(network)) return Response.json({ error: 'Invalid withdrawal network' }, { status: 400 });\n    const validAddress = network === 'TON'\n      ? /^(EQ|UQ|kQ|0Q)[A-Za-z0-9_-]{46}$/.test(address) || /^(0|-1):[a-fA-F0-9]{64}$/.test(address)\n      : /^0x[a-fA-F0-9]{40}$/.test(address);\n    if (!validAddress) return Response.json({ error: 'Invalid wallet address for the selected network' }, { status: 400 });\n    const { data, error } = await admin.rpc('create_wallet_withdrawal', {\n      p_email: user.email, p_amount: amount, p_wallet_address: address, p_network: network\n    });\n    if (error) return Response.json({ error: error.message }, { status: 400 });\n    try {\n      await notifyOnce(base44, user.email, `Withdrawal submitted\\n\\nAmount: $${amount.toFixed(2)} USD equivalent\\nNetwork: ${network}\\nAddress: ${address}\\nStatus: Pending`);\n    } catch (notificationError) {\n      console.error('Withdrawal notification failed', notificationError.message);\n    }\n    return Response.json({ success: true, amount, withdrawal: data.withdrawal, balance: data.balance, newBalance: data.balance });\n  } catch (error) {\n    return Response.json({ error: error.message }, { status: 500 });\n  }\n}\n"
+  },
+  "patches": [
+    {
+      "path": "source/fns/purchaseAccount.ts",
+      "find": "import { makeB44, secrets } from '../_shared/b44.ts';",
+      "replace": "import { makeB44, secrets } from '../_shared/b44.ts';\nimport { admin } from '../_shared/entities.ts';"
+    },
+    {
+      "path": "source/fns/purchaseAccount.ts",
+      "find": "import { getRealBalance, syncUserBalance } from '../_shared/balance.ts';",
+      "replace": "import { getRealBalance } from '../_shared/balance.ts';"
+    },
+    {
+      "path": "source/fns/purchaseAccount.ts",
+      "find": "    const qty = Math.max(1, Number(quantity) || 1);",
+      "replace": "    const qty = quantity == null ? 1 : Number(quantity);\n    if (!Number.isInteger(qty) || qty < 1 || qty > 3000) return Response.json({ error: 'Quantity must be a whole number between 1 and 3000' }, { status: 400 });"
+    },
+    {
+      "path": "source/fns/purchaseAccount.ts",
+      "find": "    const total = Number((unitPrice * qty).toFixed(2));",
+      "replace": "    const accountPrice = (acc)=>Number((Number(acc.price) || unitPrice).toFixed(2));\n    const total = Number(stockBuffer.slice(0, qty).reduce((sum, acc)=>sum + accountPrice(acc), 0).toFixed(2));"
+    },
+    {
+      "path": "source/fns/purchaseAccount.ts",
+      "find": "    const commit = async (batch)=>{\n      if (!batch.length) return;\n      await base44.asServiceRole.entities.TgAccount.bulkUpdate(batch.map((acc)=>({\n          id: acc.id,\n          status: 'sold',\n          owner_email: user.email,\n          purchase_type: isSeason ? 'season' : 'single',\n          batch_id: batchId,\n          password: '',\n          price: unitPrice\n        })));\n    };",
+      "replace": "    let settledBalance = realBalance;\n    const commit = async (batch)=>{\n      if (!batch.length) return;\n      const { data, error } = await admin.rpc('complete_account_purchase', {\n        p_buyer_email: user.email,\n        p_items: batch.map((acc)=>({ id: acc.id, price: accountPrice(acc) })),\n        p_purchase_type: isSeason ? 'season' : 'single',\n        p_batch_id: batchId || null\n      });\n      if (error) throw new Error(error.message);\n      settledBalance = Number(data.new_balance);\n    };"
+    },
+    {
+      "path": "source/fns/purchaseAccount.ts",
+      "find": "      await commit(wave);\n      delivered.push(...wave);",
+      "replace": "      try {\n        await commit(wave);\n      } catch (commitError) {\n        if (!delivered.length) return Response.json({ error: commitError.message }, { status: 400 });\n        break;\n      }\n      delivered.push(...wave);"
+    },
+    {
+      "path": "source/fns/purchaseAccount.ts",
+      "find": "          status: 'fulfilled'\n        });",
+      "replace": "          status: 'fulfilled'\n        }).catch((error)=>console.error('OTP receipt failed', error.message));"
+    },
+    {
+      "path": "source/fns/purchaseAccount.ts",
+      "find": "    if (country) await syncCountryStock(base44, country_iso);\n    await syncUserBalance(base44, user.email);",
+      "replace": "    if (country) await syncCountryStock(base44, country_iso).catch((error)=>console.error('Stock refresh failed', error.message));"
+    },
+    {
+      "path": "source/fns/purchaseAccount.ts",
+      "find": "      first_account_id: delivered[0].id,",
+      "replace": "      balance: settledBalance,\n      first_account_id: delivered[0].id,"
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+import React, { useState } from "react";
+import { useTgIdentity } from "@/lib/TgIdentityContext";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
+import { Check, X } from "lucide-react";
+import { formatDate, formatMoney } from "@/lib/format";
+import { useAppLang } from "@/lib/AppLanguageContext";
+
+export default function AdminDeposits({ pending, onChanged }) {
+  const { toast } = useToast();
+  const { invoke } = useTgIdentity();
+  const { t } = useAppLang();
+  const [busyId, setBusyId] = useState(null);
+
+  async function review(d, action) {
+    setBusyId(d.id);
+    try {
+      await invoke("reviewTopUp", { id: d.id, action });
+      toast({
+        title: action === "approve" ? t("dp.approvedToast") : t("dp.rejectedToast"),
+        description: action === "approve" ? t("dp.credited", { amount: formatMoney(Number(d.amount)) }) : undefined,
+      });
+      onChanged && onChanged();
+    } catch (err) {
+      toast({
+        title: t("c.actionFailed"),
+        description: err.response?.data?.error || err.message,
+        variant: "destructive",
+      });
+    }
+    setBusyId(null);
+  }
+
+  if (!pending || pending.length === 0) return <p className="text-sm text-muted-foreground">{t("dp.noPending")}</p>;
+
+  return (
+    <div className="space-y-3">
+      {pending.map((d) => (
+        <div key={d.id} className="rounded-2xl border border-border/50 bg-card p-4">
+          <div className="flex items-center justify-between gap-2">
+            <p className="font-heading text-lg font-bold text-emerald-400">{formatMoney(Number(d.amount))}</p>
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                onClick={() => review(d, "approve")}
+                disabled={busyId === d.id}
+                className="rounded-full bg-primary font-semibold text-primary-foreground hover:bg-primary/90"
+              >
+                <Check className="h-4 w-4" /> {t("c.approve")}
+              </Button>
+              <Button size="sm" variant="destructive" onClick={() => review(d, "reject")} disabled={busyId === d.id} className="rounded-full">
+                <X className="h-4 w-4" /> {t("c.reject")}
+              </Button>
+            </div>
+          </div>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {d.network || "—"} · {d.user_email} · {formatDate(d.created_date)}
+          </p>
+          <p className="mt-1 break-all font-mono text-[11px] text-muted-foreground">{d.tx_hash}</p>
+        </div>
+      ))}
+    </div>
+  );
+}

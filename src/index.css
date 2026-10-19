@@ -1,0 +1,331 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 251 24% 9%;
+    --obsidian: 251 27% 6%;
+    --foreground: 248 70% 94%;
+    --card: 251 27% 16%;
+    --card-foreground: 248 70% 94%;
+    --popover: 251 27% 14%;
+    --popover-foreground: 248 70% 94%;
+    --primary: 247 74% 63%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 250 29% 19%;
+    --secondary-foreground: 248 70% 94%;
+    --muted: 250 29% 19%;
+    --muted-foreground: 248 23% 66%;
+    --accent: 251 31% 30%;
+    --accent-foreground: 248 70% 94%;
+    --destructive: 0 62% 52%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 250 25% 26%;
+    --input: 250 25% 26%;
+    --ring: 244 98% 80%;
+    --chart-1: 244 98% 80%;
+    --chart-2: 247 74% 63%;
+    --chart-3: 248 23% 66%;
+    --chart-4: 250 29% 19%;
+    --chart-5: 248 70% 94%;
+    --radius: 0.75rem;
+    --font-heading: ui-rounded, "Segoe UI", system-ui, sans-serif;
+    --font-body: ui-rounded, "Segoe UI", system-ui, sans-serif;
+    --font-display: ui-rounded, "Segoe UI", system-ui, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    --sidebar-background: 251 24% 8%;
+    --sidebar-foreground: 248 70% 94%;
+    --sidebar-primary: 247 74% 63%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 250 29% 19%;
+    --sidebar-accent-foreground: 248 70% 94%;
+    --sidebar-border: 250 25% 26%;
+    --sidebar-ring: 244 98% 80%;
+  }
+
+  .dark {
+    --background: 251 24% 9%;
+    --obsidian: 251 27% 6%;
+    --foreground: 248 70% 94%;
+    --card: 251 27% 16%;
+    --card-foreground: 248 70% 94%;
+    --popover: 251 27% 14%;
+    --popover-foreground: 248 70% 94%;
+    --primary: 247 74% 63%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 250 29% 19%;
+    --secondary-foreground: 248 70% 94%;
+    --muted: 250 29% 19%;
+    --muted-foreground: 248 23% 66%;
+    --accent: 251 31% 30%;
+    --accent-foreground: 248 70% 94%;
+    --destructive: 0 62% 52%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 250 25% 26%;
+    --input: 250 25% 26%;
+    --ring: 244 98% 80%;
+    --chart-1: 244 98% 80%;
+    --chart-2: 247 74% 63%;
+    --chart-3: 248 23% 66%;
+    --chart-4: 250 29% 19%;
+    --chart-5: 248 70% 94%;
+    --sidebar-background: 251 24% 8%;
+    --sidebar-foreground: 248 70% 94%;
+    --sidebar-primary: 247 74% 63%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 250 29% 19%;
+    --sidebar-accent-foreground: 248 70% 94%;
+    --sidebar-border: 250 25% 26%;
+    --sidebar-ring: 244 98% 80%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body;
+  }
+}
+
+@layer utilities {
+  @keyframes og-rise {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: none; }
+  }
+  .og-rise {
+    animation: og-rise 0.7s ease-out both;
+  }
+  .og-rise-2 {
+    animation: og-rise 0.7s ease-out 0.3s both;
+  }
+  .og-rise-3 {
+    animation: og-rise 0.7s ease-out 0.5s both;
+  }
+  .og-rise-4 {
+    animation: og-rise 0.7s ease-out 0.7s both;
+  }
+  /* Sell step indicator — active bar breathes between dim and full accent */
+  @keyframes sf-amber {
+    0%, 100% { opacity: 0.68; }
+    50% { opacity: 1; }
+  }
+  .sf-bar-active {
+    animation: sf-amber 2.8s ease-in-out infinite;
+  }
+  /* Vault Card — soft light sweep drifting across the hero surface */
+  @keyframes vg-sweep {
+    0% { transform: translateX(-130%); }
+    55% { transform: translateX(320%); }
+    100% { transform: translateX(320%); }
+  }
+  .vg-sweep {
+    animation: vg-sweep 6s ease-in-out infinite;
+  }
+  /* Nordic Frost Glass — balance pod: entrance rise + rhythmic inner glow pulse */
+  @keyframes nf-rise {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes nf-pulse {
+    0%, 100% { box-shadow: inset 0 0 22px rgba(108, 92, 231, .3), inset 0 2px 0 rgba(255, 255, 255, .08), 0 14px 34px rgba(0, 0, 0, .45); }
+    50% { box-shadow: inset 0 0 34px rgba(162, 155, 254, .55), inset 0 2px 0 rgba(255, 255, 255, .1), 0 14px 40px rgba(108, 92, 231, .35); }
+  }
+  .nf-pod {
+    animation: nf-rise 0.7s ease-out 0.2s both, nf-pulse 3.2s ease-in-out infinite;
+  }
+  /* Capsule List market — opacity-only entrance + Top Seller glow pulse */
+  @keyframes mk-rise {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes mk-glow {
+    0%, 100% { box-shadow: inset 0 0 18px rgba(108, 92, 231, .25), 0 10px 26px rgba(0, 0, 0, .4); }
+    50% { box-shadow: inset 0 0 30px rgba(162, 155, 254, .45), 0 10px 30px rgba(0, 0, 0, .4); }
+  }
+  /* Original splash: soft violet atmosphere and a fine loading line. */
+  .splash-screen {
+    background:
+      radial-gradient(ellipse 70% 36% at 50% 42%, hsl(var(--primary) / .22), transparent 78%),
+      radial-gradient(ellipse 85% 40% at 0% 100%, hsl(var(--primary) / .09), transparent 75%),
+      hsl(var(--obsidian));
+  }
+  /* Logo glow pulse — breathes between a soft and a strong halo */
+  @keyframes nf-logo-glow {
+    0%, 100% {
+      filter: drop-shadow(0 0 10px hsl(var(--ring) / .45));
+    }
+    50% {
+      filter: drop-shadow(0 0 30px hsl(var(--ring) / .95)) drop-shadow(0 0 60px hsl(var(--primary) / .45));
+    }
+  }
+  .splash-logo {
+    animation: nf-logo-glow 1.8s ease-in-out infinite;
+  }
+  /* Wordmark — shimmering gold gradient on bold type */
+  .splash-sub {
+    background: linear-gradient(90deg, #b8860b, #f7d66d 45%, #fff3c4 50%, #f7d66d 55%, #b8860b);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  /* Progress bar — purple→cyan gradient fill, glow pulse and a light sheen */
+  @keyframes nf-splash-bar {
+    from { width: 0%; }
+    to { width: 100%; }
+  }
+  @keyframes nf-bar-pulse {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.5); }
+  }
+  .splash-bar {
+    background: linear-gradient(90deg, #bc13fe, #7a00ff 45%, #00f2ff);
+    box-shadow: 0 0 14px rgba(188, 19, 254, .65), 0 0 28px rgba(0, 242, 255, .35);
+    animation: nf-splash-bar 3s ease-out forwards, nf-bar-pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes nf-splash-sheen {
+    0% { transform: translateX(-150%) skewX(-18deg); opacity: 0; }
+    18% { opacity: .9; }
+    100% { transform: translateX(760%) skewX(-18deg); opacity: 0; }
+  }
+  .splash-sheen {
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .75), transparent);
+    animation: nf-splash-sheen 1.5s ease-in-out infinite;
+  }
+  .mk-fade {
+    animation: mk-rise 0.7s ease-out both;
+  }
+  .mk-cap {
+    animation: mk-rise 0.7s ease-out 0.15s both, mk-glow 4s ease-in-out infinite;
+  }
+  .mk-sec {
+    animation: mk-rise 0.7s ease-out 0.3s both;
+  }
+  /* Admin — Glass Dashboard: frosted KPI pods, pill tabs and glass cards */
+  @keyframes adm-rise {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes adm-pulse {
+    0%, 100% { box-shadow: inset 0 0 18px rgba(108, 92, 231, .3), inset 0 1px 0 rgba(255, 255, 255, .1), 0 10px 26px rgba(0, 0, 0, .45); }
+    50% { box-shadow: inset 0 0 30px rgba(162, 155, 254, .55), inset 0 1px 0 rgba(255, 255, 255, .12), 0 10px 30px rgba(108, 92, 231, .35); }
+  }
+  .adm-bg {
+    position: fixed; left: 0; top: 0; width: 100%; height: 100%;
+    object-fit: cover; opacity: .55; z-index: 0; pointer-events: none;
+  }
+  .adm-scrim {
+    position: fixed; left: 0; top: 0; width: 100%; height: 100%;
+    background: linear-gradient(180deg, rgba(20, 16, 43, .35), #14102B 95%);
+    z-index: 0; pointer-events: none;
+  }
+  .adm-hd { display: flex; align-items: center; gap: 12px; animation: adm-rise 0.7s ease-out both; }
+  .adm-ic {
+    width: 44px; height: 44px; border-radius: 50%;
+    border: 1px solid rgba(162, 155, 254, .45); background: rgba(108, 92, 231, .18);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .adm-eb { margin: 0; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .16em; color: #A29BFE; }
+  .adm-h1 { margin: 2px 0 0; font-size: 20px; font-weight: 800; line-height: 1.1; }
+  .adm-kpi { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; animation: adm-rise 0.7s ease-out 0.15s both; }
+  .adm-pod {
+    border-radius: 24px; border: 1px solid rgba(162, 155, 254, .3); background: rgba(30, 26, 60, .7);
+    padding: 14px 8px; text-align: center; animation: adm-pulse 3.2s ease-in-out infinite;
+    display: flex; flex-direction: column; gap: 6px; align-items: center; justify-content: center; min-height: 92px;
+  }
+  .adm-pod b { font-size: 34px; font-weight: 800; letter-spacing: -0.02em; line-height: 1; color: #fff; }
+  .adm-pod span { font-size: 10px; text-transform: uppercase; letter-spacing: .12em; color: #A29BFE; font-weight: 700; }
+  .adm-tabs {
+    display: flex; gap: 4px; border-radius: 999px; border: 1px solid rgba(162, 155, 254, .25);
+    background: rgba(30, 26, 60, .7); padding: 6px; animation: adm-rise 0.7s ease-out 0.3s both;
+  }
+  .adm-tab {
+    position: relative; flex: 1; display: flex; align-items: center; justify-content: center; gap: 4px;
+    padding: 9px 4px; border-radius: 999px; border: 0; background: transparent; color: #a8a3cf;
+    font: 600 11px ui-rounded, "Segoe UI", system-ui, sans-serif; cursor: pointer;
+    transition: color 0.2s, background-color 0.2s;
+  }
+  .adm-tab:hover { color: #ECEAFF; }
+  .adm-tab:active { opacity: .85; }
+  .adm-tab:focus-visible { outline: 2px solid #A29BFE; }
+  .adm-tab.on { background: linear-gradient(135deg, #6C5CE7, #8E7DFF); color: #fff; box-shadow: 0 4px 14px rgba(108, 92, 231, .5); }
+  .adm-bd {
+    position: absolute; top: -5px; right: 0; min-width: 16px; height: 16px; border-radius: 8px;
+    background: #e04646; color: #fff; font-size: 9px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center; padding: 0 4px; box-sizing: border-box;
+  }
+  .adm-sr {
+    display: flex; align-items: center; gap: 8px; border-radius: 999px;
+    border: 1px solid rgba(162, 155, 254, .28); background: rgba(45, 38, 78, .55);
+    padding: 11px 16px; animation: adm-rise 0.7s ease-out 0.4s both;
+  }
+  .adm-sr input { width: 100%; background: transparent; border: 0; outline: 0; color: #ECEAFF; font: 13px ui-rounded, "Segoe UI", system-ui, sans-serif; }
+  .adm-sr input::placeholder { color: rgba(168, 163, 207, .7); }
+  .adm-card {
+    border-radius: 24px; border: 1px solid rgba(162, 155, 254, .24); background: rgba(30, 26, 60, .7);
+    padding: 18px; display: flex; flex-direction: column; gap: 12px; font-size: 13px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), 0 8px 20px rgba(0, 0, 0, .32);
+    animation: adm-rise 0.7s ease-out 0.5s both;
+  }
+  .adm-row { display: flex; align-items: center; gap: 10px; }
+  .adm-av {
+    width: 36px; height: 36px; border-radius: 50%;
+    border: 1px solid rgba(162, 155, 254, .45); background: rgba(108, 92, 231, .18);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 14px; color: #A29BFE; flex-shrink: 0;
+  }
+  .adm-nm { flex: 1; min-width: 0; }
+  .adm-nm p { margin: 0; }
+  .adm-nm .a { font-weight: 700; color: #ECEAFF; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .adm-nm .b { font-size: 12px; color: #a8a3cf; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .adm-st { border-radius: 999px; padding: 3px 9px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; flex-shrink: 0; }
+  .adm-st.act { background: rgba(162, 155, 254, .18); color: #C9C4FF; }
+  .adm-st.ban { background: rgba(224, 70, 70, .18); color: #ff8a8a; }
+  .adm-bal { margin: 0; font-size: 12px; color: #a8a3cf; }
+  .adm-bal b { font-size: 17px; color: #A29BFE; font-weight: 800; }
+  .adm-btns { display: flex; gap: 8px; }
+  .adm-btn {
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px; border-radius: 999px;
+    padding: 10px; font: 700 11px ui-rounded, "Segoe UI", system-ui, sans-serif;
+    text-transform: uppercase; letter-spacing: .06em; cursor: pointer;
+    transition: background-color 0.2s, opacity 0.2s, box-shadow 0.2s;
+    border: 1px solid rgba(162, 155, 254, .3); background: rgba(45, 38, 78, .55); color: #C9C4FF;
+  }
+  .adm-btn:hover { background: rgba(162, 155, 254, .22); }
+  .adm-btn:active { opacity: .8; }
+  .adm-btn:focus-visible { outline: 2px solid #A29BFE; }
+  .adm-btn:disabled { opacity: .5; pointer-events: none; }
+  .adm-btn.d { border-color: rgba(224, 70, 70, .45); background: rgba(224, 70, 70, .12); color: #ff8a8a; }
+  .adm-btn.d:hover { background: rgba(224, 70, 70, .22); }
+  .adm-btn.p { border: 0; background: linear-gradient(135deg, #6C5CE7, #8E7DFF); color: #fff; box-shadow: 0 4px 14px rgba(108, 92, 231, .5); }
+  .adm-btn.p:hover { opacity: .9; }
+  .adm-amt {
+    width: 0; flex: 1; border-radius: 999px; border: 1px solid rgba(162, 155, 254, .28);
+    background: rgba(45, 38, 78, .55); padding: 10px 14px; color: #ECEAFF;
+    font: 13px ui-rounded, "Segoe UI", system-ui, sans-serif; outline: 0; transition: border-color 0.2s;
+  }
+  .adm-amt:focus { border-color: rgba(162, 155, 254, .7); }
+  .adm-amt::placeholder { color: rgba(168, 163, 207, .7); }
+  .adm-lst { display: flex; flex-direction: column; gap: 6px; }
+  .adm-lt { margin: 0; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .14em; color: #A29BFE; }
+  .adm-li { display: flex; align-items: center; gap: 8px; border-radius: 16px; background: rgba(20, 16, 43, .55); padding: 9px 12px; }
+  .adm-li div { flex: 1; min-width: 0; }
+  .adm-li p { margin: 0; }
+  .adm-li .m { font-size: 12px; color: #ECEAFF; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .adm-li .s { font-size: 11px; color: #a8a3cf; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .adm-li .v { font-weight: 800; color: #A29BFE; font-size: 13px; flex-shrink: 0; }
+  .adm-li .v.n { color: #ff8a8a; }
+  .adm-emp { font-size: 12px; color: #a8a3cf; margin: 0; }
+  .adm-amv { margin: 0; font-size: 22px; font-weight: 800; color: #A29BFE; }
+  .adm-dot { width: 5px; height: 5px; border-radius: 50%; background: #6C5CE7; box-shadow: 0 0 8px #6C5CE7; flex-shrink: 0; }
+  .adm-mut { margin: 0; font-size: 12px; color: #a8a3cf; }
+  .adm-mono { margin: 0; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 11px; color: #a8a3cf; word-break: break-all; }
+  .adm-tag {
+    border-radius: 999px; border: 1px solid rgba(162, 155, 254, .3); background: rgba(162, 155, 254, .14);
+    padding: 3px 9px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #C9C4FF; flex-shrink: 0;
+  }
+  .adm-sec { margin: 0; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .14em; color: #A29BFE; }
+}
