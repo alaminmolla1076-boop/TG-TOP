@@ -566,21 +566,23 @@ export default async function handleCallback(base44, token, cq) {
       await send(cbChatId, t(cbLang, 'bind.required'));
       return;
     }
+    await clearState(base44, `sellmulti:${String(cbUser.id)}`);
     await setState(base44, `sell:${String(cbUser.id)}`, JSON.stringify({
       status: 'awaiting_phone'
     }));
     await send(cbChatId, `${t(cbLang, 'sell.title')}\n\n${t(cbLang, 'sell.prompt')}`);
     return;
   }
-  if (cbData === 'sell_season') {
+  if (cbData === 'sell_multi') {
     if (!cbUserRec) {
       await send(cbChatId, t(cbLang, 'bind.required'));
       return;
     }
-    await setState(base44, `sellseason:${String(cbUser.id)}`, JSON.stringify({
-      status: 'awaiting_sessions'
+    await clearState(base44, `sell:${String(cbUser.id)}`);
+    await setState(base44, `sellmulti:${String(cbUser.id)}`, JSON.stringify({
+      status: 'awaiting_numbers'
     }));
-    await send(cbChatId, t(cbLang, 'sell.seasonPrompt'));
+    await send(cbChatId, t(cbLang, 'sell.multiPrompt'));
     return;
   }
   switch(cbData){
@@ -778,8 +780,8 @@ export default async function handleCallback(base44, token, cq) {
           ],
           [
             {
-              text: t(cbLang, 'sell.seasonBtn'),
-              callback_data: 'sell_season'
+              text: t(cbLang, 'sell.multiBtn'),
+              callback_data: 'sell_multi'
             }
           ],
           [

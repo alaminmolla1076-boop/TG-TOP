@@ -4,7 +4,7 @@ import { tgSend, tgSetCommands } from '../_shared/telegramApi.ts';
 import { stateCache, prefetchStates, getState, setState, clearState, getUserContext, findUserByTelegramId } from '../bot/state.ts';
 import handleCallback from '../bot/callbacks.ts';
 import handleCommand from '../bot/commands.ts';
-import { handleDocument, handleBuySearch, handleNumericFlows, handleSellFlow, handleTextFlows } from '../bot/flows.ts';
+import { handleDocument, handleBuySearch, handleNumericFlows, handleSellFlow, handleSellMultiFlow, handleTextFlows } from '../bot/flows.ts';
 // Every translated reply-keyboard button text → command action (all languages).
 const REPLY_MENU_ACTIONS = buildAllReplyActions();
 // Routes one Telegram update: callback query, document upload, or text message.
@@ -37,6 +37,7 @@ async function processUpdate(base44, token, update) {
       'setting:maintenance_message',
       `cmds:${chatId}`,
       `sell:${tid}`,
+      `sellmulti:${tid}`,
       `sellseason:${tid}`,
       `adminseason:${tid}`,
       `topup:${tid}`,
@@ -108,6 +109,7 @@ async function processUpdate(base44, token, update) {
   if (isMenuPress) {
     for (const key of [
       'sell',
+      'sellmulti',
       'sellseason',
       'adminseason',
       'topup',
@@ -122,6 +124,8 @@ async function processUpdate(base44, token, update) {
   if (isPlainText) {
     const sellStateRec = await getState(base44, `sell:${tid}`);
     if (sellStateRec && await handleSellFlow(base44, token, ctx, JSON.parse(sellStateRec.value))) return;
+    const sellMultiRec = await getState(base44, `sellmulti:${tid}`);
+    if (sellMultiRec && await handleSellMultiFlow(base44, token, ctx, JSON.parse(sellMultiRec.value))) return;
     if (user && await handleTextFlows(base44, token, ctx)) return;
   }
   await handleCommand(base44, token, ctx);

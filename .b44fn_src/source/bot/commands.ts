@@ -420,8 +420,8 @@ export default async function handleCommand(base44, token, ctx) {
           ],
           [
             {
-              text: t(lang, 'sell.seasonBtn'),
-              callback_data: 'sell_season'
+              text: t(lang, 'sell.multiBtn'),
+              callback_data: 'sell_multi'
             }
           ]
         ], replyTo);
@@ -568,7 +568,7 @@ export default async function handleCommand(base44, token, ctx) {
       {
         if (!await requireUser()) break;
         await clearState(base44, `session:${user.email}`);
-        await tgSend(token, chatId, `❌ <b>Accounts with 2FA cannot be sold.</b>\n\nRemove 2FA from the account first, then sell it with /session or the 📱 Sell button.`, replyTo);
+        await tgSend(token, chatId, `🔐 <b>Selling accounts with 2FA</b>\n\nDuring login (📱 Sell Number or 📱 Sell Multiple), when an account has 2FA the bot asks for its 2FA password. After login the system replaces the password with its own and adds the account to stock.`, replyTo);
         break;
       }
     case 'admin':

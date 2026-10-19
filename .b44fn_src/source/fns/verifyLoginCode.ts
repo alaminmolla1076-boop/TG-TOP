@@ -1,5 +1,5 @@
 import { makeB44 } from '../_shared/b44.ts';
-import { Mt, errorMessageOf } from '../_shared/mtproto.js';
+import { Mt, errorMessageOf, srpCheck } from '../_shared/mtproto.js';
 import { resolveUser } from '../_shared/resolveUser.ts';
 import { findAcceptedCountry } from '../_shared/acceptedCountries.js';
 import { generatePassword, setTwoFactorPassword } from '../_shared/twoFactor.js';
@@ -17,7 +17,7 @@ export default async function(req) {
     }, {
       status: 401
     });
-    const { request_id, phone_code, user_email } = body;
+    const { request_id, phone_code, password, user_email } = body;
     if (!request_id) return Response.json({
       error: 'request_id required'
     }, {
@@ -41,46 +41,84 @@ export default async function(req) {
     mt = new Mt(sr.session_string || '', {
       syncAuth: false
     });
-    try {
-      // A previous worker can stop after Telegram accepted the code.
-      // Reuse that authorized key rather than consume the same OTP again.
-      if (!await mt.isAuthorized()) {
-        await mt.call('auth.signIn', {
-          phone_number: sr.phone_number,
-          phone_code_hash: sr.phone_code_hash,
-          phone_code: String(phone_code).trim()
+    // Verify the cloud password on a resumed request (the OTP was already
+    // accepted). A wrong password keeps the request alive so the seller can
+    // retry.
+    if (sr.status === 'awaiting_2fa' && password) {
+      try {
+        const pwd = await mt.call('account.getPassword', {});
+        const check = await srpCheck(pwd, String(password));
+        await mt.call('auth.checkPassword', {
+          password: check
         });
-      }
-    } catch (e) {
-      const msg = errorMessageOf(e);
-      // Account has 2FA — not supported in this flow.
-      if (/SESSION_PASSWORD_NEEDED/i.test(msg)) {
-        await base44.asServiceRole.entities.SessionRequest.update(sr.id, {
-          status: 'rejected',
-          error: 'Account has 2FA — not supported'
-        });
+      } catch (e2) {
         return Response.json({
-          error: 'Account has 2FA — not supported'
+          error: errorMessageOf(e2)
         }, {
           status: 400
         });
       }
-      await base44.asServiceRole.entities.SessionRequest.update(sr.id, {
-        status: 'failed',
-        error: msg
-      });
-      return Response.json({
-        error: msg
-      }, {
-        status: 400
-      });
+    } else {
+      try {
+        // A previous worker can stop after Telegram accepted the code.
+        // Reuse that authorized key rather than consume the same OTP again.
+        if (!await mt.isAuthorized()) {
+          await mt.call('auth.signIn', {
+            phone_number: sr.phone_number,
+            phone_code_hash: sr.phone_code_hash,
+            phone_code: String(phone_code).trim()
+          });
+        }
+      } catch (e) {
+        const msg = errorMessageOf(e);
+        // Account has 2FA — ask for the password (or verify it now).
+        if (/SESSION_PASSWORD_NEEDED/i.test(msg)) {
+          if (!password) {
+            // Code accepted: persist the 2FA-pending session so the next
+            // call can run auth.checkPassword on the same auth key.
+            const pendingSession = await mt.save();
+            await base44.asServiceRole.entities.SessionRequest.update(sr.id, {
+              status: 'awaiting_2fa',
+              session_string: pendingSession
+            });
+            return Response.json({
+              error: '2FA_REQUIRED'
+            }, {
+              status: 400
+            });
+          }
+          try {
+            const pwd = await mt.call('account.getPassword', {});
+            const check = await srpCheck(pwd, String(password));
+            await mt.call('auth.checkPassword', {
+              password: check
+            });
+          } catch (e2) {
+            return Response.json({
+              error: errorMessageOf(e2)
+            }, {
+              status: 400
+            });
+          }
+        } else {
+          await base44.asServiceRole.entities.SessionRequest.update(sr.id, {
+            status: 'failed',
+            error: msg
+          });
+          return Response.json({
+            error: msg
+          }, {
+            status: 400
+          });
+        }
+      }
     }
-    // Login succeeded — set a system 2FA password before saving.
+    // Login succeeded — set (or replace with a system) 2FA password before saving.
     let storedPassword = '';
     try {
       const pwd = await mt.call('account.getPassword', {});
-      if (pwd.has_password) {
-        // Account already has 2FA — can't set a new one without the old password.
+      if (pwd.has_password && !password) {
+        // Already has 2FA and the old password is unknown — cannot rotate it.
         await base44.asServiceRole.entities.SessionRequest.update(sr.id, {
           status: 'rejected',
           error: 'Account already has 2FA — not supported'
@@ -92,7 +130,9 @@ export default async function(req) {
         });
       }
       storedPassword = generatePassword(12);
-      await setTwoFactorPassword(mt, storedPassword, '', 'tgtop');
+      // When the seller logged in with their own 2FA, replace it with the
+      // system password; fresh accounts simply get the system password.
+      await setTwoFactorPassword(mt, storedPassword, pwd.has_password ? String(password) : '', 'tgtop');
     } catch (e) {
       const msg = errorMessageOf(e);
       await base44.asServiceRole.entities.SessionRequest.update(sr.id, {
