@@ -7,10 +7,10 @@ import { useAppLang } from "@/lib/AppLanguageContext";
 export default function BottomNav() {
   const { t } = useAppLang();
   const tabs = [
+    { to: "/account", label: t("nav.account"), icon: User },
+    { to: "/sell", label: t("nav.sell"), icon: Upload },
     { to: "/", label: t("nav.market"), icon: Store, end: true },
     { to: "/home", label: t("nav.dashboard"), icon: LayoutDashboard },
-    { to: "/sell", label: t("nav.sell"), icon: Upload },
-    { to: "/account", label: t("nav.account"), icon: User },
   ];
 
   return (
