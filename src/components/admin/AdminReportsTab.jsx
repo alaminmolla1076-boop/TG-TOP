@@ -3,7 +3,7 @@ import { useAppLang } from "@/lib/AppLanguageContext";
 import { formatDate } from "@/lib/format";
 import { AdminSpinner } from "./AdminUsersTab";
 
-const SCAM_TYPES = ["not_delivered", "invalid_account", "scam", "price_manipulation", "other"];
+const SCAM_TYPES = ["not_logged_out"];
 
 // Reports tab — seller reports submitted from the Report Seller page.
 export default function AdminReportsTab({ reports, loading }) {
