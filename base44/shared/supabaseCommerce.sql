@@ -92,10 +92,11 @@ create or replace function public.create_wallet_withdrawal(
 declare
   v_withdrawal public.withdrawals%rowtype;
   v_balance numeric;
+  v_fee numeric := 0.10;
 begin
-  if nullif(trim(p_email), '') is null or p_amount is null or p_amount < 3
+  if nullif(trim(p_email), '') is null or p_amount is null or p_amount < 2
     or p_amount::text in ('NaN', 'Infinity', '-Infinity') or p_amount <> round(p_amount, 2) then
-    raise exception 'Minimum withdrawal is $3; use at most two decimal places';
+    raise exception 'Minimum withdrawal is $2; use at most two decimal places';
   end if;
   if p_network is null or p_network not in ('BEP20', 'POLYGON', 'TON') then
     raise exception 'Invalid withdrawal network';
@@ -108,12 +109,18 @@ begin
   end if;
   perform pg_advisory_xact_lock(hashtextextended(p_email, 0));
   v_balance := public.commerce_balance(p_email);
-  if v_balance < p_amount then
-    raise exception 'Insufficient balance';
+  -- A $0.10 transaction fee is charged on top of the withdrawal amount; the
+  -- user must keep the fee in their account when requesting a withdrawal.
+  if v_balance < p_amount + v_fee then
+    raise exception 'Insufficient balance: a $0.10 transaction fee is charged in addition to the withdrawal amount';
   end if;
   insert into public.withdrawals(user_email, amount, wallet_address, coin, network, status)
     values(p_email, p_amount, p_wallet_address, case when p_network = 'TON' then 'TON' else 'USDT' end, p_network, 'pending')
     returning * into v_withdrawal;
+  -- Fee kept as its own ledger row (negative top-up), same pattern as the
+  -- purchase commission, so the balance math stays auditable.
+  insert into public.top_ups(user_email, amount, coin, network, tx_hash, status)
+    values(p_email, -v_fee, 'USDT', 'withdrawal_fee', 'wfee:' || v_withdrawal.id, 'approved');
   v_balance := public.commerce_balance(p_email);
   update public.profiles set balance = v_balance where email = p_email;
   return jsonb_build_object('withdrawal', to_jsonb(v_withdrawal), 'balance', v_balance);

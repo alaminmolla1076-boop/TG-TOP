@@ -42,6 +42,15 @@ export default async function(req) {
     await base44.asServiceRole.entities.Withdrawal.update(withdrawal_id, {
       status
     });
+    // On rejection the held amount is returned by the balance view; the $0.10
+    // fee ledger row is removed with it so the user is fully refunded.
+    if (status === 'rejected') {
+      const feeRows = await base44.asServiceRole.entities.TopUp.filter({
+        network: 'withdrawal_fee',
+        tx_hash: `wfee:${withdrawal_id}`
+      });
+      for (const row of feeRows || [])await base44.asServiceRole.entities.TopUp.delete(row.id);
+    }
     let balance = null;
     if (withdrawal.user_email) {
       balance = await syncUserBalance(base44, withdrawal.user_email);

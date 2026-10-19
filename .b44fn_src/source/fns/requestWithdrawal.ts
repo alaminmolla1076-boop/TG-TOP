@@ -15,9 +15,9 @@ export default async function(req) {
     const amount = Number(body.amount);
     const network = String(body.network || 'BEP20').toUpperCase();
     const address = String(body.wallet_address || '').trim();
-    if (!Number.isFinite(amount) || amount < 3 || Math.abs(amount * 100 - Math.round(amount * 100)) > 0.000001) {
+    if (!Number.isFinite(amount) || amount < 2 || Math.abs(amount * 100 - Math.round(amount * 100)) > 0.000001) {
       return Response.json({
-        error: 'Minimum withdrawal is $3; use at most two decimal places'
+        error: 'Minimum withdrawal is $2; use at most two decimal places'
       }, {
         status: 400
       });
@@ -49,7 +49,7 @@ export default async function(req) {
       status: 400
     });
     try {
-      await notifyOnce(base44, user.email, `Withdrawal submitted\n\nAmount: $${amount.toFixed(2)} USD equivalent\nNetwork: ${network}\nAddress: ${address}\nStatus: Pending`);
+      await notifyOnce(base44, user.email, `Withdrawal submitted\n\nAmount: $${amount.toFixed(2)}\nFee: $0.10\nNetwork: ${network}\nAddress: ${address}\nNew balance: $${Number(data.balance ?? 0).toFixed(2)}\nStatus: Pending`);
     } catch (notificationError) {
       console.error('Withdrawal notification failed', notificationError.message);
     }

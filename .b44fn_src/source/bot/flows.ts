@@ -8,6 +8,7 @@ import { getState, setState, clearState, getUserContext, findUserByTelegramId } 
 import { buildCountryKeyboard } from './keyboards.ts';
 import { showMarketConfirm } from './market.ts';
 import { topupMethodView } from './topup.ts';
+import { WD_MIN, WD_FEE, withdrawNetworkView, checkWithdrawBalance } from './withdraw.ts';
 import { processSellSeasonBulk } from './delivery.ts';
 // Stateful conversation flows of the bot (file upload, top-up, withdraw, season
 // quantity, sell, admin upload). Each handler returns true when it consumed the
@@ -129,9 +130,8 @@ export async function handleNumericFlows(base44, token, ctx) {
     const withdrawState = JSON.parse(withdrawAmtRec.value);
     if (withdrawState.status === 'awaiting_amount') {
       const amount = parseFloat(rawText);
-      const MIN_WITHDRAW = 3;
-      if (!amount || amount < MIN_WITHDRAW) {
-        const minMsg = await tgSend(token, chatId, `❗ <b>Minimum withdrawal is $${MIN_WITHDRAW}</b>\n\nPlease enter an amount of $${MIN_WITHDRAW} or more:`, replyTo);
+      if (!amount || amount < WD_MIN) {
+        const minMsg = await tgSend(token, chatId, `❗ <b>Minimum withdrawal is $${WD_MIN}</b>\n\n⚠️ A $0.10 fee is charged in addition to the amount.\nPlease enter an amount of $${WD_MIN} or more:`, replyTo);
         await setState(base44, `withdraw:${tid}`, JSON.stringify({
           status: 'awaiting_amount',
           msgs: [
@@ -142,18 +142,23 @@ export async function handleNumericFlows(base44, token, ctx) {
         }));
         return true;
       }
-      const addrMsg = await tgSend(token, chatId, t(lang, 'withdraw.addrPrompt', {
-        amount
-      }), replyTo);
-      await setState(base44, `withdraw:${tid}`, JSON.stringify({
-        amount,
-        status: 'awaiting_address',
-        msgs: [
-          ...withdrawState.msgs || [],
-          replyTo,
-          addrMsg?.result?.message_id
-        ].filter(Boolean)
-      }));
+      // The fee must stay in the account on top of the requested amount.
+      const balCheck = await checkWithdrawBalance(base44, user, amount);
+      if (balCheck.error) {
+        const errMsg = await tgSend(token, chatId, balCheck.error, replyTo);
+        await setState(base44, `withdraw:${tid}`, JSON.stringify({
+          status: 'awaiting_amount',
+          msgs: [
+            ...withdrawState.msgs || [],
+            replyTo,
+            errMsg?.result?.message_id
+          ].filter(Boolean)
+        }));
+        return true;
+      }
+      const v = withdrawNetworkView(amount, balCheck.balance);
+      await tgSendMenu(token, chatId, v.text, v.keyboard, replyTo);
+      await clearState(base44, `withdraw:${tid}`);
       return true;
     }
   }
@@ -427,6 +432,7 @@ export async function handleTextFlows(base44, token, ctx) {
       try {
         const result = await base44.asServiceRole.functions.invoke('requestWithdrawal', {
           amount: withdrawState.amount,
+          network: withdrawState.network || 'BEP20',
           wallet_address: wallet,
           user_email: user.email
         });

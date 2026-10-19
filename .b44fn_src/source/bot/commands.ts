@@ -7,6 +7,7 @@ import { getState, setState, clearState, findUserByTelegramId, findUserByBindCod
 import { mainReplyKeyboard } from './keyboards.ts';
 import { marketMenu } from './market.ts';
 import { topupAmountView } from './topup.ts';
+import { withdrawAmountView } from './withdraw.ts';
 import { formatCountries, formatOrders, formatStatus } from './views.ts';
 import { deliverSeasonZip, handleBind, handleSeasonGen, errText } from './delivery.ts';
 // The bot's slash-command / reply-keyboard command switch.
@@ -502,14 +503,9 @@ export default async function handleCommand(base44, token, ctx) {
           }
           break;
         }
-        const wdPromptMsg = await tgSend(token, chatId, `${t(lang, 'withdraw.title')}\n\n${t(lang, 'withdraw.prompt')}`, replyTo);
-        await setState(base44, `withdraw:${String(tgUser.id)}`, JSON.stringify({
-          status: 'awaiting_amount',
-          msgs: [
-            replyTo,
-            wdPromptMsg?.result?.message_id
-          ].filter(Boolean)
-        }));
+        const bal = await getRealBalance(base44, user.email);
+        const wdView = withdrawAmountView(bal);
+        await tgSendMenu(token, chatId, wdView.text, wdView.keyboard, replyTo);
         break;
       }
     case 'session':

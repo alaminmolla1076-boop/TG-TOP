@@ -7,6 +7,7 @@ import { getState, setState, clearState, getUserContext, findUserByTelegramId } 
 import { mainMenuKeyboard, buildCountryKeyboard, DEPOSIT_ADDRESSES } from './keyboards.ts';
 import { handleMarketCallback, marketMenu } from './market.ts';
 import { handleTopupCallback, topupAmountView } from './topup.ts';
+import { handleWithdrawCallback, withdrawAmountView } from './withdraw.ts';
 import { formatOrders, formatStatus, formatProducts } from './views.ts';
 import { deliverSeasonZip, handleBind, errText } from './delivery.ts';
 // Handles every inline-keyboard button press. Direct port of the callback
@@ -58,6 +59,11 @@ export default async function handleCallback(base44, token, cq) {
   // Top Up wizard — mirrors the app's Top Up (amount → method → network → deposit).
   if (cbData.startsWith('tp_')) {
     await handleTopupCallback(base44, token, cq, cbUserRec, cbLang, cbChatId, cbMsgId);
+    return;
+  }
+  // Withdraw wizard — mirrors the app's Withdraw (amount → network → address).
+  if (cbData.startsWith('wd_')) {
+    await handleWithdrawCallback(base44, token, cq, cbUserRec, cbLang, cbChatId, cbMsgId);
     return;
   }
   if (cbData.startsWith('buyctry:')) {
@@ -834,13 +840,9 @@ export default async function handleCallback(base44, token, cq) {
           await send(cbChatId, t(cbLang, 'bind.required'));
           break;
         }
-        const wdPromptMsg = await send(cbChatId, `${t(cbLang, 'withdraw.title')}\n\n${t(cbLang, 'withdraw.prompt')}`);
-        await setState(base44, `withdraw:${String(cbUser.id)}`, JSON.stringify({
-          status: 'awaiting_amount',
-          msgs: [
-            wdPromptMsg?.result?.message_id
-          ].filter(Boolean)
-        }));
+        const bal = await getRealBalance(base44, cbUserRec.email);
+        const v = withdrawAmountView(bal);
+        await tgEditMenu(token, cbChatId, cbMsgId, v.text, v.keyboard);
         break;
       }
     case 'menu_channel':
