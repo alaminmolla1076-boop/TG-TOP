@@ -576,7 +576,7 @@ async function sellMultiNext(base44, token, ctx, st) {
 }
 
 export async function handleSellMultiFlow(base44, token, ctx, st) {
-  const { chatId, replyTo, rawText, tgUser, user } = ctx;
+  const { chatId, replyTo, rawText, tgUser, user, lang } = ctx;
   const tid = String(tgUser.id);
   // Step 1 — the list of phone numbers.
   if (st.status === 'awaiting_numbers') {
