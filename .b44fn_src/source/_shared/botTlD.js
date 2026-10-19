@@ -7,6 +7,7 @@ export const TD = {
     "sf.country": "🌍 Country: {flag} {country}",
     "sf.addedToStock": "The account has been added to your stock — it is now live in the Market.",
     "sf.alreadyIn": "already in our system — skipped",
+    "sf.wrong2faFor": "❌ <b>Wrong 2FA password.</b>\n\nSend the correct 2FA password for {phone}:",
     "sf.twofaChanged": "✅ Logged in {phone} — 2FA password changed",
   },
   bn: {
@@ -16,6 +17,7 @@ export const TD = {
     "sf.country": "🌍 দেশ: {flag} {country}",
     "sf.addedToStock": "অ্যাকাউন্টটি আপনার স্টকে যোগ হয়েছে — এটি এখন মার্কেটে লাইভ।",
     "sf.alreadyIn": "আমাদের সিস্টেমে আগেই আছে — স্কিপ করা হলো",
+    "sf.wrong2faFor": "❌ <b>ভুল 2FA পাসওয়ার্ড।</b>\n\n{phone}-এর সঠিক 2FA পাসওয়ার্ড পাঠান:",
     "sf.twofaChanged": "✅ লগইন হয়েছে {phone} — 2FA পাসওয়ার্ড পরিবর্তন হয়েছে",
   },
   es: {
@@ -25,6 +27,7 @@ export const TD = {
     "sf.country": "🌍 País: {flag} {country}",
     "sf.addedToStock": "La cuenta se ha añadido a tu stock — ya está en el Mercado.",
     "sf.alreadyIn": "ya está en nuestro sistema — omitido",
+    "sf.wrong2faFor": "❌ <b>Contraseña 2FA incorrecta.</b>\n\nEnvía la contraseña 2FA correcta de {phone}:",
     "sf.twofaChanged": "✅ Sesión iniciada en {phone} — contraseña 2FA cambiada",
   },
   fr: {
@@ -34,6 +37,7 @@ export const TD = {
     "sf.country": "🌍 Pays : {flag} {country}",
     "sf.addedToStock": "Le compte a été ajouté à votre stock — il est maintenant en vente sur le Marché.",
     "sf.alreadyIn": "déjà dans notre système — ignoré",
+    "sf.wrong2faFor": "❌ <b>Mot de passe 2FA incorrect.</b>\n\nEnvoyez le bon mot de passe 2FA de {phone} :",
     "sf.twofaChanged": "✅ Connecté à {phone} — mot de passe 2FA modifié",
   },
   de: {
@@ -43,6 +47,7 @@ export const TD = {
     "sf.country": "🌍 Land: {flag} {country}",
     "sf.addedToStock": "Das Konto wurde deinem Bestand hinzugefügt — es ist jetzt im Markt aktiv.",
     "sf.alreadyIn": "bereits in unserem System — übersprungen",
+    "sf.wrong2faFor": "❌ <b>Falsches 2FA-Passwort.</b>\n\nSende das richtige 2FA-Passwort von {phone}:",
     "sf.twofaChanged": "✅ Angemeldet bei {phone} — 2FA-Passwort geändert",
   },
   pt: {
@@ -52,6 +57,7 @@ export const TD = {
     "sf.country": "🌍 País: {flag} {country}",
     "sf.addedToStock": "A conta foi adicionada ao seu estoque — já está à venda no Mercado.",
     "sf.alreadyIn": "já está no nosso sistema — ignorado",
+    "sf.wrong2faFor": "❌ <b>Senha 2FA incorreta.</b>\n\nEnvie a senha 2FA correta de {phone}:",
     "sf.twofaChanged": "✅ Conectado em {phone} — senha 2FA alterada",
   },
   ru: {
@@ -61,6 +67,7 @@ export const TD = {
     "sf.country": "🌍 Страна: {flag} {country}",
     "sf.addedToStock": "Аккаунт добавлен в ваш склад — он уже продаётся на Маркете.",
     "sf.alreadyIn": "уже есть в нашей системе — пропущено",
+    "sf.wrong2faFor": "❌ <b>Неверный пароль 2FA.</b>\n\nОтправьте правильный пароль 2FA для {phone}:",
     "sf.twofaChanged": "✅ Вход выполнен {phone} — пароль 2FA изменён",
   },
   ar: {
@@ -70,6 +77,7 @@ export const TD = {
     "sf.country": "🌍 البلد: {flag} {country}",
     "sf.addedToStock": "تمت إضافة الحساب إلى مخزونك — وهو الآن معروض في السوق.",
     "sf.alreadyIn": "موجود مسبقًا في نظامنا — تم تخطيه",
+    "sf.wrong2faFor": "❌ <b>كلمة مرور 2FA خاطئة.</b>\n\nأرسل كلمة مرور 2FA الصحيحة لـ {phone}:",
     "sf.twofaChanged": "✅ تم تسجيل الدخول {phone} — تم تغيير كلمة مرور 2FA",
   },
   hi: {
@@ -79,6 +87,7 @@ export const TD = {
     "sf.country": "🌍 देश: {flag} {country}",
     "sf.addedToStock": "खाता आपके स्टॉक में जोड़ दिया गया है — अब यह मार्केट में लाइव है।",
     "sf.alreadyIn": "हमारे सिस्टम में पहले से है — छोड़ दिया",
+    "sf.wrong2faFor": "❌ <b>गलत 2FA पासवर्ड।</b>\n\n{phone} का सही 2FA पासवर्ड भेजें:",
     "sf.twofaChanged": "✅ लॉगिन हुआ {phone} — 2FA पासवर्ड बदला गया",
   },
   zh: {
@@ -88,6 +97,7 @@ export const TD = {
     "sf.country": "🌍 国家：{flag} {country}",
     "sf.addedToStock": "该账户已加入您的库存 — 现已在市场上架。",
     "sf.alreadyIn": "已存在于我们的系统中 — 已跳过",
+    "sf.wrong2faFor": "❌ <b>两步验证密码错误。</b>\n\n请发送 {phone} 的正确两步验证密码：",
     "sf.twofaChanged": "✅ 已登录 {phone} — 两步验证密码已更改",
   },
 };

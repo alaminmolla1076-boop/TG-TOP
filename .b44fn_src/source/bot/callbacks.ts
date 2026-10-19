@@ -257,7 +257,7 @@ export default async function handleCallback(base44, token, cq) {
       platform: 'tg'
     });
     if (!countries.length) {
-      await send(cbChatId, '❌ No countries available.');
+      await send(cbChatId, t(cbLang, 'sf.noCountries'));
       return;
     }
     await tgEditMenu(token, cbChatId, cbMsgId, query ? t(cbLang, 'buy.searchResult', {
@@ -272,10 +272,10 @@ export default async function handleCallback(base44, token, cq) {
       platform: 'tg'
     });
     if (!countries.length) {
-      await send(cbChatId, '❌ No countries available.');
+      await send(cbChatId, t(cbLang, 'sf.noCountries'));
       return;
     }
-    await tgEditMenu(token, cbChatId, cbMsgId, `🌍 <b>Market — Buy Accounts</b>\n\nTap a country:`, buildCountryKeyboard(countries, cbLang, null, 1));
+    await tgEditMenu(token, cbChatId, cbMsgId, t(cbLang, 'cmd.buyTitle'), buildCountryKeyboard(countries, cbLang, null, 1));
     return;
   }
   if (cbData.startsWith('admintopup:') || cbData.startsWith('adminwithdraw:')) {
@@ -510,7 +510,7 @@ export default async function handleCallback(base44, token, cq) {
       msg += `${t(cbLang, 'buy.seasonAccounts')}: ${accountIds.length}\n`;
       if (accountIds.length < qty) msg += `⚠️ ${qty - accountIds.length} could not be delivered (not charged)\n`;
       await send(cbChatId, msg);
-      await deliverSeasonZip(base44, token, cbChatId, accountIds);
+      await deliverSeasonZip(base44, token, cbChatId, accountIds, null, cbLang);
       await sendMenu(cbChatId, `✅`, [
         [
           {
@@ -614,7 +614,7 @@ export default async function handleCallback(base44, token, cq) {
           platform: 'tg'
         });
         if (!countries.length) {
-          await send(cbChatId, '❌ No countries available.');
+          await send(cbChatId, t(cbLang, 'sf.noCountries'));
           break;
         }
         await sendMenu(cbChatId, `${t(cbLang, 'buy.title')}\n\n${t(cbLang, 'buy.prompt')}`, buildCountryKeyboard(countries, cbLang, null, 1));
@@ -645,7 +645,7 @@ export default async function handleCallback(base44, token, cq) {
           await send(cbChatId, t(cbLang, 'bind.required'));
           break;
         }
-        const v = topupAmountView();
+        const v = topupAmountView(cbLang);
         await tgEditMenu(token, cbChatId, cbMsgId, v.text, v.keyboard);
         break;
       }
@@ -843,7 +843,7 @@ export default async function handleCallback(base44, token, cq) {
           break;
         }
         const bal = await getRealBalance(base44, cbUserRec.email);
-        const v = withdrawAmountView(bal);
+        const v = withdrawAmountView(bal, cbLang);
         await tgEditMenu(token, cbChatId, cbMsgId, v.text, v.keyboard);
         break;
       }

@@ -244,22 +244,23 @@ export async function handleNumericFlows(base44, token, ctx) {
 }
 // Shared success/rejection reporting for the guided sell flow.
 async function reportSellResult(base44, token, ctx, data, sellMsgs) {
-  const { chatId, replyTo, tgUser } = ctx;
+  const { chatId, replyTo, tgUser, lang } = ctx;
+  const L = lang || 'en';
   if (data.status === 'completed' || data.success) {
     for (const mid of sellMsgs)await tgDeleteMessage(token, chatId, mid);
-    let msg = `✅ <b>Account Received Successfully</b>\n\n`;
-    msg += `🛡️ Spam check: <b>Passed</b>\n`;
-    msg += `🔐 2FA password: <b>Set</b>\n`;
-    if (data.country) msg += `🌍 Country: ${data.country_flag || ''} ${data.country_name || data.country}\n`;
-    if (data.phone) msg += `📱 Phone: <code>${data.phone}</code>\n`;
-    msg += `\nThe account has been added to your stock — it is now live in the Market.`;
+    let msg = `${t(L, 'sf.received')}\n\n`;
+    msg += `${t(L, 'sf.spamPassed')}\n`;
+    msg += `${t(L, 'sf.twofaSet')}\n`;
+    if (data.country) msg += `${t(L, 'sf.country', { flag: data.country_flag || '', country: data.country_name || data.country })}\n`;
+    if (data.phone) msg += `${t(L, 'mk.phone', { phone: data.phone })}\n`;
+    msg += `\n${t(L, 'sf.addedToStock')}`;
     await tgSend(token, chatId, msg, replyTo);
-    const logoutMsg = await tgSend(token, chatId, `⚠️ <b>Please logout from your devices</b> for security.`, replyTo);
+    const logoutMsg = await tgSend(token, chatId, t(L, 'sf.logout'), replyTo);
     // Sell mode stays active so the next number needs no extra tap.
     await setState(base44, `sell:${String(tgUser.id)}`, JSON.stringify({
       status: 'awaiting_phone'
     }));
-    const nextNumMsg = await tgSend(token, chatId, `🔁 Send the next phone number to sell, or tap another button to exit sell mode.`, replyTo);
+    const nextNumMsg = await tgSend(token, chatId, t(L, 'sf.nextNumber'), replyTo);
     await new Promise((r)=>setTimeout(r, 1000));
     try {
       if (logoutMsg?.result?.message_id) await tgDeleteMessage(token, chatId, logoutMsg.result.message_id);
@@ -268,11 +269,11 @@ async function reportSellResult(base44, token, ctx, data, sellMsgs) {
     return;
   }
   if (data.status === 'rejected') {
-    await tgSend(token, chatId, `❌ <b>Rejected:</b> ${REJECT_REASONS[data.reason] || data.reason || 'Unknown reason'}`, replyTo);
+    await tgSend(token, chatId, t(L, 'sf.rejected', { reason: REJECT_REASONS[data.reason] || data.reason || t(L, 'sf.unknownReason') }), replyTo);
     await setState(base44, `sell:${String(tgUser.id)}`, JSON.stringify({
       status: 'awaiting_phone'
     }));
-    const rejNextMsg = await tgSend(token, chatId, `🔁 Send the next phone number to sell, or tap another button to exit sell mode.`, replyTo);
+    const rejNextMsg = await tgSend(token, chatId, t(L, 'sf.nextNumber'), replyTo);
     await new Promise((r)=>setTimeout(r, 1000));
     try {
       if (rejNextMsg?.result?.message_id) await tgDeleteMessage(token, chatId, rejNextMsg.result.message_id);
@@ -289,7 +290,7 @@ export async function handleSellFlow(base44, token, ctx, sellState) {
   // 2FA password reply — the code was already accepted, finish the login.
   if (sellState.status === 'awaiting_2fa') {
     const password = rawText.trim();
-    const verifyMsg = await tgSend(token, chatId, `🔄 Checking 2FA password...`, replyTo);
+    const verifyMsg = await tgSend(token, chatId, t(lang, 'sf.checking2fa'), replyTo);
     const sellMsgs = [
       ...sellState.msgs || [],
       verifyMsg?.result?.message_id
@@ -306,10 +307,10 @@ export async function handleSellFlow(base44, token, ctx, sellState) {
     } catch (err) {
       const m = (err.message || '').toLowerCase();
       if (/password|2fa|flood|fresh/.test(m)) {
-        await tgSend(token, chatId, `❌ <b>Wrong 2FA password.</b>\n\nSend the correct 2FA password:`, replyTo);
+        await tgSend(token, chatId, t(lang, 'sf.wrong2fa'), replyTo);
       } else {
         await clearState(base44, `sell:${tid}`);
-        await tgSend(token, chatId, `❌ Error: ${err.message}`, replyTo);
+        await tgSend(token, chatId, t(lang, 'c.error', { msg: err.message }), replyTo);
       }
     }
     return true;
@@ -325,7 +326,7 @@ export async function handleSellFlow(base44, token, ctx, sellState) {
       await tgSend(token, chatId, t(lang, 'bind.required'), replyTo);
       return true;
     }
-    const connectingMsg = await tgSend(token, chatId, `🧬connecting ${phone}`, replyTo);
+    const connectingMsg = await tgSend(token, chatId, t(lang, 'sf.connecting', { phone }), replyTo);
     try {
       const result = await base44.asServiceRole.functions.invoke('sendLoginCode', {
         phone_number: phone,
@@ -341,7 +342,7 @@ export async function handleSellFlow(base44, token, ctx, sellState) {
           connectingMsg?.result?.message_id
         ].filter(Boolean)
       }));
-      await tgSend(token, chatId, `Code Send ${phone} send otp`, replyTo);
+      await tgSend(token, chatId, t(lang, 'sf.codeSent', { phone }), replyTo);
     } catch (err) {
       const errMsg = String(err?.message || '');
       if (/409|already exists|NUMBER_EXISTS/i.test(errMsg)) {
@@ -352,10 +353,10 @@ export async function handleSellFlow(base44, token, ctx, sellState) {
         await setState(base44, `sell:${tid}`, JSON.stringify({
           status: 'awaiting_phone'
         }));
-        await tgSend(token, chatId, `📦 <b>This Country Capacity is full.</b>\nTry Again After Some Time`, replyTo);
+        await tgSend(token, chatId, t(lang, 'sf.capacityFull'), replyTo);
       } else {
         await clearState(base44, `sell:${tid}`);
-        await tgSend(token, chatId, `❌ Error: ${err.message}`, replyTo);
+        await tgSend(token, chatId, t(lang, 'c.error', { msg: err.message }), replyTo);
       }
     }
     return true;
@@ -363,10 +364,10 @@ export async function handleSellFlow(base44, token, ctx, sellState) {
   if (sellState.status === 'awaiting_code') {
     const code = rawText.replace(/\s+/g, '');
     if (!/^\d{4,6}$/.test(code)) {
-      await tgSend(token, chatId, '❌ Invalid code. Please enter the 4-6 digit OTP code:', replyTo);
+      await tgSend(token, chatId, t(lang, 'sf.invalidOtp'), replyTo);
       return true;
     }
-    const verifyMsg = await tgSend(token, chatId, `🔄 Verifying code...`, replyTo);
+    const verifyMsg = await tgSend(token, chatId, t(lang, 'sf.verifying'), replyTo);
     const sellMsgs = [
       ...sellState.msgs || [],
       verifyMsg?.result?.message_id
@@ -389,12 +390,12 @@ export async function handleSellFlow(base44, token, ctx, sellState) {
           phone: sellState.phone,
           msgs: sellMsgs
         }));
-        await tgSend(token, chatId, `🔐 <b>This account has 2FA.</b>\n\nSend the account's 2FA password:`, replyTo);
+        await tgSend(token, chatId, t(lang, 'sf.has2fa'), replyTo);
       } else if (m.includes('code') || m.includes('invalid') || m.includes('expired')) {
-        await tgSend(token, chatId, `❌ <b>Wrong Code</b>\n\nPlease enter the correct OTP code:`, replyTo);
+        await tgSend(token, chatId, t(lang, 'sf.wrongCode'), replyTo);
       } else {
         await clearState(base44, `sell:${tid}`);
-        await tgSend(token, chatId, `❌ Error: ${err.message}`, replyTo);
+        await tgSend(token, chatId, t(lang, 'c.error', { msg: err.message }), replyTo);
       }
     }
     return true;
@@ -419,7 +420,7 @@ export async function handleTextFlows(base44, token, ctx) {
       try {
         await processSellSeasonBulk(base44, token, chatId, sessions, user.email, lang, replyTo);
       } catch (err) {
-        await tgSend(token, chatId, `❌ Error: ${err.message}`, replyTo);
+        await tgSend(token, chatId, t(lang, 'c.error', { msg: err.message }), replyTo);
       }
     })());
     return true;
@@ -430,7 +431,7 @@ export async function handleTextFlows(base44, token, ctx) {
     if (txidState.status === 'awaiting_txid') {
       const txid = rawText.trim();
       if (txid.length < 8) {
-        await tgSend(token, chatId, '❌ Invalid TXID. Please send a valid transaction hash:', replyTo);
+        await tgSend(token, chatId, t(lang, 'sf.invalidTxid'), replyTo);
         return true;
       }
       try {
@@ -449,7 +450,7 @@ export async function handleTextFlows(base44, token, ctx) {
           replyTo
         ].filter(Boolean).map((mid)=>tgDeleteMessage(token, chatId, mid).catch(()=>{})));
       } catch (err) {
-        await tgSend(token, chatId, `❌ Error: ${err.message}`, replyTo);
+        await tgSend(token, chatId, t(lang, 'c.error', { msg: err.message }), replyTo);
       }
       return true;
     }
@@ -460,7 +461,7 @@ export async function handleTextFlows(base44, token, ctx) {
     if (withdrawState.status === 'awaiting_address') {
       const wallet = rawText.trim();
       if (wallet.length < 10) {
-        await tgSend(token, chatId, '❌ Invalid address. Please send a valid wallet address:', replyTo);
+        await tgSend(token, chatId, t(lang, 'sf.invalidAddress'), replyTo);
         return true;
       }
       try {
@@ -478,7 +479,7 @@ export async function handleTextFlows(base44, token, ctx) {
           replyTo
         ].filter(Boolean).map((mid)=>tgDeleteMessage(token, chatId, mid).catch(()=>{})));
       } catch (err) {
-        await tgSend(token, chatId, `❌ Error: ${err.message}`, replyTo);
+        await tgSend(token, chatId, t(lang, 'c.error', { msg: err.message }), replyTo);
       }
       return true;
     }
@@ -490,11 +491,11 @@ export async function handleTextFlows(base44, token, ctx) {
       if (uploadState.status === 'awaiting_sessions') {
         const sessions = rawText.split(/\n+/).map((s)=>s.trim()).filter(Boolean);
         if (!sessions.length) {
-          await tgSend(token, chatId, '❌ No session strings found. Please send session strings (one per line):', replyTo);
+          await tgSend(token, chatId, t(lang, 'sf.noSessions'), replyTo);
           return true;
         }
         await clearState(base44, `upload:${tid}`);
-        await tgSend(token, chatId, `🔄 Uploading ${sessions.length} session(s) to ${uploadState.iso}...`, replyTo);
+        await tgSend(token, chatId, t(lang, 'sf.uploading', { count: sessions.length, iso: uploadState.iso }), replyTo);
         try {
           const result = await base44.asServiceRole.functions.invoke('uploadSessions', {
             country_iso: uploadState.iso,
@@ -514,7 +515,7 @@ export async function handleTextFlows(base44, token, ctx) {
             await tgSendDoc(token, chatId, data.failed_file_url, `❌ Failed sessions log (${data.failed}) — not added to stock`);
           }
         } catch (err) {
-          await tgSend(token, chatId, `❌ Error: ${err.message}`, replyTo);
+          await tgSend(token, chatId, t(lang, 'c.error', { msg: err.message }), replyTo);
         }
         return true;
       }
@@ -542,7 +543,8 @@ const extractPhoneNumbers = (text) => {
 
 // Starts the next number in the queue, or reports completion.
 async function sellMultiNext(base44, token, ctx, st) {
-  const { chatId, replyTo, user } = ctx;
+  const { chatId, replyTo, user, lang } = ctx;
+  const L = lang || 'en';
   const tid = String(ctx.tgUser.id);
   while (st.idx < st.numbers.length) {
     const phone = st.numbers[st.idx];
@@ -557,18 +559,18 @@ async function sellMultiNext(base44, token, ctx, st) {
       st.phone = phone;
       st.sub = 'otp';
       await setState(base44, `sellmulti:${tid}`, JSON.stringify(st));
-      await tgSend(token, chatId, `🧬 Connecting ${phone}`, replyTo);
-      await tgSend(token, chatId, `📩 Code sent to ${phone}\nSend the OTP code:`, replyTo);
+      await tgSend(token, chatId, t(L, 'sf.connecting', { phone }), replyTo);
+      await tgSend(token, chatId, t(L, 'sf.codeSent', { phone }), replyTo);
       return;
     } catch (err) {
       const m = String(err.message || '');
-      const reason = /409|already exists|NUMBER_EXISTS/i.test(m) ? 'already in our system — skipped' : m;
-      await tgSend(token, chatId, `⚠️ ${phone}: ${reason}`, replyTo);
+      const reason = /409|already exists|NUMBER_EXISTS/i.test(m) ? t(L, 'sf.alreadyIn') : m;
+      await tgSend(token, chatId, t(L, 'sf.phoneIssue', { phone, reason }), replyTo);
       st.idx++;
     }
   }
   await clearState(base44, `sellmulti:${tid}`);
-  await tgSend(token, chatId, `🎉 <b>Sell Multiple complete</b>\n\n✅ Added to stock: ${st.done || 0} account(s)\n📋 Total numbers: ${st.numbers.length}`, replyTo);
+  await tgSend(token, chatId, t(L, 'sf.sellMultiDone', { done: st.done || 0, total: st.numbers.length }), replyTo);
 }
 
 export async function handleSellMultiFlow(base44, token, ctx, st) {
@@ -578,10 +580,10 @@ export async function handleSellMultiFlow(base44, token, ctx, st) {
   if (st.status === 'awaiting_numbers') {
     const numbers = extractPhoneNumbers(rawText);
     if (!numbers.length) {
-      await tgSend(token, chatId, `❌ No phone numbers found.\n\nSend the list with one number per line:\n<code>+1234567890</code>`, replyTo);
+      await tgSend(token, chatId, t(lang, 'sf.noPhones'), replyTo);
       return true;
     }
-    await tgSend(token, chatId, `📋 <b>${numbers.length} number(s) received.</b>\nLogging in one by one…`, replyTo);
+    await tgSend(token, chatId, t(lang, 'sf.phonesReceived', { count: numbers.length }), replyTo);
     st = {
       status: 'processing',
       numbers,
@@ -600,10 +602,10 @@ export async function handleSellMultiFlow(base44, token, ctx, st) {
   if (st.sub === 'otp') {
     const code = rawText.replace(/\s+/g, '');
     if (!/^\d{4,6}$/.test(code)) {
-      await tgSend(token, chatId, `❌ Invalid code. Send the 4-6 digit OTP for ${st.phone}:`, replyTo);
+      await tgSend(token, chatId, t(lang, 'sf.invalidOtpFor', { phone: st.phone }), replyTo);
       return true;
     }
-    const verifyMsg = await tgSend(token, chatId, `🔄 Verifying code...`, replyTo);
+    const verifyMsg = await tgSend(token, chatId, t(lang, 'sf.verifying'), replyTo);
     try {
       const result = await base44.asServiceRole.functions.invoke('verifyLoginCode', {
         request_id: st.request_id,
@@ -616,7 +618,7 @@ export async function handleSellMultiFlow(base44, token, ctx, st) {
       try {
         if (verifyMsg?.result?.message_id) await tgDeleteMessage(token, chatId, verifyMsg.result.message_id);
       } catch  {}
-      await tgSend(token, chatId, `✅ Logged in ${data.phone || st.phone}`, replyTo);
+      await tgSend(token, chatId, t(lang, 'sf.loggedIn', { phone: data.phone || st.phone }), replyTo);
       st.done++;
       st.idx++;
       await sellMultiNext(base44, token, ctx, st);
@@ -628,14 +630,14 @@ export async function handleSellMultiFlow(base44, token, ctx, st) {
       if (m === '2FA_REQUIRED') {
         st.sub = '2fa';
         await setState(base44, `sellmulti:${tid}`, JSON.stringify(st));
-        await tgSend(token, chatId, `🔐 <b>${st.phone} has 2FA.</b>\n\nSend the account's 2FA password:`, replyTo);
+        await tgSend(token, chatId, t(lang, 'sf.phone2fa', { phone: st.phone }), replyTo);
         return true;
       }
       if (/code|invalid|expired/i.test(m)) {
-        await tgSend(token, chatId, `❌ <b>Wrong code.</b>\n\nSend the correct OTP for ${st.phone}:`, replyTo);
+        await tgSend(token, chatId, t(lang, 'sf.wrongOtpFor', { phone: st.phone }), replyTo);
         return true;
       }
-      await tgSend(token, chatId, `❌ ${st.phone}: ${m}\n⏭️ Moving to the next number…`, replyTo);
+      await tgSend(token, chatId, t(lang, 'sf.phoneError', { phone: st.phone, error: m }), replyTo);
       st.idx++;
       await sellMultiNext(base44, token, ctx, st);
     }
@@ -644,7 +646,7 @@ export async function handleSellMultiFlow(base44, token, ctx, st) {
   // 2FA password reply for the current number.
   if (st.sub === '2fa') {
     const password = rawText.trim();
-    const verifyMsg = await tgSend(token, chatId, `🔄 Checking 2FA password...`, replyTo);
+    const verifyMsg = await tgSend(token, chatId, t(lang, 'sf.checking2fa'), replyTo);
     try {
       const result = await base44.asServiceRole.functions.invoke('verifyLoginCode', {
         request_id: st.request_id,
@@ -656,7 +658,7 @@ export async function handleSellMultiFlow(base44, token, ctx, st) {
       try {
         if (verifyMsg?.result?.message_id) await tgDeleteMessage(token, chatId, verifyMsg.result.message_id);
       } catch  {}
-      await tgSend(token, chatId, `✅ Logged in ${data.phone || st.phone} — 2FA password changed`, replyTo);
+      await tgSend(token, chatId, t(lang, 'sf.twofaChanged', { phone: data.phone || st.phone }), replyTo);
       st.done++;
       st.idx++;
       await sellMultiNext(base44, token, ctx, st);
@@ -666,10 +668,10 @@ export async function handleSellMultiFlow(base44, token, ctx, st) {
       } catch  {}
       const m = String(err.message || '');
       if (/password|2fa|flood|fresh/i.test(m)) {
-        await tgSend(token, chatId, `❌ <b>Wrong 2FA password.</b>\n\nSend the correct 2FA password for ${st.phone}:`, replyTo);
+        await tgSend(token, chatId, t(lang, 'sf.wrong2faFor', { phone: st.phone }), replyTo);
         return true;
       }
-      await tgSend(token, chatId, `❌ ${st.phone}: ${m}\n⏭️ Moving to the next number…`, replyTo);
+      await tgSend(token, chatId, t(lang, 'sf.phoneError', { phone: st.phone, error: m }), replyTo);
       st.idx++;
       await sellMultiNext(base44, token, ctx, st);
     }

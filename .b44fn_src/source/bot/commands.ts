@@ -109,7 +109,7 @@ export default async function handleCommand(base44, token, ctx) {
           category: 'premium'
         });
         if (!products.length) {
-          await tgSend(token, chatId, '❌ No premium products available.', replyTo);
+          await tgSend(token, chatId, t(lang, 'cmd.noPremium'), replyTo);
           break;
         }
         const keyboard = products.map((p)=>{
@@ -136,7 +136,7 @@ export default async function handleCommand(base44, token, ctx) {
           category: 'stars'
         });
         if (!products.length) {
-          await tgSend(token, chatId, '❌ No stars products available.', replyTo);
+          await tgSend(token, chatId, t(lang, 'cmd.noStars'), replyTo);
           break;
         }
         const buttons = products.map((p)=>({
@@ -261,10 +261,10 @@ export default async function handleCommand(base44, token, ctx) {
         if (!await requireUser()) break;
         const accountId = parts[1];
         if (!accountId) {
-          await tgSend(token, chatId, 'Usage: /otp [account_id]', replyTo);
+          await tgSend(token, chatId, t(lang, 'cmd.otpUsage'), replyTo);
           break;
         }
-        await tgSend(token, chatId, `📱 Fetching OTP for account ${accountId}...`, replyTo);
+        await tgSend(token, chatId, t(lang, 'cmd.otpFetching', { id: accountId }), replyTo);
         try {
           const result = await base44.asServiceRole.functions.invoke('fetchOtpCode', {
             account_id: accountId,
@@ -272,9 +272,9 @@ export default async function handleCommand(base44, token, ctx) {
           });
           const data = result.data || result;
           if (data.error) throw new Error(data.error);
-          await tgSend(token, chatId, `📱 <b>OTP Code</b>\n\nAccount: ${accountId}\nOTP: <code>${data.otp_code || data.code || 'N/A'}</code>\nPass: <code>${data.pass || 'N/A'}</code>`, replyTo);
+          await tgSend(token, chatId, t(lang, 'cmd.otpCode', { id: accountId, otp: data.otp_code || data.code || 'N/A', pass: data.pass || 'N/A' }), replyTo);
         } catch (err) {
-          await tgSend(token, chatId, `❌ Error: ${err.message}`, replyTo);
+          await tgSend(token, chatId, t(lang, 'c.error', { msg: err.message }), replyTo);
         }
         break;
       }
@@ -286,7 +286,7 @@ export default async function handleCommand(base44, token, ctx) {
           const iso = parts[1].toUpperCase();
           const qty = parseInt(parts[2]);
           if (qty > 0) {
-            await tgSend(token, chatId, `🔄 Purchasing ${qty} account(s) from ${iso}...`, replyTo);
+            await tgSend(token, chatId, t(lang, 'cmd.purchasing', { qty, iso }), replyTo);
             try {
               const result = await base44.asServiceRole.functions.invoke('purchaseAccount', {
                 country_iso: iso,
@@ -303,28 +303,28 @@ export default async function handleCommand(base44, token, ctx) {
                 iso,
                 platform: 'tg'
               }))[0];
-              let msg = `✅ <b>Purchase Complete!</b>\n\n`;
+              let msg = `${t(lang, 'mk.purchaseComplete')}\n\n`;
               if (buyCtry) msg += `${buyCtry.flag || '🌍'} <b>${buyCtry.name}</b> (${buyCtry.iso})\n💰 ${t(lang, 'buy.price')}: $${buyCtry.price}\n`;
-              msg += `🛡️ 2FA: <b>Disabled</b>\n`;
+              msg += `${t(lang, 'cmd.twofaDisabled')}\n`;
               if (acc) msg += `📱 Phone: <code>${acc.phone_number}</code>\n`;
               await tgSend(token, chatId, msg, replyTo);
               if (acc) {
-                await tgSendMenu(token, chatId, `📱 <b>OTP Code</b>`, [
+                await tgSendMenu(token, chatId, t(lang, 'cmd.otpMenuTitle'), [
                   [
                     {
-                      text: '📱 Request OTP',
+                      text: t(lang, 'cmd.requestOtp'),
                       callback_data: `getotp:${acc.id}`
                     }
                   ]
                 ], replyTo);
               }
             } catch (err) {
-              await tgSend(token, chatId, `❌ Error: ${err.message}`, replyTo);
+              await tgSend(token, chatId, t(lang, 'c.error', { msg: err.message }), replyTo);
             }
           }
         } else {
           // Menu press (Market button) — show the market menu, like the app's Market page.
-          const { text: mkText, keyboard: mkKb } = await marketMenu(base44, user);
+          const { text: mkText, keyboard: mkKb } = await marketMenu(base44, user, lang);
           await tgSendMenu(token, chatId, mkText, mkKb, replyTo);
         }
         break;
@@ -333,23 +333,23 @@ export default async function handleCommand(base44, token, ctx) {
       {
         if (!await requireUser()) break;
         if (!parts[1] || !parts[2]) {
-          await tgSend(token, chatId, 'Usage: /season [ISO] [quantity>1]\nExample: /season US 5', replyTo);
+          await tgSend(token, chatId, t(lang, 'cmd.seasonUsage'), replyTo);
           break;
         }
         const iso = parts[1].toUpperCase();
         const qty = parseInt(parts[2]);
         if (qty < 2) {
-          await tgSend(token, chatId, '❌ Season quantity must be > 1.', replyTo);
+          await tgSend(token, chatId, t(lang, 'cmd.seasonQtyMin'), replyTo);
           break;
         }
-        await tgSend(token, chatId, `🔄 Purchasing ${qty} season accounts from ${iso}...`, replyTo);
+        await tgSend(token, chatId, t(lang, 'cmd.seasonPurchasing', { qty, iso }), replyTo);
         try {
           const { ids: accountIds, error: seasonCmdErr } = await buySeasonInChunks(base44, {
             country_iso: iso,
             user_email: user.email,
             quantity: qty,
             onChunk: qty > 100 ? async ({ done, total })=>{
-              await tgSend(token, chatId, `⏳ ${done}/${total} accounts ready…`, replyTo);
+              await tgSend(token, chatId, t(lang, 'cmd.readyProgress', { done, total }), replyTo);
             } : null
           });
           if (!accountIds.length) throw new Error(seasonCmdErr || 'No accounts could be delivered');
@@ -357,14 +357,14 @@ export default async function handleCommand(base44, token, ctx) {
             iso,
             platform: 'tg'
           }))[0];
-          let msg = `✅ <b>Season purchase complete!</b>\n\n`;
+          let msg = `${t(lang, 'cmd.seasonDone')}\n\n`;
           if (seasonCmdCtry) {
             msg += `${seasonCmdCtry.flag || '🌍'} <b>${seasonCmdCtry.name}</b> (${iso})\n`;
             msg += `💰 ${t(lang, 'buy.price')}: $${(seasonCmdCtry.price * qty).toFixed(2)}\n`;
           }
-          msg += `Accounts: ${accountIds.length}\n`;
+          msg += `${t(lang, 'cmd.accountsCount', { count: accountIds.length })}\n`;
           await tgSend(token, chatId, msg, replyTo);
-          await deliverSeasonZip(base44, token, chatId, accountIds, replyTo);
+          await deliverSeasonZip(base44, token, chatId, accountIds, replyTo, lang);
           await tgSendMenu(token, chatId, `✅`, [
             [
               {
@@ -386,10 +386,10 @@ export default async function handleCommand(base44, token, ctx) {
           const amount = parseFloat(parts[1]);
           const coin = parts[2].toUpperCase();
           if (!amount || amount <= 0) {
-            await tgSend(token, chatId, '❌ Invalid amount.', replyTo);
+            await tgSend(token, chatId, t(lang, 'cmd.invalidAmount'), replyTo);
             break;
           }
-          await tgSend(token, chatId, `🔄 Creating ${amount} ${coin} top-up order...`, replyTo);
+          await tgSend(token, chatId, t(lang, 'cmd.creatingOrder', { amount, coin }), replyTo);
           try {
             const result = await base44.asServiceRole.functions.invoke('createOkpayOrder', {
               amount,
@@ -398,13 +398,13 @@ export default async function handleCommand(base44, token, ctx) {
             });
             const data = result.data || result;
             if (data.error) throw new Error(data.error);
-            await tgSend(token, chatId, `✅ Top-up order created!\nPay URL: ${data.pay_url || data.payment_url || data.url || 'Check app'}`, replyTo);
+            await tgSend(token, chatId, t(lang, 'cmd.orderCreated', { url: data.pay_url || data.payment_url || data.url || t(lang, 'cmd.checkApp') }), replyTo);
           } catch (err) {
-            await tgSend(token, chatId, `❌ Error: ${err.message}`, replyTo);
+            await tgSend(token, chatId, t(lang, 'c.error', { msg: err.message }), replyTo);
           }
           break;
         }
-        const tpView = topupAmountView();
+        const tpView = topupAmountView(lang);
         await tgSendMenu(token, chatId, tpView.text, tpView.keyboard, replyTo);
         break;
       }
@@ -431,12 +431,12 @@ export default async function handleCommand(base44, token, ctx) {
       {
         if (!await requireUser()) break;
         if (!parts[1] || !parts[2]) {
-          await tgSend(token, chatId, 'Usage: /deposit [amount] [tx_hash]\nExample: /deposit 50 0xabc123...', replyTo);
+          await tgSend(token, chatId, t(lang, 'cmd.depositUsage'), replyTo);
           break;
         }
         const amount = parseFloat(parts[1]);
         if (!amount || amount <= 0) {
-          await tgSend(token, chatId, '❌ Invalid amount.', replyTo);
+          await tgSend(token, chatId, t(lang, 'cmd.invalidAmount'), replyTo);
           break;
         }
         try {
@@ -449,7 +449,7 @@ export default async function handleCommand(base44, token, ctx) {
           const data = result.data || result;
           if (data.error) throw new Error(data.error);
         } catch (err) {
-          await tgSend(token, chatId, `❌ Error: ${err.message}`, replyTo);
+          await tgSend(token, chatId, t(lang, 'c.error', { msg: err.message }), replyTo);
         }
         break;
       }
@@ -457,7 +457,7 @@ export default async function handleCommand(base44, token, ctx) {
       {
         if (!await requireUser()) break;
         if (!parts[1]) {
-          await tgSend(token, chatId, 'Usage: /okpay [amount]\nExample: /okpay 50', replyTo);
+          await tgSend(token, chatId, t(lang, 'cmd.okpayUsage'), replyTo);
           break;
         }
         const amount = parseFloat(parts[1]);
@@ -465,7 +465,7 @@ export default async function handleCommand(base44, token, ctx) {
           await tgSend(token, chatId, '❌ Invalid amount.', replyTo);
           break;
         }
-        await tgSend(token, chatId, `🔄 Creating OKPay order for $${amount}...`, replyTo);
+        await tgSend(token, chatId, t(lang, 'tu.okpayCreating', { amount }), replyTo);
         try {
           const result = await base44.asServiceRole.functions.invoke('createOkpayOrder', {
             amount,
@@ -474,9 +474,9 @@ export default async function handleCommand(base44, token, ctx) {
           });
           const data = result.data || result;
           if (data.error) throw new Error(data.error);
-          await tgSend(token, chatId, `✅ <b>OKPay Order Created</b>\n\nPay URL: ${data.pay_url || data.payment_url || data.url || 'Check app'}`, replyTo);
+          await tgSend(token, chatId, `${t(lang, 'tu.okpayCreated')}\n\n${t(lang, 'cmd.payUrl', { url: data.pay_url || data.payment_url || data.url || t(lang, 'cmd.checkApp') })}`, replyTo);
         } catch (err) {
-          await tgSend(token, chatId, `❌ Error: ${err.message}`, replyTo);
+          await tgSend(token, chatId, t(lang, 'c.error', { msg: err.message }), replyTo);
         }
         break;
       }
@@ -487,7 +487,7 @@ export default async function handleCommand(base44, token, ctx) {
         if (text.trim().startsWith('/') && parts[1] && parts[2] && /^\d+(\.\d+)?$/.test(parts[1])) {
           const amount = parseFloat(parts[1]);
           if (!amount || amount <= 0) {
-            await tgSend(token, chatId, '❌ Invalid amount.', replyTo);
+            await tgSend(token, chatId, t(lang, 'cmd.invalidAmount'), replyTo);
             break;
           }
           try {
@@ -499,12 +499,12 @@ export default async function handleCommand(base44, token, ctx) {
             const data = result.data || result;
             if (data.error) throw new Error(data.error);
           } catch (err) {
-            await tgSend(token, chatId, `❌ Error: ${err.message}`, replyTo);
+            await tgSend(token, chatId, t(lang, 'c.error', { msg: err.message }), replyTo);
           }
           break;
         }
         const bal = await getRealBalance(base44, user.email);
-        const wdView = withdrawAmountView(bal);
+        const wdView = withdrawAmountView(bal, lang);
         await tgSendMenu(token, chatId, wdView.text, wdView.keyboard, replyTo);
         break;
       }
@@ -512,11 +512,11 @@ export default async function handleCommand(base44, token, ctx) {
       {
         if (!await requireUser()) break;
         if (!parts[1]) {
-          await tgSend(token, chatId, 'Usage: /session [phone_number]\nExample: /session +1234567890', replyTo);
+          await tgSend(token, chatId, t(lang, 'cmd.sessionUsage'), replyTo);
           break;
         }
         const phone = parts[1];
-        await tgSend(token, chatId, `🔄 Sending login code to ${phone}...`, replyTo);
+        await tgSend(token, chatId, t(lang, 'cmd.sendingCode', { phone }), replyTo);
         try {
           const result = await base44.asServiceRole.functions.invoke('sendLoginCode', {
             phone_number: phone,
@@ -529,9 +529,9 @@ export default async function handleCommand(base44, token, ctx) {
             request_id: data.request_id,
             status: 'code_sent'
           }));
-          await tgSend(token, chatId, `✅ Code sent to ${phone}.\n\nReply with: <code>/verify [code]</code>`, replyTo);
+          await tgSend(token, chatId, t(lang, 'cmd.codeSentReply', { phone }), replyTo);
         } catch (err) {
-          await tgSend(token, chatId, `❌ Error: ${err.message}`, replyTo);
+          await tgSend(token, chatId, t(lang, 'c.error', { msg: err.message }), replyTo);
         }
         break;
       }
@@ -540,12 +540,12 @@ export default async function handleCommand(base44, token, ctx) {
         if (!await requireUser()) break;
         const stateRec = await getState(base44, `session:${user.email}`);
         if (!stateRec) {
-          await tgSend(token, chatId, '❌ No active session. Use /session first.', replyTo);
+          await tgSend(token, chatId, t(lang, 'cmd.noActiveSession'), replyTo);
           break;
         }
         const sessionState = JSON.parse(stateRec.value);
         if (!parts[1]) {
-          await tgSend(token, chatId, 'Usage: /verify [code]', replyTo);
+          await tgSend(token, chatId, t(lang, 'cmd.verifyUsage'), replyTo);
           break;
         }
         await tgSend(token, chatId, `🔄 Verifying code...`, replyTo);
@@ -558,9 +558,9 @@ export default async function handleCommand(base44, token, ctx) {
           const data = result.data || result;
           if (data.error) throw new Error(data.error);
           await clearState(base44, `session:${user.email}`);
-          await tgSend(token, chatId, `✅ <b>Account Received Successfully</b>\n\n🌍 Country: ${data.country || ''} ${data.country_iso ? `(${data.country_iso})` : ''}\n📱 Phone: <code>${data.phone || ''}</code>\n\nThe account has been added to your stock — it is now live in the Market.`, replyTo);
+          await tgSend(token, chatId, `${t(lang, 'sf.received')}\n\n${t(lang, 'sf.country', { flag: '', country: `${data.country || ''}${data.country_iso ? ` (${data.country_iso})` : ''}` })}\n${t(lang, 'mk.phone', { phone: data.phone || '' })}\n\n${t(lang, 'sf.addedToStock')}`, replyTo);
         } catch (err) {
-          await tgSend(token, chatId, `❌ Error: ${err.message}`, replyTo);
+          await tgSend(token, chatId, t(lang, 'c.error', { msg: err.message }), replyTo);
         }
         break;
       }
@@ -568,7 +568,7 @@ export default async function handleCommand(base44, token, ctx) {
       {
         if (!await requireUser()) break;
         await clearState(base44, `session:${user.email}`);
-        await tgSend(token, chatId, `🔐 <b>Selling accounts with 2FA</b>\n\nDuring login (📱 Sell Number or 📱 Sell Multiple), when an account has 2FA the bot asks for its 2FA password. After login the system replaces the password with its own and adds the account to stock.`, replyTo);
+        await tgSend(token, chatId, t(lang, 'cmd.twofaExplainer'), replyTo);
         break;
       }
     case 'admin':
@@ -663,7 +663,7 @@ export default async function handleCommand(base44, token, ctx) {
           const data = result.data || result;
           await tgSend(token, chatId, data.error ? `❌ ${data.error}` : `✅ ${isTopUp ? 'Top-up' : 'Withdrawal'} ${parts[2]}d.`, replyTo);
         } catch (err) {
-          await tgSend(token, chatId, `❌ Error: ${err.message}`, replyTo);
+          await tgSend(token, chatId, t(lang, 'c.error', { msg: err.message }), replyTo);
         }
         break;
       }
@@ -682,7 +682,7 @@ export default async function handleCommand(base44, token, ctx) {
           const data = result.data || result;
           await tgSend(token, chatId, data.error ? `❌ ${data.error}` : `✅ Balance updated for ${parts[1]}.`, replyTo);
         } catch (err) {
-          await tgSend(token, chatId, `❌ Error: ${err.message}`, replyTo);
+          await tgSend(token, chatId, t(lang, 'c.error', { msg: err.message }), replyTo);
         }
         break;
       }
@@ -701,7 +701,7 @@ export default async function handleCommand(base44, token, ctx) {
           const data = result.data || result;
           await tgSend(token, chatId, data.error ? `❌ ${data.error}` : `✅ User ${parts[2]}ed.`, replyTo);
         } catch (err) {
-          await tgSend(token, chatId, `❌ Error: ${err.message}`, replyTo);
+          await tgSend(token, chatId, t(lang, 'c.error', { msg: err.message }), replyTo);
         }
         break;
       }
@@ -713,7 +713,7 @@ export default async function handleCommand(base44, token, ctx) {
           const data = result.data || result;
           await tgSend(token, chatId, `✅ Rewards processed: ${JSON.stringify(data).slice(0, 300)}`, replyTo);
         } catch (err) {
-          await tgSend(token, chatId, `❌ Error: ${err.message}`, replyTo);
+          await tgSend(token, chatId, t(lang, 'c.error', { msg: err.message }), replyTo);
         }
         break;
       }
@@ -721,7 +721,7 @@ export default async function handleCommand(base44, token, ctx) {
       {
         const rawText = text.trim();
         if (cmd && rawText.startsWith('/')) {
-          await tgSend(token, chatId, `❓ Unknown command: /${cmd}\nUse /help to see all commands.`, replyTo);
+          await tgSend(token, chatId, t(lang, 'cmd.unknownCmd', { cmd }), replyTo);
           break;
         }
         // A short alphanumeric message may be an app bind code.
@@ -735,9 +735,9 @@ export default async function handleCommand(base44, token, ctx) {
               telegram_last_name: tgUser.last_name || '',
               telegram_bind_code: ''
             });
-            await tgSend(token, chatId, `✅ <b>Account Linked Successfully!</b>\n\n` + `Your Telegram is now connected to ${matchUser.email}.\n` + `Use /balance, /buy, /status and other commands to manage your account.`, replyTo);
+            await tgSend(token, chatId, t(lang, 'cmd.linked', { email: matchUser.email }), replyTo);
           } else if (cmd) {
-            await tgSend(token, chatId, `❓ Unknown command: /${cmd}\nUse /help to see all commands.`, replyTo);
+            await tgSend(token, chatId, t(lang, 'cmd.unknownCmd', { cmd }), replyTo);
           }
         }
         break;
