@@ -9,6 +9,8 @@ export default async function(req) {
   try {
     const base44 = makeB44(req);
     const body = await req.json().catch(()=>({}));
+    // Optional seller search (username or name, case-insensitive).
+    const query = String(body.query || '').trim().replace(/^@+/, '').toLowerCase();
     const user = await resolveUser(base44, body);
     if (!user?.email) return Response.json({
       error: 'Unauthorized'
@@ -42,8 +44,10 @@ export default async function(req) {
         stock: Number(row.stock)
       });
     }
+    let sellers = Array.from(sellersMap.values());
+    if (query) sellers = sellers.filter((s)=>(s.username || '').toLowerCase().includes(query) || (s.name || '').toLowerCase().includes(query));
     return Response.json({
-      sellers: Array.from(sellersMap.values()),
+      sellers,
       top_seller: payload.top_seller && payload.top_seller.name ? payload.top_seller : null,
       products: (payload.products || []).map((p)=>({
           ...p,

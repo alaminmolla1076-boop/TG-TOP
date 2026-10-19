@@ -5,6 +5,7 @@ import { stateCache, prefetchStates, getState, setState, clearState, getUserCont
 import handleCallback from '../bot/callbacks.ts';
 import handleCommand from '../bot/commands.ts';
 import { handleDocument, handleBuySearch, handleNumericFlows, handleSellFlow, handleSellMultiFlow, handleTextFlows } from '../bot/flows.ts';
+import { handleMarketSearchFlow } from '../bot/market.ts';
 // Every translated reply-keyboard button text → command action (all languages).
 const REPLY_MENU_ACTIONS = buildAllReplyActions();
 // Routes one Telegram update: callback query, document upload, or text message.
@@ -44,6 +45,7 @@ async function processUpdate(base44, token, update) {
       `withdraw:${tid}`,
       `season:${tid}`,
       `mkqty:${tid}`,
+      `mksearch:${tid}`,
       `buysearch:${tid}`,
       `buypage_query:${tid}`
     ])
@@ -102,6 +104,10 @@ async function processUpdate(base44, token, update) {
     await handleBuySearch(base44, token, ctx);
     return;
   }
+  if (isPlainText && await getState(base44, `mksearch:${tid}`)) {
+    await handleMarketSearchFlow(base44, token, ctx);
+    return;
+  }
   if (isPlainText && /^\d+(\.\d+)?$/.test(rawText)) {
     if (await handleNumericFlows(base44, token, ctx)) return;
   }
@@ -116,6 +122,7 @@ async function processUpdate(base44, token, update) {
       'withdraw',
       'season',
       'mkqty',
+      'mksearch',
       'buysearch'
     ]){
       await clearState(base44, `${key}:${tid}`);

@@ -3,7 +3,7 @@ import { t } from '../_shared/botTranslations.js';
 import { getRealBalance } from '../_shared/balance.ts';
 import { buySeasonInChunks } from '../_shared/seasonBuy.js';
 import { deliverSeasonZip, errText } from './delivery.ts';
-import { setState } from './state.ts';
+import { setState, clearState } from './state.ts';
 // The bot's Market — a direct mirror of the app's Market page: the seller
 // directory (each seller opens their country stock), products and
 // the same purchase options (Buy 1, or Buy Session Formats with quick and
@@ -23,9 +23,10 @@ const SEC = (title)=>`┈┈┈┈ ${title} ┈┈┈┈`;
 const feeOf = (amount)=>Math.round(amount * 5) / 100;
 const money = (n)=>`$${Number(n || 0).toFixed(2)}`;
 const dial = (code)=>code ? ` +${String(code).replace(/^\+/, '')}` : '';
-async function fetchMarket(base44, user) {
+async function fetchMarket(base44, user, query) {
   const res = await base44.asServiceRole.functions.invoke('getMarketSellers', {
-    user_email: user.email
+    user_email: user.email,
+    query
   });
   const data = res.data || res;
   if (data.error) throw new Error(data.error);
@@ -45,7 +46,14 @@ const gone = (sellerEmail)=>[
 export async function marketMenu(base44, user) {
   const market = await fetchMarket(base44, user);
   let text = `${SEP}\n🌍 <b>Market</b>\n${SEP}\n\n${SEC('👤 <b>Sellers</b>')}\nTap a seller to browse their stock:`;
-  const kb = [];
+  const kb = [
+    [
+      {
+        text: '🔍 Search Seller',
+        callback_data: 'mk_search'
+      }
+    ]
+  ];
   for (const s of (market.sellers || []).slice(0, 30)){
     kb.push([
       {
@@ -327,6 +335,22 @@ export async function handleMarketCallback(base44, token, cq, user, lang, chatId
     return;
   }
   const tid = String(cq.from.id);
+  // Any other Market button cancels a pending seller search.
+  if (cbData !== 'mk_search') await clearState(base44, `mksearch:${tid}`).catch(()=>{});
+  if (cbData === 'mk_search') {
+    await setState(base44, `mksearch:${tid}`, JSON.stringify({
+      status: 'awaiting_query'
+    }));
+    await tgEditMenu(token, chatId, msgId, `${SEP}\n🔍 <b>Search Seller</b>\n${SEP}\n\nSend a username or name to search:`, [
+      [
+        {
+          text: '⬅️ Back',
+          callback_data: 'menu_buy'
+        }
+      ]
+    ]);
+    return;
+  }
   if (cbData.startsWith('mk_s:')) {
     const v = await sellerView(base44, user, cbData.slice(5));
     await tgEditMenu(token, chatId, msgId, v.text, v.keyboard);
@@ -420,4 +444,62 @@ export async function handleMarketCallback(base44, token, cq, user, lang, chatId
     }
     return;
   }
+}
+
+// A seller search the user typed after tapping 🔍 Search Seller.
+export async function handleMarketSearchFlow(base44, token, ctx) {
+  const { chatId, replyTo, rawText, user } = ctx;
+  const tid = String(ctx.tgUser.id);
+  await clearState(base44, `mksearch:${tid}`);
+  if (!user) {
+    await tgSend(token, chatId, t('en', 'bind.required'), replyTo);
+    return true;
+  }
+  const query = String(rawText || '').trim().replace(/^@+/, '');
+  if (!query) {
+    await tgSend(token, chatId, `❌ Send a username or name to search:`, replyTo);
+    return true;
+  }
+  const market = await fetchMarket(base44, user, query);
+  const sellers = market.sellers || [];
+  if (!sellers.length) {
+    await tgSendMenu(token, chatId, `${SEP}\n🔍 <b>Search — ${query}</b>\n${SEP}\n\n❌ No sellers found.`, [
+      [
+        {
+          text: '🔍 New Search',
+          callback_data: 'mk_search'
+        }
+      ],
+      [
+        {
+          text: '⬅️ Back to Market',
+          callback_data: 'menu_buy'
+        }
+      ]
+    ], replyTo);
+    return true;
+  }
+  const kb = [];
+  for (const s of sellers.slice(0, 30)){
+    kb.push([
+      {
+        text: `👤 ${s.name}${s.is_self ? ' (You)' : ''} · ${s.sold} sold`,
+        callback_data: `mk_s:${s.email}`
+      }
+    ]);
+  }
+  kb.push([
+    {
+      text: '🔍 New Search',
+      callback_data: 'mk_search'
+    }
+  ]);
+  kb.push([
+    {
+      text: '⬅️ Back to Market',
+      callback_data: 'menu_buy'
+    }
+  ]);
+  await tgSendMenu(token, chatId, `${SEP}\n🔍 <b>Search — ${query}</b>\n${SEP}\n\n${sellers.length} seller(s) found. Tap a seller to browse their stock:`, kb, replyTo);
+  return true;
 }

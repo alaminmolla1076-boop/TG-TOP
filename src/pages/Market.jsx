@@ -4,6 +4,7 @@ import { useToast } from "@/components/ui/use-toast";
 import MarketBackdrop from "@/components/market/MarketBackdrop";
 import TopSellerCapsule from "@/components/market/TopSellerCapsule";
 import SellerList from "@/components/market/SellerList";
+import SellerSearchBar from "@/components/market/SellerSearchBar";
 import ProductsList from "@/components/market/ProductsList";
 import HowItWorksBand from "@/components/market/HowItWorksBand";
 import { formatMoney } from "@/lib/format";
@@ -19,6 +20,8 @@ export default function Market() {
   const [topSeller, setTopSeller] = useState(null);
   const [buyingId, setBuyingId] = useState(null);
   const [loadError, setLoadError] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(null);
+  const [searching, setSearching] = useState(false);
 
   async function load() {
     setLoadError(false);
@@ -38,6 +41,27 @@ export default function Market() {
   useEffect(() => {
     load();
   }, []);
+
+  async function searchSellers(q) {
+    setSearching(true);
+    try {
+      const catalog = await invoke("getMarketProducts", { query: q });
+      setSellers(catalog.data.sellers || []);
+      setSearchQuery(q);
+    } catch (err) {
+      toast({
+        title: "Search failed",
+        description: err.response?.data?.error || err.message,
+        variant: "destructive",
+      });
+    }
+    setSearching(false);
+  }
+
+  async function clearSearch() {
+    setSearchQuery(null);
+    await load();
+  }
 
   async function handleBuy(product) {
     setBuyingId(product.id);
@@ -66,6 +90,12 @@ export default function Market() {
           TRUSTED DIGITAL MARKETPLACE
         </span>
         <TopSellerCapsule topSeller={topSeller} />
+        <SellerSearchBar
+          onSearch={searchSellers}
+          onClear={clearSearch}
+          searching={searching}
+          activeQuery={searchQuery}
+        />
         {loadError ? (
           <div className="mk-sec flex flex-col items-center gap-3 rounded-[22px] border border-[#A29BFE]/30 bg-[rgba(45,38,78,.5)] p-[18px] text-center">
             <p className="text-[13px] text-[#a8a3cf]">
@@ -80,7 +110,7 @@ export default function Market() {
             </button>
           </div>
         ) : (
-          <SellerList sellers={sellers} />
+          <SellerList sellers={sellers} query={searchQuery} />
         )}
         <ProductsList products={products} buyingId={buyingId} onBuy={handleBuy} />
         <HowItWorksBand />

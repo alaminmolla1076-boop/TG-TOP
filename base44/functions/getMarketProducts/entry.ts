@@ -7,6 +7,8 @@ export default async function(req) {
     const identity = await resolveIdentity(body.initData || '');
     const profile = identity.profile;
     const email = sqlString(identity.identity_email);
+    // Optional seller search (username or name, case-insensitive).
+    const query = String(body.query || '').trim().replace(/^@+/, '').toLowerCase();
 
     const [products, sellerRows, topSellerRows] = await Promise.all([
       // Telegram Premium and Stars purchases are hidden from the market.
@@ -98,7 +100,13 @@ export default async function(req) {
     return Response.json({
       balance: profile ? Number(profile.balance) : 0,
       products: products.map((p) => ({ ...p, price: Number(p.price) })),
-      sellers: Array.from(sellersMap.values()),
+      sellers: query
+        ? Array.from(sellersMap.values()).filter(
+            (s) =>
+              (s.username || '').toLowerCase().includes(query) ||
+              (s.name || '').toLowerCase().includes(query)
+          )
+        : Array.from(sellersMap.values()),
       top_seller: topSellerRows[0]
         ? { ...topSellerRows[0], sold: Number(topSellerRows[0].sold) }
         : null,

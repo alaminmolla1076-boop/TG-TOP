@@ -5,7 +5,7 @@ import SectionHead from "./SectionHead";
 
 // Capsule List — seller name directory. Each name row navigates to the
 // seller's own country-stock page (page-based, not an accordion).
-export default function SellerList({ sellers }) {
+export default function SellerList({ sellers, query }) {
   return (
     <section className="mk-sec flex flex-col gap-3">
       <SectionHead
@@ -17,7 +17,9 @@ export default function SellerList({ sellers }) {
         <p className="text-[13px] text-[#a8a3cf]">Loading…</p>
       ) : sellers.length === 0 ? (
         <div className="rounded-[22px] border border-dashed border-[#A29BFE]/30 bg-[rgba(45,38,78,.3)] p-[18px] text-[13px] text-[#a8a3cf]">
-          No sellers with stock right now — check back soon.
+          {query
+            ? `No sellers found for “${query}” — try another username.`
+            : "No sellers with stock right now — check back soon."}
         </div>
       ) : (
         sellers.map((s) => (
