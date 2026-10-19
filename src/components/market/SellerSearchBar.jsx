@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { Search, X } from "lucide-react";
+import { useAppLang } from "@/lib/AppLanguageContext";
 
 // Capsule List Market — seller search bar. Search filters the seller
 // directory by username (or name) on the server; Clear restores the full list.
 export default function SellerSearchBar({ onSearch, onClear, searching, activeQuery }) {
   const [value, setValue] = useState("");
+  const { t } = useAppLang();
   const q = value.trim();
 
   const submit = (e) => {
@@ -27,14 +29,14 @@ export default function SellerSearchBar({ onSearch, onClear, searching, activeQu
       <input
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        placeholder="Search seller by username"
+        placeholder={t("mk.searchPlaceholder")}
         className="min-w-0 flex-1 bg-transparent text-[13px] text-foreground placeholder:text-[#a8a3cf] focus:outline-none"
       />
       {activeQuery && (
         <button
           type="button"
           onClick={clear}
-          aria-label="Clear search"
+          aria-label={t("mk.searchPlaceholder")}
           className="flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-full border border-[#A29BFE]/40 bg-[rgba(108,92,231,.22)] text-[#A29BFE] transition-colors duration-200 hover:bg-[rgba(108,92,231,.4)]"
         >
           <X className="h-3.5 w-3.5" strokeWidth={1.8} />
@@ -45,7 +47,7 @@ export default function SellerSearchBar({ onSearch, onClear, searching, activeQu
         disabled={!q || searching}
         className="shrink-0 cursor-pointer rounded-full border border-[#A29BFE]/40 bg-[rgba(108,92,231,.25)] px-4 py-1.5 text-[13px] font-semibold text-[#A29BFE] transition-colors duration-200 hover:bg-[rgba(108,92,231,.45)] disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {searching ? "…" : "Search"}
+        {searching ? "…" : t("c.search")}
       </button>
     </form>
   );

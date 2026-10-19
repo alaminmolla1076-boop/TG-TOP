@@ -1,10 +1,12 @@
 import React from "react";
 import { Trophy } from "lucide-react";
+import { useAppLang } from "@/lib/AppLanguageContext";
 
 // Capsule List — Top Seller capsule with the Account-style concentric ring.
 // The count comes from real completed sales (top_ups tagged account_sale);
 // with no sales yet it truthfully shows 0.
 export default function TopSellerCapsule({ topSeller }) {
+  const { t } = useAppLang();
   const sold = topSeller?.sold ?? 0;
   return (
     <div className="mk-cap flex items-center gap-3.5 rounded-[30px] border border-[#A29BFE]/30 bg-gradient-to-br from-[rgba(45,38,78,.85)] to-[rgba(33,28,56,.9)] p-5">
@@ -13,7 +15,7 @@ export default function TopSellerCapsule({ topSeller }) {
       </div>
       <div className="min-w-0">
         <div className="text-[10px] font-semibold uppercase tracking-[.14em] text-[#A29BFE]">
-          Top Seller
+          {t("mk.topSeller")}
         </div>
         <div className="mt-1 bg-gradient-to-r from-[#A29BFE] to-[#6C5CE7] bg-clip-text font-display text-[34px] font-bold leading-none text-transparent tabular-nums">
           {sold}
