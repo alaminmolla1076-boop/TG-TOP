@@ -15,9 +15,9 @@ export default async function(req) {
     const amount = Number(body.amount);
     const network = String(body.network || 'BEP20').toUpperCase();
     const address = String(body.wallet_address || '').trim();
-    if (!Number.isFinite(amount) || amount < 2 || Math.abs(amount * 100 - Math.round(amount * 100)) > 0.000001) {
+    if (!Number.isFinite(amount) || amount < 1 || Math.abs(amount * 100 - Math.round(amount * 100)) > 0.000001) {
       return Response.json({
-        error: 'Minimum withdrawal is $2; use at most two decimal places'
+        error: 'Minimum withdrawal is $1; use at most two decimal places'
       }, {
         status: 400
       });

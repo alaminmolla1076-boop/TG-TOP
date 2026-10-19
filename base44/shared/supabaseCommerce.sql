@@ -94,9 +94,9 @@ declare
   v_balance numeric;
   v_fee numeric := 0.10;
 begin
-  if nullif(trim(p_email), '') is null or p_amount is null or p_amount < 2
+  if nullif(trim(p_email), '') is null or p_amount is null or p_amount < 1
     or p_amount::text in ('NaN', 'Infinity', '-Infinity') or p_amount <> round(p_amount, 2) then
-    raise exception 'Minimum withdrawal is $2; use at most two decimal places';
+    raise exception 'Minimum withdrawal is $1; use at most two decimal places';
   end if;
   if p_network is null or p_network not in ('BEP20', 'POLYGON', 'TON') then
     raise exception 'Invalid withdrawal network';

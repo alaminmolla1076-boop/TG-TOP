@@ -12,7 +12,7 @@ const SEP = '━━━━━━━━━━━━━━━━━━';
 const SEC = (title)=>`┈┈┈┈ ${title} ┈┈┈┈`;
 const money = (n)=>`$${Number(n || 0).toFixed(2)}`;
 export const WD_FEE = 0.1;
-export const WD_MIN = 2;
+export const WD_MIN = 1;
 const QUICK_AMOUNTS = [
   2,
   5,
