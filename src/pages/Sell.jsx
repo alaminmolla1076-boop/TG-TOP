@@ -3,7 +3,6 @@ import { useTgIdentity } from "@/lib/TgIdentityContext";
 import { Badge } from "@/components/ui/badge";
 import SellWizard from "@/components/sell/SellWizard";
 import StockPricesPanel from "@/components/sell/StockPricesPanel";
-import StockPasswords from "@/components/sell/StockPasswords";
 import { formatMoney } from "@/lib/format";
 import { useAppLang } from "@/lib/AppLanguageContext";
 
@@ -50,10 +49,6 @@ export default function Sell() {
     <div className="mx-auto flex max-w-md flex-col gap-4">
       <div className="og-rise">
         <StockPricesPanel stock={stock} onSaved={() => load(true)} />
-      </div>
-
-      <div className="og-rise [animation-delay:.1s]">
-        <StockPasswords />
       </div>
 
       <div className="og-rise [animation-delay:.2s]">
