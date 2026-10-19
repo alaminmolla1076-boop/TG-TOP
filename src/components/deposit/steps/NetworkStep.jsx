@@ -1,8 +1,10 @@
 import React from "react";
 import { ChevronRight, Loader2 } from "lucide-react";
 import { LOGOS } from "@/components/deposit/logos";
+import OkpayLogo from "../OkpayLogo";
 
 const CHAINS = [
+  { value: "OKPAY", name: "Top Up with Okpay", okpay: true, badge: "USDT · Instant", desc: "Pay with OKPay — instant top-up, no network fees" },
   { value: "TON", name: "Keeper Wallet", logo: LOGOS.keeper, badge: "TON Coin", desc: "Connect Keeper first, then confirm your TON top-up" },
   { value: "TRC20", name: "Tron", logo: LOGOS.TRC20, badge: "USDT TRC20", desc: "USDT on Tron — low fees, fast confirmation" },
   { value: "ERC20", name: "Ethereum", logo: LOGOS.ERC20, badge: "USDT ERC20", desc: "USDT on Ethereum — higher gas fees" },
@@ -34,7 +36,7 @@ export default function NetworkStep({ amount, network, creating, onSelect }) {
             }`}
           >
             <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-secondary/60 p-2">
-              <img src={c.logo} alt={c.name} className="h-8 w-8" />
+              {c.okpay ? <OkpayLogo className="h-8 w-8" /> : <img src={c.logo} alt={c.name} className="h-8 w-8" />}
             </span>
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">

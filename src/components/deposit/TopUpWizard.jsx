@@ -8,6 +8,7 @@ import AmountStep from "@/components/deposit/steps/AmountStep";
 import NetworkStep from "@/components/deposit/steps/NetworkStep";
 import SendStep from "@/components/deposit/steps/SendStep";
 import TonStep from "@/components/deposit/steps/TonStep";
+import OkpayStep from "@/components/deposit/steps/OkpayStep";
 import connectKeeperWallet from "@/components/deposit/connectKeeperWallet";
 
 export default function TopUpWizard({ onDone, onClose }) {
@@ -40,10 +41,14 @@ export default function TopUpWizard({ onDone, onClose }) {
   async function checkStatus(quiet) {
     setChecking(true);
     try {
-      const res = await invoke(networkRef.current === "TON" ? "tonTopUp" : "verifyUsdtDeposit", {
-        action: "check",
-        request_id: requestIdRef.current,
-      });
+      const okpay = networkRef.current === "OKPAY";
+      const res = await invoke(
+        okpay ? "checkOkpayOrder" : networkRef.current === "TON" ? "tonTopUp" : "verifyUsdtDeposit",
+        okpay ? { topup_id: requestIdRef.current } : {
+          action: "check",
+          request_id: requestIdRef.current,
+        }
+      );
       setStatus(res.data.status);
       if (res.data.status === "approved") {
         toast({ title: "Top-up confirmed", description: "Your balance has been credited." });
@@ -79,6 +84,15 @@ export default function TopUpWizard({ onDone, onClose }) {
           throw new Error("Switch Keeper to TON mainnet, then reconnect.");
         }
       }
+      if (selectedNetwork === "OKPAY") {
+        const res = await invoke("createOkpayOrder", { amount: Number(amount) });
+        requestIdRef.current = res.data.topup_id;
+        setRequest({ ...res.data, amount: Number(amount), network: "OKPAY" });
+        setStatus("pending");
+        setStep("okpay");
+        startPolling();
+        return;
+      }
       const res = await invoke(selectedNetwork === "TON" ? "tonTopUp" : "verifyUsdtDeposit", {
         action: "create",
         amount: Number(amount),
@@ -104,17 +118,19 @@ export default function TopUpWizard({ onDone, onClose }) {
     if (step === "network") setStep("amount");
   }
 
-  const steps = network === "TON" ? ["amount", "network", "ton"] : ["amount", "network", "send"];
+  const steps = network === "TON" ? ["amount", "network", "ton"]
+    : network === "OKPAY" ? ["amount", "network", "okpay"]
+    : ["amount", "network", "send"];
   const stepIndex = steps.indexOf(step);
   const stepTitle =
-    step === "send" || step === "ton"
+    step === "send" || step === "ton" || step === "okpay"
       ? "Complete Your Top-Up"
       : `Step ${stepIndex + 1} of ${steps.length}`;
 
   return (
     <div className="grid gap-6">
       <div className="flex items-center gap-3">
-        {stepIndex > 0 && step !== "send" && step !== "ton" && (
+        {stepIndex > 0 && step !== "send" && step !== "ton" && step !== "okpay" && (
           <Button type="button" variant="ghost" size="icon" onClick={goBack} disabled={creating} aria-label="Back">
             <ChevronLeft className="h-5 w-5" />
           </Button>
@@ -171,6 +187,15 @@ export default function TopUpWizard({ onDone, onClose }) {
           )}
           {step === "ton" && (
             <TonStep
+              request={request}
+              status={status}
+              checking={checking}
+              onCheck={() => checkStatus(false)}
+              onCancel={() => { stopPolling(); onClose && onClose(); }}
+            />
+          )}
+          {step === "okpay" && (
+            <OkpayStep
               request={request}
               status={status}
               checking={checking}
