@@ -14,7 +14,7 @@ export default function ReportSeller() {
   const { toast } = useToast();
   const [username, setUsername] = useState("");
   const [sellerId, setSellerId] = useState("");
-  const [scamType, setScamType] = useState("not_delivered");
+  const [scamType, setScamType] = useState("not_logged_out");
   const [details, setDetails] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
@@ -23,12 +23,11 @@ export default function ReportSeller() {
   const fieldCls =
     "w-full rounded-2xl border border-ring/[.25] bg-[rgba(45,38,78,.5)] px-4 py-3 text-[13px] text-foreground placeholder:text-[#a8a3cf]/60 transition-colors duration-200 focus:border-[#A29BFE]/60 focus:outline-none";
 
+  // The only report reason: delivery is automatic and the price is the
+  // seller's own, so the single remaining issue is a seller keeping the
+  // account logged in on their device.
   const scamTypes = [
-    { value: "not_delivered", label: t("rs.type.not_delivered") },
-    { value: "invalid_account", label: t("rs.type.invalid_account") },
-    { value: "scam", label: t("rs.type.scam") },
-    { value: "price_manipulation", label: t("rs.type.price_manipulation") },
-    { value: "other", label: t("rs.type.other") },
+    { value: "not_logged_out", label: t("rs.type.not_logged_out") },
   ];
 
   const submit = async () => {
@@ -58,7 +57,7 @@ export default function ReportSeller() {
   const reset = () => {
     setUsername("");
     setSellerId("");
-    setScamType("not_delivered");
+    setScamType("not_logged_out");
     setDetails("");
     setDone(false);
   };
