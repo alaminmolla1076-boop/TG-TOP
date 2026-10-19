@@ -7,6 +7,7 @@ import SellerList from "@/components/market/SellerList";
 import SellerSearchBar from "@/components/market/SellerSearchBar";
 import ProductsList from "@/components/market/ProductsList";
 import HowItWorksBand from "@/components/market/HowItWorksBand";
+import LegalFooter from "@/components/market/LegalFooter";
 import { formatMoney } from "@/lib/format";
 
 // Capsule List — Market: Top Seller capsule + seller name directory; each
@@ -114,6 +115,7 @@ export default function Market() {
         )}
         <ProductsList products={products} buyingId={buyingId} onBuy={handleBuy} />
         <HowItWorksBand />
+        <LegalFooter />
       </div>
     </div>
   );
