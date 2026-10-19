@@ -77,7 +77,7 @@ export default async function handleCommand(base44, token, ctx) {
           user.telegram_last_name
         ].filter(Boolean).join(' ') || user.full_name || user.email;
         const sep = '━━━━━━━━━━━━━━━━━━';
-        await tgSend(token, chatId, `${sep}\n${t(lang, 'myaccount.title')}\n${sep}\n\n` + `<b>${name}</b>\n` + `🔗 ${user.telegram_username ? `@${user.telegram_username}` : 'N/A'}\n` + `🆔 <code>${user.telegram_id || user.id}</code>\n\n` + `┈┈┈┈ 📊 <b>Statistics</b> ┈┈┈┈\n` + `🛒 Purchased: <b>${accounts.length} account(s)</b>\n` + `📱 Sold: <b>${sessions.length} account(s)</b>\n` + `🔐 Total Login: <b>${sessions.length}</b>\n` + `💰 Total Top Up: <b>$${totalDeposits.toFixed(2)}</b>\n` + `💸 Total Withdraw: <b>$${totalWithdrawals.toFixed(2)}</b>\n\n` + `${sep}\n💎 <b>Balance: $${bal.toFixed(2)}</b>\n${sep}` + await buildUserRewards(base44, user.email), replyTo);
+        await tgSend(token, chatId, `${sep}\n${t(lang, 'myaccount.title')}\n${sep}\n\n` + `<b>${name}</b>\n` + `🔗 ${user.telegram_username ? `@${user.telegram_username}` : 'N/A'}\n` + `🆔 <code>${user.telegram_id || user.id}</code>\n\n` + `┈┈┈┈ ${t(lang, 'myaccount.stats')} ┈┈┈┈\n` + `${t(lang, 'myaccount.purchased', { count: accounts.length })}\n` + `${t(lang, 'myaccount.sold', { count: sessions.length })}\n` + `${t(lang, 'myaccount.totalLogin', { count: sessions.length })}\n` + `${t(lang, 'myaccount.totalTopUp', { amount: `$${totalDeposits.toFixed(2)}` })}\n` + `${t(lang, 'myaccount.totalWithdraw', { amount: `$${totalWithdrawals.toFixed(2)}` })}\n\n` + `${sep}\n${t(lang, 'myaccount.balance', { balance: `$${bal.toFixed(2)}` })}\n${sep}` + await buildUserRewards(base44, user.email), replyTo);
         break;
       }
     case 'balance':
@@ -190,7 +190,7 @@ export default async function handleCommand(base44, token, ctx) {
         await tgSendMenu(token, chatId, `${t(lang, 'refer.title')}\n\n${t(lang, 'refer.desc')}\n\n${t(lang, 'refer.yourLink')}:\n<code>${refLink}</code>`, [
           [
             { text: t(lang, 'refer.copyBtn'), copy_text: { text: refLink } },
-            { text: '📤 Share', switch_inline_query: refLink }
+            { text: t(lang, 'refer.share'), switch_inline_query: refLink }
           ]
         ], replyTo);
         break;

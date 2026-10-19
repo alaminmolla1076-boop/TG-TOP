@@ -823,7 +823,7 @@ export default async function handleCallback(base44, token, cq) {
           cbUserRec.telegram_first_name,
           cbUserRec.telegram_last_name
         ].filter(Boolean).join(' ') || cbUserRec.full_name || cbUserRec.email;
-        await send(cbChatId, `${t(cbLang, 'myaccount.title')}\n\n` + `Name: <b>${name}</b>\n` + `Username: ${cbUserRec.telegram_username ? `@${cbUserRec.telegram_username}` : 'N/A'}\n` + `ID: <code>${cbUserRec.telegram_id || cbUserRec.id}</code>\n\n` + `📊 <b>Statistics</b>\n` + `🛒 Purchased: ${accounts.length} account(s)\n` + `📱 Sold: ${sessions.length} account(s)\n` + `🔐 Total Login: ${sessions.length}\n` + `🎁 Total Reward: $${totalReward.toFixed(2)}\n` + `💰 Total Top Up: $${totalDeposits.toFixed(2)}\n` + `💸 Total Withdraw: $${totalWithdrawals.toFixed(2)}\n` + `💎 Balance: <b>$${bal.toFixed(2)}</b>` + await buildUserRewards(base44, cbUserRec.email));
+        await send(cbChatId, `${t(cbLang, 'myaccount.title')}\n\n` + `${t(cbLang, 'myaccount.name')}: <b>${name}</b>\n` + `${t(cbLang, 'myaccount.username')}: ${cbUserRec.telegram_username ? `@${cbUserRec.telegram_username}` : 'N/A'}\n` + `${t(cbLang, 'myaccount.id')}: <code>${cbUserRec.telegram_id || cbUserRec.id}</code>\n\n` + `${t(cbLang, 'myaccount.stats')}\n` + `${t(cbLang, 'myaccount.purchased', { count: accounts.length })}\n` + `${t(cbLang, 'myaccount.sold', { count: sessions.length })}\n` + `${t(cbLang, 'myaccount.totalLogin', { count: sessions.length })}\n` + `${t(cbLang, 'myaccount.totalReward', { amount: `$${totalReward.toFixed(2)}` })}\n` + `${t(cbLang, 'myaccount.totalTopUp', { amount: `$${totalDeposits.toFixed(2)}` })}\n` + `${t(cbLang, 'myaccount.totalWithdraw', { amount: `$${totalWithdrawals.toFixed(2)}` })}\n` + `${t(cbLang, 'myaccount.balance', { balance: `$${bal.toFixed(2)}` })}` + await buildUserRewards(base44, cbUserRec.email));
         break;
       }
     case 'menu_reward':
@@ -895,7 +895,7 @@ export default async function handleCallback(base44, token, cq) {
               }
             },
             {
-              text: '📤 Share',
+              text: t(cbLang, 'refer.share'),
               switch_inline_query: refLink
             }
           ]
