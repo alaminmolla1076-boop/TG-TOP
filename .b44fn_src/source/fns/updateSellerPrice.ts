@@ -1,5 +1,6 @@
 import { makeB44 } from '../_shared/b44.ts';
 import { resolveUser } from '../_shared/resolveUser.ts';
+import { broadcastPriceDrop } from '../_shared/priceDropNotify.ts';
 // Lets a seller set the price for ALL their available accounts of a given
 // country. The new price applies only to that seller's listings — other
 // sellers keep their own prices, and buyers pay whatever the seller set.
@@ -44,6 +45,11 @@ export default async function(req) {
         status: 400
       });
     }
+    // Snapshot taken BEFORE the update: the previous price and the stock pools
+    // affected, so a price DROP can be announced to every user.
+    const oldPrice = Math.max(...accounts.map((a) => Number(a.price) || 0));
+    const spamCount = accounts.filter((a) => a.spam).length;
+    const spamPool = spamCount === 0 ? 'nonspam' : spamCount === accounts.length ? 'spam' : 'mixed';
     // Bulk-update all the seller's available accounts of this country.
     await base44.asServiceRole.entities.TgAccount.updateMany({
       country_iso,
@@ -54,6 +60,23 @@ export default async function(req) {
         price: Number(newPrice.toFixed(2))
       }
     });
+    // When the price went DOWN, tell everyone: who dropped it, country with
+    // flag, Spam / Non-Spam pool, old and new price — in each user's language.
+    if (oldPrice > 0 && newPrice < oldPrice) {
+      const countries = await base44.asServiceRole.entities.Country.filter({
+        iso: country_iso
+      }).catch(() => []);
+      broadcastPriceDrop(base44, {
+        sellerUsername: user.telegram_username || '',
+        sellerName: user.telegram_first_name || '',
+        sellerTelegramId: user.telegram_id,
+        countryIso: country_iso,
+        countryName: countries[0]?.name || country_iso,
+        spamPool,
+        oldPrice,
+        newPrice: Number(newPrice.toFixed(2))
+      });
+    }
     return Response.json({
       success: true,
       country_iso,
