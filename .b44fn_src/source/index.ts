@@ -42,6 +42,7 @@ import webGetAccountCode from './webfns/getAccountCode.ts';
 import webBuySession from './webfns/buySession.ts';
 import webBuyProduct from './webfns/buyProduct.ts';
 import webSetStockPrice from './webfns/setStockPrice.ts';
+import webGetMyStockPasswords from './webfns/getMyStockPasswords.ts';
 import webReportSeller from './webfns/reportSeller.ts';
 import webSellSendCode from './webfns/sellSendCode.ts';
 import webSellVerifyCode from './webfns/sellVerifyCode.ts';
@@ -110,6 +111,7 @@ setRegistry({
   webBuySession,
   webBuyProduct,
   webSetStockPrice,
+  webGetMyStockPasswords,
   webReportSeller,
   webSellSendCode,
   webSellVerifyCode,
