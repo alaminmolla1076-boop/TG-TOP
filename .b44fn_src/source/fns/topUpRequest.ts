@@ -5,7 +5,9 @@
 // exact unique USDT jetton amount to the TON_DEPOSIT_ADDRESS and the transfer is
 // verified on-chain via Toncenter.
 import { entities } from '../_shared/entities.ts';
-import { secrets } from '../_shared/b44.ts';
+import { makeB44, secrets } from '../_shared/b44.ts';
+import { syncUserBalance } from '../_shared/balance.ts';
+import { notifyTopUpDecision } from '../_shared/moneyNotify.ts';
 async function callPublicEdge(name, body) {
   const anon = Deno.env.get('SUPABASE_ANON_KEY') || '';
   const url = `${Deno.env.get('SUPABASE_URL')}/functions/v1/${name}`;
@@ -133,7 +135,8 @@ async function checkTonUsdtRequest(rec) {
     tx_hash: hash
   });
   return {
-    status: 'approved'
+    status: 'approved',
+    tx_hash: hash
   };
 }
 export default async function(req) {
@@ -191,12 +194,32 @@ export default async function(req) {
       }, {
         status: 403
       });
-      if (rec.network === 'TON') return Response.json(await checkTonUsdtRequest(rec));
+      // When an on-chain check flips a pending top-up to approved/rejected,
+      // the user gets the professional success notice in their bot chat.
+      const base44 = makeB44(req);
+      const notifyOutcome = async (status, txHash) => {
+        if (rec.status !== 'pending' || !['approved', 'rejected'].includes(status)) return;
+        try {
+          const balance = rec.user_email ? await syncUserBalance(base44, rec.user_email) : null;
+          await notifyTopUpDecision(base44, rec.user_email, status, {
+            ...rec,
+            tx_hash: txHash || rec.tx_hash
+          }, balance);
+        } catch (e) {
+          console.error('topup notify failed', e?.message);
+        }
+      };
+      if (rec.network === 'TON') {
+        const result = await checkTonUsdtRequest(rec);
+        await notifyOutcome(result.status, result.tx_hash);
+        return Response.json(result);
+      }
       const result = await callPublicEdge('checkTopUpStatus', {
         request_id: body.request_id
       });
       // Supabase uses detected/expired; the flows use approved/rejected.
       const status = result.status === 'detected' ? 'approved' : result.status === 'expired' ? 'rejected' : result.status;
+      await notifyOutcome(status);
       return Response.json({
         ...result,
         status
