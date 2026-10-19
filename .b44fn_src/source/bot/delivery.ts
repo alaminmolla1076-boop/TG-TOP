@@ -13,7 +13,8 @@ export function errText(err) {
 }
 // Delivers ALL purchased sessions as ONE ZIP, whatever the season size — session
 // files are a few hundred bytes each. Only the DB read is chunked (200/query).
-export async function deliverSeasonZip(base44, token, chatId, accountIds, replyTo) {
+export async function deliverSeasonZip(base44, token, chatId, accountIds, replyTo, lang) {
+  const L = lang || 'en';
   const files = [];
   const StringSession = await loadStringSession();
   for(let i = 0; i < accountIds.length; i += 200){
@@ -46,11 +47,11 @@ export async function deliverSeasonZip(base44, token, chatId, accountIds, replyT
     const { file_url } = await base44.asServiceRole.integrations.Core.UploadFile({
       file: zipFile
     });
-    const delivery = await tgSendDoc(token, chatId, file_url, `📦 ${files.length} session file${files.length > 1 ? 's' : ''} — TG Top`);
-    if (!delivery.ok) throw new Error(delivery.description || 'Session ZIP delivery failed');
+    const delivery = await tgSendDoc(token, chatId, file_url, t(L, 'dl.zipCaption', { count: files.length }));
+    if (!delivery.ok) throw new Error(delivery.description || t(L, 'dl.zipFail'));
     sent = files.length;
   }
-  if (!sent) await tgSend(token, chatId, '❌ No valid sessions to deliver.', replyTo);
+  if (!sent) await tgSend(token, chatId, t(L, 'dl.noValid'), replyTo);
   return sent;
 }
 // Generates a bind code so an app account can be linked to this Telegram user.
@@ -126,10 +127,19 @@ export async function processSellSeasonBulk(base44, token, chatId, sessions, use
     totalFailed += data.failed || 0;
     totalReward += data.total_reward || 0;
     const done = i + 1;
+    const SL = lang || 'en';
     if (data.added) {
-      await tgSend(token, chatId, `✅ Session ${done}/${sessions.length} — added${data.results?.[0]?.country ? ` (${data.results[0].country})` : ''}`, replyTo);
+      await tgSend(token, chatId, t(SL, 'dl.sessionAdded', {
+        done,
+        total: sessions.length,
+        country: data.results?.[0]?.country ? ` (${data.results[0].country})` : ''
+      }), replyTo);
     } else if (data.failed) {
-      await tgSend(token, chatId, `❌ Session ${done}/${sessions.length} — ${data.failed_details?.[0]?.reason || 'failed'}`, replyTo);
+      await tgSend(token, chatId, t(SL, 'dl.sessionFailed', {
+        done,
+        total: sessions.length,
+        reason: data.failed_details?.[0]?.reason || t(SL, 'dl.failed')
+      }), replyTo);
     }
     for (const [iso, count] of Object.entries(data.added_by_country || {})){
       addedByCountry[iso] = (addedByCountry[iso] || 0) + count;
@@ -140,7 +150,10 @@ export async function processSellSeasonBulk(base44, token, chatId, sessions, use
     }
     // Recovery file per session so bad accounts can be recovered immediately.
     if (data.failed_file_url) {
-      await tgSendDoc(token, chatId, data.failed_file_url, `❌ Batch ${done} failed sessions (${data.failed || 0}) — recovery file`);
+      await tgSendDoc(token, chatId, data.failed_file_url, t(SL, 'dl.batchFailed', {
+        done,
+        count: data.failed || 0
+      }));
     }
   }
   let msg = `${t(lang, 'sell.seasonDone')}\n\n`;
@@ -153,12 +166,13 @@ export async function processSellSeasonBulk(base44, token, chatId, sessions, use
   if (totalReward) msg += `${t(lang, 'sell.seasonReward', {
     reward: totalReward.toFixed(2)
   })}\n`;
+  const SL2 = lang || 'en';
   if (Object.keys(addedByCountry).length) {
-    msg += `\n🌍 <b>By country:</b>\n`;
+    msg += `\n${t(SL2, 'dl.byCountry')}\n`;
     for (const [iso, count] of Object.entries(addedByCountry))msg += `• ${iso}: ${count}\n`;
   }
   if (Object.keys(failedReasons).length) {
-    msg += `\n❌ <b>Failed breakdown:</b>\n`;
+    msg += `\n${t(SL2, 'dl.failedBreakdown')}\n`;
     for (const [reason, count] of Object.entries(failedReasons))msg += `• ${reason}: ${count}\n`;
   }
   await tgSend(token, chatId, msg, replyTo);

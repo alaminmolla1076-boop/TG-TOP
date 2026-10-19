@@ -41,7 +41,7 @@ export async function handleDocument(base44, token, msg, tgUser) {
   }
   const docLang = (await getUserContext(base44, String(tgUser.id))).lang;
   const fileName = msg.document.file_name || 'sessions.txt';
-  const receivedMsg = await tgSend(token, chatId, `📥 <b>File received:</b> ${fileName}\n\n🔄 Processing... please wait`, replyTo);
+  const receivedMsg = await tgSend(token, chatId, `${t(docLang, 'sf.fileReceived', { name: fileName })}\n\n${t(docLang, 'sf.processingWait')}`, replyTo);
   const receivedMsgId = receivedMsg?.result?.message_id;
   try {
     const fileBytes = await tgDownloadFileBytes(token, msg.document.file_id);
@@ -52,7 +52,7 @@ export async function handleDocument(base44, token, msg, tgUser) {
     }
     await clearState(base44, `sellseason:${String(tgUser.id)}`);
     await clearState(base44, `adminseason:${String(tgUser.id)}`);
-    const foundMsg = await tgSend(token, chatId, `📊 Found <b>${sessions.length}</b> session(s). Processing now...`, replyTo);
+    const foundMsg = await tgSend(token, chatId, t(docLang, 'sf.found', { count: sessions.length }), replyTo);
     // Sessions are stored in parts of 200 — one huge array in a single state
     // field cannot be saved reliably.
     const jobRef = `${Date.now()}:${chatId}`;
@@ -80,7 +80,7 @@ export async function handleDocument(base44, token, msg, tgUser) {
     // its own CPU budget — in-process it killed the webhook isolate.
     waitUntil(selfTrigger('processSellSeasonJobs', {}));
   } catch (err) {
-    await tgSend(token, chatId, `❌ Error: ${err.message}`, replyTo);
+    await tgSend(token, chatId, t(docLang, 'c.error', { msg: err.message }), replyTo);
   }
 }
 // Country search query typed after tapping the search button.
@@ -93,7 +93,7 @@ export async function handleBuySearch(base44, token, ctx) {
     platform: 'tg'
   });
   if (!countries.length) {
-    await tgSend(token, chatId, '❌ No countries available.', replyTo);
+    await tgSend(token, chatId, t(lang, 'sf.noCountries'), replyTo);
     return true;
   }
   const q = rawText.toLowerCase().trim();
@@ -116,10 +116,10 @@ export async function handleNumericFlows(base44, token, ctx) {
     if (topupState.status === 'awaiting_amount') {
       const amount = parseFloat(rawText);
       if (!amount || amount < 1) {
-        await tgSend(token, chatId, `❌ Minimum top-up amount is $1. Please enter an amount of $1 or more:`, replyTo);
+        await tgSend(token, chatId, t(lang, 'tu.minTopup'), replyTo);
         return true;
       }
-      const tpView = topupMethodView(amount);
+      const tpView = topupMethodView(amount, lang);
       await tgSendMenu(token, chatId, tpView.text, tpView.keyboard, replyTo);
       await clearState(base44, `topup:${tid}`);
       return true;
@@ -131,7 +131,7 @@ export async function handleNumericFlows(base44, token, ctx) {
     if (withdrawState.status === 'awaiting_amount') {
       const amount = parseFloat(rawText);
       if (!amount || amount < WD_MIN) {
-        const minMsg = await tgSend(token, chatId, `❗ <b>Minimum withdrawal is $${WD_MIN}</b>\n\n⚠️ A $0.10 fee is charged in addition to the amount.\nPlease enter an amount of $${WD_MIN} or more:`, replyTo);
+        const minMsg = await tgSend(token, chatId, t(lang, 'wd.minWithdraw', { min: WD_MIN }), replyTo);
         await setState(base44, `withdraw:${tid}`, JSON.stringify({
           status: 'awaiting_amount',
           msgs: [
@@ -143,7 +143,7 @@ export async function handleNumericFlows(base44, token, ctx) {
         return true;
       }
       // The fee must stay in the account on top of the requested amount.
-      const balCheck = await checkWithdrawBalance(base44, user, amount);
+      const balCheck = await checkWithdrawBalance(base44, user, amount, lang);
       if (balCheck.error) {
         const errMsg = await tgSend(token, chatId, balCheck.error, replyTo);
         await setState(base44, `withdraw:${tid}`, JSON.stringify({
@@ -156,7 +156,7 @@ export async function handleNumericFlows(base44, token, ctx) {
         }));
         return true;
       }
-      const v = withdrawNetworkView(amount, balCheck.balance);
+      const v = withdrawNetworkView(amount, balCheck.balance, lang);
       await tgSendMenu(token, chatId, v.text, v.keyboard, replyTo);
       await clearState(base44, `withdraw:${tid}`);
       return true;
@@ -179,7 +179,7 @@ export async function handleNumericFlows(base44, token, ctx) {
       }))[0];
       await clearState(base44, `season:${tid}`);
       if (!country) {
-        await tgSend(token, chatId, `❌ Country ${iso} not found.`, replyTo);
+        await tgSend(token, chatId, t(lang, 'mk.countryNotFound'), replyTo);
         return true;
       }
       const bal = await getRealBalance(base44, user.email);
@@ -234,7 +234,8 @@ export async function handleNumericFlows(base44, token, ctx) {
     await clearState(base44, `mkqty:${tid}`);
     if (user && mkState.status === 'awaiting_qty') {
       await showMarketConfirm(base44, token, user, chatId, mkState.seller_email, mkState.iso, parseInt(rawText), {
-        replyTo
+        replyTo,
+        lang
       });
       return true;
     }

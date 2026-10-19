@@ -1,5 +1,9 @@
 // Bot UI translations for all supported languages.
 // Menu buttons + key messages. Falls back to English for missing keys.
+import { TA } from './botTlA.js';
+import { TB } from './botTlB.js';
+import { TC } from './botTlC.js';
+import { TD } from './botTlD.js';
 
 export const BOT_LANGS = [
   { code: 'en', label: 'English', flag: '🇬🇧' },
@@ -834,8 +838,17 @@ const LANG_NAMES = {
 };
 
 // Translate a key for a given language, with optional params.
+// Checks the core table first, then the flow tables (A/B/C), then English.
+const FLOW_TABLES = [TA, TB, TC, TD];
 export function t(lang, key, params) {
-  let str = (T[lang] && T[lang][key]) || T.en[key] || key;
+  let str = (T[lang] && T[lang][key]);
+  if (str === undefined) {
+    for (const F of FLOW_TABLES) {
+      str = (F[lang] && F[lang][key]) || F.en[key];
+      if (str !== undefined) break;
+    }
+  }
+  if (str === undefined) str = key;
   if (params) {
     for (const [k, v] of Object.entries(params)) {
       str = str.replace(new RegExp(`\\{${k}\\}`, 'g'), v);

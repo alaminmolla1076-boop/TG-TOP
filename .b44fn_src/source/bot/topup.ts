@@ -2,6 +2,7 @@
 // amount picker ($5…$1000 + custom) → payment method (USDT Crypto / OKPay) →
 // network (TRC20 / BEP20) → deposit page with QR code, copyable address and the
 // unique identify amount that verifies the top-up automatically on-chain.
+// Every screen is localized through t(lang, ...) with English fallback.
 import { tgSend, tgSendMenu, tgEditMenu, tgDeleteMessage, tgSendPhoto } from '../_shared/telegramApi.ts';
 import { t } from '../_shared/botTranslations.js';
 import { errText } from './delivery.ts';
@@ -46,7 +47,8 @@ const netName = (id)=>NETWORKS.find((n)=>n.id === id) || {
     desc: ''
   };
 // Page 1 — quick amount grid + custom amount.
-export function topupAmountView() {
+export function topupAmountView(lang) {
+  const L = lang || 'en';
   const kb = [];
   for(let i = 0; i < QUICK_AMOUNTS.length; i += 2){
     kb.push(QUICK_AMOUNTS.slice(i, i + 2).map((a)=>({
@@ -56,41 +58,42 @@ export function topupAmountView() {
   }
   kb.push([
     {
-      text: '✍️ Custom amount',
+      text: t(L, 'tu.customAmount'),
       callback_data: 'tp_custom'
     }
   ]);
   kb.push([
     {
-      text: '⬅️ Back',
+      text: t(L, 'c.back'),
       callback_data: 'menu_main'
     }
   ]);
   return {
-    text: `${SEP}\n💳 <b>Top Up Balance</b>\n${SEP}\n\n${SEC('💵 <b>Choose an amount</b>')}\nPick a quick amount or enter your own:`,
+    text: `${SEP}\n${t(L, 'tu.title')}\n${SEP}\n\n${SEC(t(L, 'tu.amountSec'))}\n${t(L, 'tu.amountPrompt')}`,
     keyboard: kb
   };
 }
 // Page 2 — payment method.
-export function topupMethodView(amount) {
+export function topupMethodView(amount, lang) {
+  const L = lang || 'en';
   return {
-    text: `${SEP}\n💳 <b>Top Up — ${money(amount)}</b>\n${SEP}\n\n${SEC('💠 <b>Payment method</b>')}`,
+    text: `${SEP}\n${t(L, 'tu.methodTitle', { amount: money(amount) })}\n${SEP}\n\n${SEC(t(L, 'tu.methodSec'))}`,
     keyboard: [
       [
         {
-          text: '💎 USDT Crypto',
+          text: t(L, 'tu.usdtBtn'),
           callback_data: `tp_usdt:${amount}`
         }
       ],
       [
         {
-          text: '⚡ OKPay',
+          text: t(L, 'tu.okpayBtn'),
           callback_data: `tp_okpay:${amount}`
         }
       ],
       [
         {
-          text: '⬅️ Back',
+          text: t(L, 'c.back'),
           callback_data: 'menu_topup'
         }
       ]
@@ -98,7 +101,8 @@ export function topupMethodView(amount) {
   };
 }
 // Page 3 — network selection for USDT Crypto.
-function topupNetworkView(amount) {
+function topupNetworkView(amount, lang) {
+  const L = lang || 'en';
   const kb = NETWORKS.map((n)=>[
       {
         text: `🌐 ${n.badge ? `${n.name} — ${n.badge}` : n.name}`,
@@ -107,17 +111,18 @@ function topupNetworkView(amount) {
     ]);
   kb.push([
     {
-      text: '⬅️ Back',
+      text: t(L, 'c.back'),
       callback_data: `tp_usdt:${amount}`
     }
   ]);
   return {
-    text: `${SEP}\n💎 <b>USDT Crypto — ${money(amount)}</b>\n${SEP}\n\n${SEC('🌐 <b>Select network</b>')}\nChoose the network you will send USDT on:`,
+    text: `${SEP}\n${t(L, 'tu.networkTitle', { amount: money(amount) })}\n${SEP}\n\n${SEC(t(L, 'tu.networkSec'))}\n${t(L, 'tu.networkPrompt')}`,
     keyboard: kb
   };
 }
 // Page 4 — deposit page: QR code photo, then address + identify amount.
-async function showDepositPage(base44, token, user, chatId, msgId, amount, networkId) {
+async function showDepositPage(base44, token, user, chatId, msgId, amount, networkId, lang) {
+  const L = lang || 'en';
   try {
     await tgDeleteMessage(token, chatId, msgId);
   } catch  {}
@@ -136,20 +141,21 @@ async function showDepositPage(base44, token, user, chatId, msgId, amount, netwo
   // Compact receipt — exactly the reference layout: header, amount, address,
   // one instruction line, and a single "I Have Paid" button.
   const isTon = networkId === 'TON';
-  const title = isTon ? 'TON (USDT) Recharge' : networkId === 'BEP20' ? 'BNB (BEP-20) Recharge' : 'TRON (TRC-20) Recharge';
+  const title = isTon ? t(L, 'tu.rechargeTon') : networkId === 'BEP20' ? t(L, 'tu.rechargeBnb') : t(L, 'tu.rechargeTrc');
   const amountText = isTon ? `$${Number(req.identify_amount || 0).toFixed(2)} USDT` : `$${Number(req.identify_amount || 0).toFixed(4)} USDT`;
-  const text = `💰 <b>${title}</b>\n${SEP}\n` + `💵 Amount: <b>${amountText}</b>\n` + `⚠️ Send <b>EXACTLY</b> this amount\n` + `⏳ Reserved: <b>20 minutes</b>\n${SEP}\n` + `🔒 <b>Wallet Address:</b>\n${req.wallet_address}\n` + `☝️ <i>Tap the address to copy</i>\n${SEP}\n` + `After sending, tap ✅ <b>I Have Paid</b> below.`;
+  const text = `💰 <b>${title}</b>\n${SEP}\n` + `${t(L, 'tu.amount', { amount: amountText })}\n` + `${t(L, 'tu.exact')}\n` + `${t(L, 'tu.reserved')}\n${SEP}\n` + `${t(L, 'tu.wallet')}\n${req.wallet_address}\n` + `${t(L, 'tu.tapCopy')}\n${SEP}\n` + `${t(L, 'tu.afterSend')}`;
   await tgSendMenu(token, chatId, text, [
     [
       {
-        text: '✅ I Have Paid',
+        text: t(L, 'tu.iPaid'),
         callback_data: `tp_chk:${req.request_id}`
       }
     ]
   ]);
 }
 // OKPay path — instant order, premium receipt.
-async function showOkpayPage(base44, token, user, chatId, msgId, amount) {
+async function showOkpayPage(base44, token, user, chatId, msgId, amount, lang) {
+  const L = lang || 'en';
   try {
     await tgDeleteMessage(token, chatId, msgId);
   } catch  {}
@@ -162,17 +168,17 @@ async function showOkpayPage(base44, token, user, chatId, msgId, amount) {
     const data = res.data || res;
     if (data.error) throw new Error(data.error);
     const payUrl = data.pay_url || data.payment_url || data.url;
-    const text = `${SEP}\n⚡ <b>OKPay Order Created</b>\n${SEP}\n\n💵 Amount: <b>${money(amount)}</b>\n⏳ Status: <b>Awaiting payment</b>\n${SEP}\n\nTap the button below to pay:`;
+    const text = `${SEP}\n${t(L, 'tu.okpayCreated')}\n${SEP}\n\n${t(L, 'tu.amount', { amount: money(amount) })}\n${t(L, 'tu.okpayPending')}\n${SEP}\n\n${t(L, 'tu.okpayPay')}`;
     const kb = [
       [
         {
-          text: '⚡ Pay with OKPay',
+          text: t(L, 'tu.okpayBtn'),
           url: payUrl
         }
       ],
       [
         {
-          text: '⬅️ Main Menu',
+          text: t(L, 'c.mainMenu'),
           callback_data: 'menu_main'
         }
       ]
@@ -183,7 +189,8 @@ async function showOkpayPage(base44, token, user, chatId, msgId, amount) {
   }
 }
 // Check Status button — reports the on-chain verification result.
-async function checkDepositStatus(base44, token, user, chatId, msgId, requestId) {
+async function checkDepositStatus(base44, token, user, chatId, msgId, requestId, lang) {
+  const L = lang || 'en';
   try {
     const res = await base44.asServiceRole.functions.invoke('topUpRequest', {
       action: 'check',
@@ -193,10 +200,10 @@ async function checkDepositStatus(base44, token, user, chatId, msgId, requestId)
     const data = res.data || res;
     if (data.error) throw new Error(data.error);
     if (data.status === 'approved') {
-      await tgEditMenu(token, chatId, msgId, `${SEP}\n✅ <b>Top-Up Confirmed</b>\n${SEP}\n\nYour deposit was detected on-chain and your balance has been credited.`, [
+      await tgEditMenu(token, chatId, msgId, `${SEP}\n${t(L, 'tu.confirmed')}\n${SEP}\n\n${t(L, 'tu.confirmedBody')}`, [
         [
           {
-            text: '⬅️ Main Menu',
+            text: t(L, 'c.mainMenu'),
             callback_data: 'menu_main'
           }
         ]
@@ -204,17 +211,17 @@ async function checkDepositStatus(base44, token, user, chatId, msgId, requestId)
       return;
     }
     if (data.status === 'rejected') {
-      await tgEditMenu(token, chatId, msgId, `${SEP}\n❌ <b>Top-Up Expired</b>\n${SEP}\n\nThis deposit request expired without a matching transfer. Start a new top-up to get a fresh address and identify amount.`, [
+      await tgEditMenu(token, chatId, msgId, `${SEP}\n${t(L, 'tu.expired')}\n${SEP}\n\n${t(L, 'tu.expiredBody')}`, [
         [
           {
-            text: '💳 Top Up Again',
+            text: t(L, 'tu.topupAgain'),
             callback_data: 'menu_topup'
-          }
-        ]
-      ]);
+        }
+      ]
+    ]);
       return;
     }
-    await tgSend(token, chatId, `⏳ <b>Still pending.</b>\n\nNo matching transfer detected yet. Make sure you sent the exact identify amount, then check again in a few minutes.`);
+    await tgSend(token, chatId, t(L, 'tu.pending'));
   } catch (err) {
     await tgSend(token, chatId, `❌ ${errText(err)}`);
   }
@@ -222,13 +229,14 @@ async function checkDepositStatus(base44, token, user, chatId, msgId, requestId)
 // Routes every tp_* inline-button press of the Top Up flow.
 export async function handleTopupCallback(base44, token, cq, user, lang, chatId, msgId) {
   const cbData = cq.data || '';
+  const L = lang || 'en';
   if (!user) {
-    await tgSend(token, chatId, t(lang || 'en', 'bind.required'));
+    await tgSend(token, chatId, t(L, 'bind.required'));
     return;
   }
   const tid = String(cq.from.id);
   if (cbData.startsWith('tp_amt:')) {
-    const v = topupMethodView(Number(cbData.slice(7)));
+    const v = topupMethodView(Number(cbData.slice(7)), L);
     await tgEditMenu(token, chatId, msgId, v.text, v.keyboard);
     return;
   }
@@ -238,29 +246,29 @@ export async function handleTopupCallback(base44, token, cq, user, lang, chatId,
       status: 'awaiting_amount',
       msgs: []
     }));
-    await tgEditMenu(token, chatId, msgId, `${SEP}\n✍️ <b>Custom Amount</b>\n${SEP}\n\nType the amount you want to top up:\nExample: <code>50</code>`, []);
+    await tgEditMenu(token, chatId, msgId, `${SEP}\n${t(L, 'tu.customTitle')}\n${SEP}\n\n${t(L, 'tu.customPrompt')}`, []);
     return;
   }
   if (cbData.startsWith('tp_usdt:')) {
-    const v = topupNetworkView(Number(cbData.slice(8)));
+    const v = topupNetworkView(Number(cbData.slice(8)), L);
     await tgEditMenu(token, chatId, msgId, v.text, v.keyboard);
     return;
   }
   if (cbData.startsWith('tp_net:')) {
     const [, amountRaw, networkId] = cbData.split(':');
     try {
-      await showDepositPage(base44, token, user, chatId, msgId, Number(amountRaw), networkId);
+      await showDepositPage(base44, token, user, chatId, msgId, Number(amountRaw), networkId, L);
     } catch (err) {
       await tgSend(token, chatId, `❌ ${errText(err)}`);
     }
     return;
   }
   if (cbData.startsWith('tp_okpay:')) {
-    await showOkpayPage(base44, token, user, chatId, msgId, Number(cbData.slice(9)));
+    await showOkpayPage(base44, token, user, chatId, msgId, Number(cbData.slice(9)), L);
     return;
   }
   if (cbData.startsWith('tp_chk:')) {
-    await checkDepositStatus(base44, token, user, chatId, msgId, cbData.slice(7));
+    await checkDepositStatus(base44, token, user, chatId, msgId, cbData.slice(7), L);
     return;
   }
 }

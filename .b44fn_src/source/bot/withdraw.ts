@@ -3,6 +3,7 @@
 // wallet address. Every withdrawal carries a $0.10 transaction fee that is
 // deducted from the balance IN ADDITION to the requested amount, so the user
 // must always keep the fee in their account.
+// Every screen is localized through t(lang, ...) with English fallback.
 import { tgSend, tgSendMenu, tgEditMenu } from '../_shared/telegramApi.ts';
 import { t } from '../_shared/botTranslations.js';
 import { getRealBalance } from '../_shared/balance.ts';
@@ -51,7 +52,8 @@ const netById = (id)=>NETWORKS.find((n)=>n.id === id) || {
     desc: ''
   };
 // Page 1 — quick amount grid + custom amount, with the fee shown up front.
-export function withdrawAmountView(balance) {
+export function withdrawAmountView(balance, lang) {
+  const L = lang || 'en';
   const kb = [];
   for(let i = 0; i < QUICK_AMOUNTS.length; i += 2){
     kb.push(QUICK_AMOUNTS.slice(i, i + 2).map((a)=>({
@@ -61,23 +63,24 @@ export function withdrawAmountView(balance) {
   }
   kb.push([
     {
-      text: '✍️ Custom amount',
+      text: t(L, 'wd.customAmount'),
       callback_data: 'wd_custom'
     }
   ]);
   kb.push([
     {
-      text: '⬅️ Back',
+      text: t(L, 'c.back'),
       callback_data: 'menu_main'
     }
   ]);
   return {
-    text: `${SEP}\n💸 <b>Withdraw Funds</b>\n${SEP}\n\n${SEC('💵 <b>Choose an amount</b>')}\n💰 Balance: <b>${money(balance)}</b>\n⚠️ Fee: <b>$0.10</b> per withdrawal\n\nPick a quick amount or enter your own:`,
+    text: `${SEP}\n${t(L, 'wd.title')}\n${SEP}\n\n${SEC(t(L, 'wd.amountSec'))}\n${t(L, 'wd.balance', { balance: money(balance) })}\n${t(L, 'wd.fee')}\n\n${t(L, 'wd.amountPrompt')}`,
     keyboard: kb
   };
 }
 // Page 2 — network selection for the payout.
-export function withdrawNetworkView(amount, balance) {
+export function withdrawNetworkView(amount, balance, lang) {
+  const L = lang || 'en';
   const kb = NETWORKS.map((n)=>[
       {
         text: `🌐 ${n.name} — ${n.badge}`,
@@ -86,25 +89,26 @@ export function withdrawNetworkView(amount, balance) {
     ]);
   kb.push([
     {
-      text: '⬅️ Back',
+      text: t(L, 'c.back'),
       callback_data: 'menu_withdraw'
     }
   ]);
   return {
-    text: `${SEP}\n💸 <b>Withdraw — ${money(amount)}</b>\n${SEP}\n\n${SEC('🌐 <b>Select network</b>')}\n💰 Balance: <b>${money(balance)}</b>\n⚠️ Fee: <b>$0.10</b>\n💵 You receive: <b>${money(amount)}</b>\n\nChoose the network to receive your funds:`,
+    text: `${SEP}\n${t(L, 'wd.netTitle', { amount: money(amount) })}\n${SEP}\n\n${SEC(t(L, 'wd.netSec'))}\n${t(L, 'wd.balance', { balance: money(balance) })}\n${t(L, 'wd.feeShort')}\n${t(L, 'wd.youReceive', { amount: money(amount) })}\n\n${t(L, 'wd.netPrompt')}`,
     keyboard: kb
   };
 }
 // Page 3 — wallet address prompt (the address arrives as a text message).
-export function withdrawAddressView(amount, networkId) {
+export function withdrawAddressView(amount, networkId, lang) {
+  const L = lang || 'en';
   const n = netById(networkId);
   const example = networkId === 'TON' ? '<code>EQ…your TON address</code>' : '<code>0x…your wallet address</code>';
   return {
-    text: `${SEP}\n💸 <b>Withdraw — ${money(amount)}</b>\n${SEP}\n\n${SEC(`🌐 ${n.name} — ${n.badge}`)}\n⚠️ Fee: <b>$0.10</b>\n💵 You receive: <b>${money(amount)}</b>\n\nSend your <b>${n.name}</b> wallet address now:\nExample: ${example}`,
+    text: `${SEP}\n${t(L, 'wd.netTitle', { amount: money(amount) })}\n${SEP}\n\n${SEC(`🌐 ${n.name} — ${n.badge}`)}\n${t(L, 'wd.feeShort')}\n${t(L, 'wd.youReceive', { amount: money(amount) })}\n\n${t(L, 'wd.addrPrompt', { network: n.name })}\n${t(L, 'wd.example', { example })}`,
     keyboard: [
       [
         {
-          text: '⬅️ Back',
+          text: t(L, 'c.back'),
           callback_data: `wd_amt:${amount}`
         }
       ]
@@ -113,13 +117,14 @@ export function withdrawAddressView(amount, networkId) {
 }
 // Validates amount + fee against the live balance. Returns the balance on
 // success, or a ready-to-send error view when the fee cannot be covered.
-export async function checkWithdrawBalance(base44, user, amount) {
+export async function checkWithdrawBalance(base44, user, amount, lang) {
+  const L = lang || 'en';
   const balance = await getRealBalance(base44, user.email);
   const required = Number((amount + WD_FEE).toFixed(2));
   if (balance < required) {
     return {
       balance,
-      error: `${SEP}\n❌ <b>Insufficient Balance</b>\n${SEP}\n\n${SEC('💵 <b>Withdraw request</b>')}\nWithdraw: ${money(amount)}\nFee: ${money(WD_FEE)}\nRequired: <b>${money(required)}</b>\n${SEC('💰 <b>Your balance</b>')}\n${money(balance)}\n\nThe $0.10 fee is charged in addition to the amount. Leave the fee in your account and request a smaller amount.`
+      error: `${SEP}\n${t(L, 'wd.insufficient')}\n${SEP}\n\n${SEC(t(L, 'wd.request'))}\n${t(L, 'wd.withdraw', { amount: money(amount) })}\n${t(L, 'wd.feeLine', { fee: money(WD_FEE) })}\n${t(L, 'wd.required', { required: money(required) })}\n${SEC(t(L, 'wd.yourBalance'))}\n${money(balance)}\n\n${t(L, 'wd.feeNote')}`
     };
   }
   return {
@@ -130,26 +135,27 @@ export async function checkWithdrawBalance(base44, user, amount) {
 // Routes every wd_* inline-button press of the Withdraw flow.
 export async function handleWithdrawCallback(base44, token, cq, user, lang, chatId, msgId) {
   const cbData = cq.data || '';
+  const L = lang || 'en';
   if (!user) {
-    await tgSend(token, chatId, t(lang || 'en', 'bind.required'));
+    await tgSend(token, chatId, t(L, 'bind.required'));
     return;
   }
   const tid = String(cq.from.id);
   if (cbData.startsWith('wd_amt:')) {
     const amount = Number(cbData.slice(7));
-    const { balance, error } = await checkWithdrawBalance(base44, user, amount);
+    const { balance, error } = await checkWithdrawBalance(base44, user, amount, L);
     if (error) {
       await tgEditMenu(token, chatId, msgId, error, [
         [
           {
-            text: '⬅️ Back',
+            text: t(L, 'c.back'),
             callback_data: 'menu_withdraw'
           }
         ]
       ]);
       return;
     }
-    const v = withdrawNetworkView(amount, balance);
+    const v = withdrawNetworkView(amount, balance, L);
     await tgEditMenu(token, chatId, msgId, v.text, v.keyboard);
     return;
   }
@@ -160,7 +166,7 @@ export async function handleWithdrawCallback(base44, token, cq, user, lang, chat
         msgId
       ].filter(Boolean)
     }));
-    await tgEditMenu(token, chatId, msgId, `${SEP}\n✍️ <b>Custom Amount</b>\n${SEP}\n\nType the amount you want to withdraw:\n⚠️ Fee: <b>$0.10</b> in addition to the amount\nExample: <code>50</code>`, []);
+    await tgEditMenu(token, chatId, msgId, `${SEP}\n${t(L, 'wd.customTitle')}\n${SEP}\n\n${t(L, 'wd.customPrompt')}`, []);
     return;
   }
   if (cbData.startsWith('wd_net:')) {
@@ -174,7 +180,7 @@ export async function handleWithdrawCallback(base44, token, cq, user, lang, chat
         msgId
       ].filter(Boolean)
     }));
-    const v = withdrawAddressView(amount, networkId);
+    const v = withdrawAddressView(amount, networkId, L);
     await tgEditMenu(token, chatId, msgId, v.text, v.keyboard);
     return;
   }
