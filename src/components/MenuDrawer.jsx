@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
@@ -11,13 +11,24 @@ import {
   Languages,
   Gift,
   Flag,
+  ShieldCheck,
 } from "lucide-react";
 import { useAppLang } from "@/lib/AppLanguageContext";
+import { useTgIdentity } from "@/lib/TgIdentityContext";
 
 // Nordic Frost Glass — top-left menu button with a frosted slide-in drawer.
 export default function MenuDrawer() {
   const [open, setOpen] = useState(false);
   const { t } = useAppLang();
+  const { fetchMyData } = useTgIdentity();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  // The admin entry shows only for admins — the role comes from the shared
+  // account-data cache, so this joins the header's in-flight call.
+  useEffect(() => {
+    fetchMyData().then((d) => setIsAdmin(d?.role === "admin")).catch(() => {});
+  }, [fetchMyData]);
+
   const items = [
     { to: "/deposit", label: t("menu.topUp"), icon: ArrowDownToLine },
     { to: "/withdraw", label: t("menu.withdraw"), icon: ArrowUpFromLine },
@@ -25,6 +36,7 @@ export default function MenuDrawer() {
     { to: "/language", label: t("menu.language"), icon: Languages },
     { to: "/refer", label: t("menu.refer"), icon: Gift },
     { to: "/report-seller", label: t("menu.report"), icon: Flag },
+    ...(isAdmin ? [{ to: "/admin", label: t("menu.admin"), icon: ShieldCheck }] : []),
   ];
 
   return (
