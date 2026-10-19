@@ -27,7 +27,10 @@ export default async function(req) {
       )`
     );
 
-    const [reports, pendingWithdrawals, purchases, sales, topups, withdrawals] = await Promise.all([
+    const [reports, pendingWithdrawals, purchases, sales, topups, withdrawals, userCount] = await Promise.all([
+      runSql(
+        `select count(*)::int as count from tg_web_users`
+      ),
       runSql(
         `select id, reporter_email, seller_username, seller_id, scam_type, details, status, created_date
          from seller_reports order by created_date desc limit 100`
@@ -70,6 +73,7 @@ export default async function(req) {
 
     return Response.json({
       reports,
+      users_count: Number(userCount && userCount[0] ? userCount[0].count : 0) || 0,
       pending_withdrawals: pendingWithdrawals.map((w) => ({ ...w, amount: Number(w.amount) })),
       purchases: purchases.map((o) => ({ ...o, price: Number(o.price) })),
       sales: sales.map((s) => ({ ...s, reward_amount: s.reward_amount === null ? null : Number(s.reward_amount) })),

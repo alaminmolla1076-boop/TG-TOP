@@ -9,9 +9,12 @@ import AdminReportsTab from "@/components/admin/AdminReportsTab";
 import AdminWithdrawalsTab from "@/components/admin/AdminWithdrawalsTab";
 import AdminHistoryTab from "@/components/admin/AdminHistoryTab";
 
-// Admin panel — users (ban / balance / per-user history), seller reports,
-// withdrawal approvals and global trade history. Only for admins: the page
-// gates on the role, and every backing function re-checks it server-side.
+const BACKDROP_URL =
+  "https://media.base44.com/images/public/6ad1ec4d9f3d182acc871a46/7a1e5277e_generated_a945c853.jpg";
+
+// Admin panel — Glass Dashboard: frosted KPI pods, pill tabs and glass cards.
+// Only for admins: the page gates on the role, and every backing function
+// re-checks it server-side.
 export default function Admin() {
   useTelegramBackButton();
   const { t } = useAppLang();
@@ -45,64 +48,66 @@ export default function Admin() {
   }
   if (role !== "admin") return <Navigate to="/" replace />;
 
+  const pending = data?.pending_withdrawals || [];
   const tabs = [
-    { key: "users", label: t("adm.tabUsers"), icon: Users, badge: 0 },
-    {
-      key: "withdrawals",
-      label: t("adm.tabWithdrawals"),
-      icon: Banknote,
-      badge: (data?.pending_withdrawals || []).length,
-    },
-    { key: "reports", label: t("adm.tabReports"), icon: FileWarning, badge: 0 },
-    { key: "history", label: t("adm.tabHistory"), icon: HistoryIcon, badge: 0 },
+    { key: "users", label: t("adm.tabUsers"), icon: Users },
+    { key: "withdrawals", label: t("adm.tabWithdrawals"), icon: Banknote, badge: pending.length },
+    { key: "reports", label: t("adm.tabReports"), icon: FileWarning },
+    { key: "history", label: t("adm.tabHistory"), icon: HistoryIcon },
   ];
 
   return (
-    <div className="mk-sec flex flex-col gap-4">
-      <div className="flex items-center gap-3">
-        <span className="flex h-11 w-11 items-center justify-center rounded-full border border-[#A29BFE]/40 bg-[rgba(108,92,231,.14)]">
-          <ShieldCheck className="h-5 w-5 text-[#A29BFE]" strokeWidth={1.5} />
-        </span>
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-[#A29BFE]">{t("menu.admin")}</p>
-          <h1 className="font-heading text-lg font-bold text-foreground">{t("adm.heading")}</h1>
+    <div className="relative">
+      <img aria-hidden src={BACKDROP_URL} alt="" className="adm-bg" />
+      <div aria-hidden className="adm-scrim" />
+      <div className="relative z-[1] flex flex-col gap-4">
+        <div className="adm-hd">
+          <span className="adm-ic">
+            <ShieldCheck className="h-5 w-5 text-[#A29BFE]" strokeWidth={1.6} />
+          </span>
+          <div>
+            <p className="adm-eb">{t("menu.admin")}</p>
+            <h1 className="adm-h1 font-heading">{t("adm.heading")}</h1>
+          </div>
         </div>
-      </div>
 
-      <div className="flex gap-1 rounded-full border border-ring/[.22] bg-card/75 p-1.5">
-        {tabs.map(({ key, label, icon: Icon, badge }) => (
-          <button
-            type="button"
-            key={key}
-            onClick={() => setTab(key)}
-            className={
-              "relative flex flex-1 items-center justify-center gap-1 rounded-full px-2 py-2 text-[11px] font-semibold transition-colors duration-200 " +
-              (tab === key
-                ? "bg-gradient-to-br from-[#6C5CE7] to-[#8E7DFF] text-white shadow-[0_4px_14px_rgba(108,92,231,.45)]"
-                : "text-muted-foreground hover:text-foreground")
-            }
-          >
-            <Icon className="h-[14px] w-[14px] shrink-0" strokeWidth={2} />
-            <span className="truncate">{label}</span>
-            {badge > 0 && (
-              <span className="absolute -top-1 right-0 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[9px] font-bold text-white">
-                {badge}
-              </span>
-            )}
-          </button>
-        ))}
-      </div>
+        <div className="adm-kpi">
+          <div className="adm-pod">
+            <b>{data ? data.users_count ?? 0 : "–"}</b>
+            <span>{t("adm.tabUsers")}</span>
+          </div>
+          <div className="adm-pod">
+            <b>{data ? pending.length : "–"}</b>
+            <span>{t("adm.tabWithdrawals")}</span>
+          </div>
+          <div className="adm-pod">
+            <b>{data ? (data.reports || []).length : "–"}</b>
+            <span>{t("adm.tabReports")}</span>
+          </div>
+        </div>
 
-      {tab === "users" && <AdminUsersTab />}
-      {tab === "withdrawals" && (
-        <AdminWithdrawalsTab
-          pending={data?.pending_withdrawals || []}
-          loading={!data}
-          onChanged={load}
-        />
-      )}
-      {tab === "reports" && <AdminReportsTab reports={data?.reports || []} loading={!data} />}
-      {tab === "history" && <AdminHistoryTab data={data} loading={!data} />}
+        <div className="adm-tabs">
+          {tabs.map(({ key, label, icon: Icon, badge }) => (
+            <button
+              type="button"
+              key={key}
+              onClick={() => setTab(key)}
+              className={"adm-tab" + (tab === key ? " on" : "")}
+            >
+              <Icon className="h-[14px] w-[14px] shrink-0" strokeWidth={2} />
+              <span className="truncate">{label}</span>
+              {badge > 0 && <span className="adm-bd">{badge}</span>}
+            </button>
+          ))}
+        </div>
+
+        {tab === "users" && <AdminUsersTab />}
+        {tab === "withdrawals" && (
+          <AdminWithdrawalsTab pending={pending} loading={!data} onChanged={load} />
+        )}
+        {tab === "reports" && <AdminReportsTab reports={data?.reports || []} loading={!data} />}
+        {tab === "history" && <AdminHistoryTab data={data} loading={!data} />}
+      </div>
     </div>
   );
 }

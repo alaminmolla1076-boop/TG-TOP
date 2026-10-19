@@ -31,23 +31,22 @@ export default function AdminUsersTab() {
   }, [invoke, search, reloadKey]);
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex items-center gap-2 rounded-full border border-ring/[.25] bg-[rgba(45,38,78,.5)] px-4 py-2.5">
-        <Search className="h-4 w-4 shrink-0 text-[#A29BFE]" strokeWidth={1.5} />
+    <div className="flex flex-col gap-4">
+      <div className="adm-sr">
+        <Search className="h-4 w-4 shrink-0 text-[#A29BFE]" strokeWidth={1.6} />
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={t("adm.searchPh")}
           maxLength={64}
-          className="w-full bg-transparent text-[13px] text-foreground placeholder:text-[#a8a3cf]/60 focus:outline-none"
         />
       </div>
 
       {!users ? (
         <AdminSpinner />
       ) : users.length === 0 ? (
-        <div className="rounded-3xl border border-ring/[.22] bg-card/75 px-[18px] py-4 text-[13px] text-muted-foreground">
-          {t("adm.noUsers")}
+        <div className="adm-card">
+          <p className="adm-emp">{t("adm.noUsers")}</p>
         </div>
       ) : (
         users.map((u) => (

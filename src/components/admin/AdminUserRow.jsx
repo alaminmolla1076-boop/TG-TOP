@@ -7,11 +7,6 @@ import { formatDate, formatMoney } from "@/lib/format";
 import AdminRecordList from "./AdminRecordList";
 import { AdminSpinner } from "./AdminUsersTab";
 
-const panelClass =
-  "rounded-3xl border border-ring/[.22] bg-card/75 px-[18px] py-4 text-[13px] shadow-[inset_0_1px_0_rgba(255,255,255,.06),0_6px_16px_rgba(0,0,0,.28)]";
-const pillBtn =
-  "flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-full px-3 py-[9px] text-xs font-semibold uppercase tracking-[.06em] transition-colors duration-200 disabled:opacity-50";
-
 // One user in the admin list: ban / unban, balance add / set, and an
 // expandable per-user purchase / sale / top-up / withdrawal history.
 export default function AdminUserRow({ user, onChanged }) {
@@ -86,45 +81,73 @@ export default function AdminUserRow({ user, onChanged }) {
     }
   }
 
+  const sections = history
+    ? [
+        {
+          title: t("adm.purchases"),
+          items: history.purchases,
+          line: (o) => ({
+            main: o.product_name || String(o.id),
+            sub: o.status + " · " + formatDate(o.created_date),
+            amount: formatMoney(Number(o.price)),
+          }),
+        },
+        {
+          title: t("adm.sales"),
+          items: history.sales,
+          line: (s) => ({
+            main: (s.country_iso + " " + (s.phone_number || "")).trim(),
+            sub: s.status + " · " + formatDate(s.created_date),
+            amount: s.reward_amount === null ? undefined : formatMoney(Number(s.reward_amount)),
+          }),
+        },
+        {
+          title: t("adm.topups"),
+          items: history.topups,
+          line: (x) => ({
+            main: x.network,
+            sub: x.status + " · " + formatDate(x.created_date),
+            amount: formatMoney(Number(x.amount)),
+          }),
+        },
+        {
+          title: t("adm.tabWithdrawals"),
+          items: history.withdrawals,
+          line: (w) => ({
+            main: w.network,
+            sub: w.status + " · " + formatDate(w.created_date),
+            amount: formatMoney(Number(w.amount)),
+            negative: true,
+          }),
+        },
+      ].filter((s) => (s.items || []).length > 0)
+    : [];
+
   return (
-    <div className={panelClass + " flex flex-col gap-3"}>
-      <div className="flex items-center gap-2.5">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#A29BFE]/40 bg-[rgba(108,92,231,.14)] font-display text-sm font-bold text-[#A29BFE]">
+    <div className="adm-card">
+      <div className="adm-row">
+        <span className="adm-av">
           {(user.username || user.first_name || "?").charAt(0).toUpperCase()}
         </span>
-        <div className="min-w-0 flex-1">
-          <p className="truncate font-semibold text-foreground">{displayName}</p>
-          <p className="truncate text-xs text-muted-foreground">ID: {user.telegram_id}</p>
+        <div className="adm-nm">
+          <p className="a">{displayName}</p>
+          <p className="b">ID: {user.telegram_id}</p>
         </div>
-        <span
-          className={
-            "shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider " +
-            (user.banned
-              ? "bg-destructive/15 text-destructive"
-              : "bg-primary/15 text-primary")
-          }
-        >
+        <span className={"adm-st " + (user.banned ? "ban" : "act")}>
           {t(user.banned ? "adm.banned" : "adm.active")}
         </span>
       </div>
 
-      <p className="text-xs text-muted-foreground">
-        {t("adm.balance")}:{" "}
-        <span className="font-display text-base font-bold text-primary">{formatMoney(user.balance)}</span>
+      <p className="adm-bal">
+        {t("adm.balance")}: <b>{formatMoney(user.balance)}</b>
       </p>
 
-      <div className="flex gap-2">
+      <div className="adm-btns">
         <button
           type="button"
           onClick={toggleBan}
           disabled={busy}
-          className={
-            pillBtn +
-            " " +
-            (user.banned
-              ? "border border-ring/40 bg-ring/[.14] text-[#C9C4FF] hover:bg-ring/[.24]"
-              : "border border-destructive/40 bg-destructive/10 text-destructive hover:bg-destructive/20")
-          }
+          className={"adm-btn" + (user.banned ? "" : " d")}
         >
           {user.banned ? (
             <ShieldOff className="h-[13px] w-[13px]" strokeWidth={2} />
@@ -133,34 +156,27 @@ export default function AdminUserRow({ user, onChanged }) {
           )}
           {t(user.banned ? "adm.unban" : "adm.ban")}
         </button>
-        <button
-          type="button"
-          onClick={toggleHistory}
-          className={
-            pillBtn +
-            " border border-ring/[.25] bg-[rgba(45,38,78,.5)] text-[#a8a3cf] hover:bg-accent/90 " +
-            (showHistory ? "text-foreground" : "")
-          }
-        >
+        <button type="button" onClick={toggleHistory} className="adm-btn">
           <HistoryIcon className="h-[13px] w-[13px]" strokeWidth={2} />
           {t("adm.tabHistory")}
         </button>
       </div>
 
-      <div className="flex gap-2">
+      <div className="adm-btns">
         <input
+          className="adm-amt"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           placeholder={t("adm.amount")}
           inputMode="decimal"
           maxLength={12}
-          className="w-0 flex-1 rounded-full border border-ring/[.25] bg-[rgba(45,38,78,.5)] px-4 py-[9px] text-[13px] text-foreground placeholder:text-[#a8a3cf]/60 focus:border-[#A29BFE]/60 focus:outline-none"
         />
         <button
           type="button"
           onClick={() => changeBalance("add")}
           disabled={busy}
-          className={pillBtn + " bg-gradient-to-br from-[#6C5CE7] to-[#8E7DFF] text-white shadow-[0_4px_14px_rgba(108,92,231,.45)]"}
+          className="adm-btn p"
+          style={{ flex: "none" }}
         >
           {t("adm.add")}
         </button>
@@ -168,59 +184,22 @@ export default function AdminUserRow({ user, onChanged }) {
           type="button"
           onClick={() => changeBalance("set")}
           disabled={busy}
-          className={pillBtn + " border border-ring/40 bg-ring/[.14] text-[#C9C4FF] hover:bg-ring/[.24]"}
+          className="adm-btn"
+          style={{ flex: "none" }}
         >
           {t("adm.set")}
         </button>
       </div>
 
       {showHistory &&
-        (history ? (
-          <div className="flex flex-col gap-2.5">
-            <AdminRecordList
-              title={t("adm.purchases")}
-              items={history.purchases}
-              empty={t("adm.noHistory")}
-              line={(o) => ({
-                main: o.product_name || String(o.id),
-                sub: o.status + " · " + formatDate(o.created_date),
-                amount: formatMoney(Number(o.price)),
-              })}
-            />
-            <AdminRecordList
-              title={t("adm.sales")}
-              items={history.sales}
-              empty={t("adm.noHistory")}
-              line={(s) => ({
-                main: (s.country_iso + " " + (s.phone_number || "")).trim(),
-                sub: s.status + " · " + formatDate(s.created_date),
-                amount: s.reward_amount === null ? undefined : formatMoney(Number(s.reward_amount)),
-              })}
-            />
-            <AdminRecordList
-              title={t("adm.topups")}
-              items={history.topups}
-              empty={t("adm.noHistory")}
-              line={(x) => ({
-                main: x.network,
-                sub: x.status + " · " + formatDate(x.created_date),
-                amount: formatMoney(Number(x.amount)),
-              })}
-            />
-            <AdminRecordList
-              title={t("adm.tabWithdrawals")}
-              items={history.withdrawals}
-              empty={t("adm.noHistory")}
-              line={(w) => ({
-                main: w.network,
-                sub: w.status + " · " + formatDate(w.created_date),
-                amount: formatMoney(Number(w.amount)),
-                negative: true,
-              })}
-            />
-          </div>
-        ) : (
+        (!history ? (
           <AdminSpinner />
+        ) : sections.length > 0 ? (
+          sections.map((s) => (
+            <AdminRecordList key={s.title} title={s.title} items={s.items} line={s.line} />
+          ))
+        ) : (
+          <p className="adm-emp">{t("adm.noHistory")}</p>
         ))}
     </div>
   );
