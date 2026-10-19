@@ -72,7 +72,8 @@ begin
       raise exception 'Withdrawal asset assertion failed';
     end if;
   end loop;
-  if public.commerce_balance(v_buyer) <> 3.91 then raise exception 'Withdrawal hold assertion failed'; end if;
+  -- 3 withdrawals hold $9 plus $0.30 in fee ledger rows: 12.91 - 9.30 = 3.61.
+  if public.commerce_balance(v_buyer) <> 3.61 then raise exception 'Withdrawal hold assertion failed'; end if;
   v_blocked := false;
   begin
     perform public.create_wallet_withdrawal(v_buyer, 5, '0x' || repeat('0', 40), 'BEP20');
@@ -82,7 +83,8 @@ begin
   if not v_blocked then raise exception 'Insufficient funds assertion failed'; end if;
   v_blocked := false;
   begin
-    perform public.create_wallet_withdrawal(v_buyer, 2, '0x' || repeat('0', 40), 'BEP20');
+    -- Below the $1 minimum — must be rejected ($2 is valid and was a bad value).
+    perform public.create_wallet_withdrawal(v_buyer, 0.50, '0x' || repeat('0', 40), 'BEP20');
   exception when others then
     v_blocked := true;
   end;
@@ -95,9 +97,9 @@ begin
   end;
   if not v_blocked then raise exception 'Address network assertion failed'; end if;
   update public.withdrawals set status = 'rejected' where user_email = v_buyer and network = 'POLYGON';
-  if public.commerce_balance(v_buyer) <> 6.91 then raise exception 'Rejected withdrawal refund assertion failed'; end if;
+  if public.commerce_balance(v_buyer) <> 6.61 then raise exception 'Rejected withdrawal refund assertion failed'; end if;
   update public.withdrawals set status = 'approved' where user_email = v_buyer and network = 'BEP20';
-  if public.commerce_balance(v_buyer) <> 6.91 then raise exception 'Approved withdrawal double-debit assertion failed'; end if;
+  if public.commerce_balance(v_buyer) <> 6.61 then raise exception 'Approved withdrawal double-debit assertion failed'; end if;
   if has_function_privilege('anon', 'public.complete_account_purchase(text,jsonb,text,text)', 'EXECUTE')
     or has_function_privilege('authenticated', 'public.create_wallet_withdrawal(text,numeric,text,text)', 'EXECUTE') then
     raise exception 'Privileged operation assertion failed';
