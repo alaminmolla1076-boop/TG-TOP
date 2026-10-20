@@ -34,9 +34,17 @@ const ageOrder = (v) => {
 export default function StockPriceRow({ country, pools, getValue, isBusy, onValue, onSave }) {
   const { t } = useAppLang();
   const [activeSpam, setActiveSpam] = useState(false);
-  const [age, setAge] = useState("regular");
   // Non-Spam pool first, Spam pool second.
   const ordered = [...pools].filter(Boolean).sort((a, b) => Number(!!a.spam) - Number(!!b.spam));
+  // Default the editor to the first age bucket that actually holds stock —
+  // never leave it parked on an empty bucket.
+  const stockedAgeOf = (p) =>
+    p
+      ? [...p.rows.values()]
+          .filter((r) => r.age_category && (Number(r.stock) || 0) > 0)
+          .sort((a, b) => ageOrder(a.age_category) - ageOrder(b.age_category))[0]?.age_category
+      : undefined;
+  const [age, setAge] = useState(() => stockedAgeOf(ordered.find((p) => !p.spam) || ordered[0]) || "regular");
   const active = ordered.find((p) => !!p.spam === activeSpam) || ordered[0];
 
   const totalOf = (p) => (p ? [...p.rows.values()].reduce((n, r) => n + (Number(r.stock) || 0), 0) : 0);
