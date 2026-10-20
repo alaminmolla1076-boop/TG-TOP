@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useAppLang } from "@/lib/AppLanguageContext";
 import { AGE_OPTIONS, ageLabel } from "@/lib/accountAge";
 import StockPoolPrice from "./StockPoolPrice";
+import GlassSelect from "@/components/ui/GlassSelect";
 
 const tabClass = (active, spam) =>
   `flex-1 cursor-pointer rounded-full border px-3 py-2 text-[10px] font-bold uppercase tracking-[.08em] transition-colors duration-200 ${
@@ -78,19 +79,14 @@ export default function StockPriceRow({ country, pools, getValue, isBusy, onValu
             >
               {t("sp.ageLabel")}
             </label>
-            <select
+            <GlassSelect
               id={`age-${active.country_iso}-${active.spam ? "spam" : "nonspam"}`}
               value={age}
-              onChange={(e) => setAge(e.target.value)}
-              className="h-8 min-w-0 flex-1 cursor-pointer rounded-full border border-ring/25 bg-secondary/80 px-2.5 text-[12px] font-semibold text-foreground transition-[border-color,box-shadow] duration-200 focus:border-ring focus:shadow-[0_0_0_3px_rgba(162,155,254,.22)]"
-            >
-              <option value="">{t("ag.all")}</option>
-              {AGE_OPTIONS.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {ageLabel(o.value, t)}
-                </option>
-              ))}
-            </select>
+              onChange={setAge}
+              options={[{ value: "", label: t("ag.all") }, ...AGE_OPTIONS.map((o) => ({ value: o.value, label: ageLabel(o.value, t) }))]}
+              className="min-w-0 flex-1"
+              triggerClass="h-9 rounded-full px-3.5 text-[13px]"
+            />
           </div>
           {row && (
             <div className="mt-2.5">

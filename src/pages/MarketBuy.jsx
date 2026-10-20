@@ -8,6 +8,7 @@ import MarketBackdrop from "@/components/market/MarketBackdrop";
 import PurchaseResult from "@/components/market/PurchaseResult";
 import { formatMoney } from "@/lib/format";
 import { ageLabel } from "@/lib/accountAge";
+import GlassSelect from "@/components/ui/GlassSelect";
 
 const QUICK_QTY = [5, 10, 20, 50, 100, 500, 1000];
 
@@ -154,17 +155,16 @@ export default function MarketBuy() {
             {poolAges.length > 0 && (
               <div className="mt-2 flex items-center gap-2">
                 <span className="shrink-0 text-[11px] font-semibold text-[#a8a3cf]">{t("sp.ageLabel")}</span>
-                <select
+                <GlassSelect
                   value={age || ""}
-                  onChange={(e) => setAge(e.target.value)}
-                  className="h-8 min-w-0 flex-1 cursor-pointer rounded-full border border-[#A29BFE]/30 bg-[rgba(45,38,78,.7)] px-2.5 text-[12px] font-semibold text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#A29BFE]"
-                >
-                  {poolAges.map((a) => (
-                    <option key={a.category} value={a.category}>
-                      {ageLabel(a.category, t)} · {formatMoney(a.price)}
-                    </option>
-                  ))}
-                </select>
+                  onChange={setAge}
+                  options={poolAges.map((a) => ({
+                    value: a.category,
+                    label: `${ageLabel(a.category, t)} · ${formatMoney(a.price)}`,
+                  }))}
+                  className="min-w-0 flex-1"
+                  triggerClass="h-8 rounded-full border-[#A29BFE]/30 bg-[rgba(45,38,78,.7)] px-3 text-[12px]"
+                />
               </div>
             )}
           </div>
