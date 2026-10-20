@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { ChevronLeft, ChevronRight, Globe } from "lucide-react";
+import { ChevronLeft, ChevronRight, Globe, ShoppingCart } from "lucide-react";
 import { useTgIdentity } from "@/lib/TgIdentityContext";
 import { useAppLang } from "@/lib/AppLanguageContext";
 import SectionHead from "@/components/market/SectionHead";
@@ -148,8 +148,12 @@ export default function MarketSeller() {
                   {poolStockOf(c, pool)} {t("c.inStock")}
                 </span>
               </span>
-              <span className="shrink-0 rounded-full border border-[#A29BFE]/40 bg-[rgba(108,92,231,.22)] px-3 py-1 text-[11px] font-semibold text-[#A29BFE]">
-                {t("c.buy")}
+              <span
+                title={t("c.buy")}
+                aria-label={t("c.buy")}
+                className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-[#A29BFE]/45 bg-gradient-to-br from-[#6C5CE7] to-[#8E7DFF] text-[#fff] shadow-[0_4px_14px_rgba(108,92,231,.5)] transition-transform duration-200 hover:scale-105"
+              >
+                <ShoppingCart className="h-4 w-4" strokeWidth={2} />
               </span>
               <span className="shrink-0 text-[15px] font-bold text-[#A29BFE] tabular-nums">
                 {formatMoney(c.price)}
