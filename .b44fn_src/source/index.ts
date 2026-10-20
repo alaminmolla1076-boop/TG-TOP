@@ -84,6 +84,7 @@ setRegistry({
   sellSeason: (req)=>import('./fns/sellSeason.ts').then((m)=>m.default(req)),
   generateSeasonZip: (req)=>import('./fns/generateSeasonZip.ts').then((m)=>m.default(req)),
   processSellSeasonJobs,
+  sellMultiWorker: (req)=>import('./fns/sellMultiWorker.ts').then((m)=>m.default(req)),
   updateSellerPrice: (req)=>import('./fns/updateSellerPrice.ts').then((m)=>m.default(req)),
   processPendingRewards: (req)=>import('./fns/processPendingRewards.ts').then((m)=>m.default(req)),
   recheckSpamStock: (req)=>import('./fns/recheckSpamStock.ts').then((m)=>m.default(req)),
