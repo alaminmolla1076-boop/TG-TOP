@@ -3,11 +3,13 @@
 // what per-seller pricing needs (the buyer picks a specific seller's listing).
 // When spamPool is set ('spam' | 'nonspam') only that stock pool is returned —
 // the buyer picked Spam or Non-Spam stock on the seller's page.
-export async function getAvailableAccounts(base44, countryIso, limit = 500, ownerEmail = null, spamPool = null) {
+// When ageCategory is set, only that age bucket's accounts are returned.
+export async function getAvailableAccounts(base44, countryIso, limit = 500, ownerEmail = null, spamPool = null, ageCategory = null) {
   const query = { country_iso: countryIso, status: 'available' };
   if (ownerEmail) query.owner_email = ownerEmail;
   if (spamPool === 'spam') query.spam = true;
   else if (spamPool === 'nonspam') query.spam = false;
+  if (ageCategory) query.age_category = ageCategory;
   return base44.asServiceRole.entities.TgAccount.filter(
     query,
     'created_date',

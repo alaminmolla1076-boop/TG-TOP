@@ -18,7 +18,7 @@ export default async function(req) {
        group by seller_id, lower(seller_username)`
     ).catch(() => []);
 
-    const [products, sellerRows, topSellerRows, sellerReportsRows] = await Promise.all([
+    const [products, sellerRows, topSellerRows, sellerReportsRows, ageRows] = await Promise.all([
       // Telegram Premium and Stars purchases are hidden from the market.
       runSql(
         `select id, name, description, price, category, icon, unit_label
@@ -79,8 +79,21 @@ export default async function(req) {
              group by coalesce(p.id, u.id), p.full_name, p.telegram_first_name, p.telegram_last_name, p.telegram_username,
                       p.telegram_photo_url, u.telegram_first_name, u.telegram_last_name, u.telegram_username, u.photo_url
              order by sold desc limit 1`
-          ),
-          ]);
+             ),
+             // Age buckets per seller + country: buyers pick an account age on
+             // the purchase page, each bucket with its own stock and price.
+             runSql(
+             `select a.owner_email, a.country_iso,
+                    coalesce(a.age_category, 'regular') as age_category,
+                    count(*) filter (where a.spam is true) as spam_stock,
+                    count(*) filter (where a.spam is false) as nonspam_stock,
+                    min(a.price) as price
+             from tg_accounts a
+             where a.status = 'available' and a.price is not null
+             group by a.owner_email, a.country_iso, coalesce(a.age_category, 'regular')
+             order by a.owner_email asc, a.country_iso asc limit 2000`
+             ),
+             ]);
 
     // Reports are matched by seller id, falling back to the seller username.
     const reportsById = new Map();
@@ -92,6 +105,19 @@ export default async function(req) {
     }
     const reportsOf = (row) =>
       Number(reportsById.get(String(row.seller_id)) ?? reportsByUsername.get((row.username || '').toLowerCase()) ?? 0);
+
+    // Age buckets keyed by seller email + country, for the buyer's age picker.
+    const ageMap = new Map();
+    for (const row of ageRows || []) {
+      const k = `${row.owner_email}|${row.country_iso}`;
+      if (!ageMap.has(k)) ageMap.set(k, []);
+      ageMap.get(k).push({
+        category: row.age_category,
+        spam_stock: Number(row.spam_stock || 0),
+        nonspam_stock: Number(row.nonspam_stock || 0),
+        price: Number(row.price),
+      });
+    }
 
     const sellersMap = new Map();
     for (const row of sellerRows) {
@@ -118,6 +144,7 @@ export default async function(req) {
         stock: Number(row.stock),
         spam_stock: Number(row.spam_stock || 0),
         nonspam_stock: Number(row.nonspam_stock || 0),
+        ages: ageMap.get(`${row.owner_email}|${row.country_iso}`) || [],
       });
     }
 

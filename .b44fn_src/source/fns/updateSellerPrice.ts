@@ -2,6 +2,7 @@ import { makeB44 } from '../_shared/b44.ts';
 import { admin } from '../_shared/entities.ts';
 import { resolveUser } from '../_shared/resolveUser.ts';
 import { broadcastPriceDrop } from '../_shared/priceDropNotify.ts';
+import { isValidAgeCategory } from '../_shared/accountAge.js';
 // Lets a seller set the price for all their available accounts of a given
 // country in ONE stock pool (Spam or Non-Spam). The new price applies only to
 // that seller's listings — other sellers keep their own prices, and buyers pay
@@ -18,6 +19,14 @@ export default async function(req) {
     });
     const { country_iso, price, spam } = body;
     const poolSpam = !!spam;
+    // Optional age bucket: when set, the price applies only to that age's
+    // accounts of this country+pool ('' = the whole pool, any age).
+    const ageCategory = body.age_category ? String(body.age_category).trim() : '';
+    if (ageCategory && !isValidAgeCategory(ageCategory)) return Response.json({
+      error: 'Invalid account age'
+    }, {
+      status: 400
+    });
     if (!country_iso) return Response.json({
       error: 'country_iso required'
     }, {
@@ -40,7 +49,8 @@ export default async function(req) {
       country_iso,
       status: 'available',
       owner_email: ownerEmail,
-      spam: poolSpam
+      spam: poolSpam,
+      ...(ageCategory ? { age_category: ageCategory } : {})
     });
     // Empty pool: still remember the price for this pool (stock_prices), so
     // future stock — e.g. accounts the daily @SpamBot sweep promotes into the
@@ -50,8 +60,9 @@ export default async function(req) {
         owner_email: ownerEmail,
         country_iso,
         spam: poolSpam,
+        age_category: ageCategory,
         price: Number(newPrice.toFixed(2))
-      }, { onConflict: 'owner_email,country_iso,spam' });
+      }, { onConflict: 'owner_email,country_iso,spam,age_category' });
       return Response.json({
         success: true,
         country_iso,
@@ -82,11 +93,14 @@ export default async function(req) {
       owner_email: ownerEmail,
       country_iso,
       spam: poolSpam,
+      age_category: ageCategory,
       price: Number(newPrice.toFixed(2))
-    }, { onConflict: 'owner_email,country_iso,spam' });
+    }, { onConflict: 'owner_email,country_iso,spam,age_category' });
     // When the price went DOWN, tell everyone: who dropped it, country with
     // flag, Spam / Non-Spam pool, old and new price — in each user's language.
-    if (oldPrice > 0 && newPrice < oldPrice) {
+    // Pool-wide drops are announced to everyone; an age-specific price change
+    // only affects that bucket's listings, so it stays out of the broadcast.
+    if (!ageCategory && oldPrice > 0 && newPrice < oldPrice) {
       const countries = await base44.asServiceRole.entities.Country.filter({
         iso: country_iso
       }).catch(() => []);
@@ -105,6 +119,7 @@ export default async function(req) {
       success: true,
       country_iso,
       spam: poolSpam,
+      age_category: ageCategory,
       price: Number(newPrice.toFixed(2)),
       updated: accounts.length
     });
