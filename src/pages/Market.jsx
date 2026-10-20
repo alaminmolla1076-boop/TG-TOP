@@ -97,6 +97,7 @@ export default function Market() {
         <span className="mk-fade self-center rounded-full border border-[#A29BFE]/35 bg-[rgba(108,92,231,.14)] px-4 py-1.5 text-[11px] font-semibold tracking-[.14em] text-[#A29BFE]">
           {t("mk.badge")}
         </span>
+        <AgeFilterBar sellers={sellers} active={ageFilter} onChange={setAgeFilter} />
         <TopSellerCapsule topSeller={topSeller} />
         <SellerSearchBar
           onSearch={searchSellers}
@@ -104,7 +105,6 @@ export default function Market() {
           searching={searching}
           activeQuery={searchQuery}
         />
-        <AgeFilterBar sellers={sellers} active={ageFilter} onChange={setAgeFilter} />
         {ageFilter ? (
           <AgeCountryList sellers={sellers} category={ageFilter} />
         ) : loadError ? (
