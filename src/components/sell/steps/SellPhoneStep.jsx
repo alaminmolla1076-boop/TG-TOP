@@ -1,6 +1,7 @@
 import React from "react";
 import { useAppLang } from "@/lib/AppLanguageContext";
 import { AGE_OPTIONS, ageLabel } from "@/lib/accountAge";
+import GlassSelect from "@/components/ui/GlassSelect";
 
 const inputBase =
   "w-full rounded-2xl border border-ring/25 bg-secondary/80 px-4 text-base font-semibold text-foreground placeholder:text-muted-foreground transition-[border-color,box-shadow] duration-200 focus:border-ring focus:shadow-[0_0_0_3px_rgba(162,155,254,.22)] disabled:cursor-not-allowed disabled:opacity-50";
@@ -38,19 +39,13 @@ export default function SellPhoneStep({ phone, onPhone, age, onAge, onSubmit, bu
         <label htmlFor="sell-age" className="text-[11px] font-semibold text-foreground">
           {t("sp.ageLabel")}
         </label>
-        <select
+        <GlassSelect
           id="sell-age"
           value={age}
-          onChange={(e) => onAge(e.target.value)}
+          onChange={onAge}
           disabled={busy}
-          className={`${inputBase} h-[52px] appearance-none`}
-        >
-          {AGE_OPTIONS.map((o) => (
-            <option key={o.value} value={o.value}>
-              {ageLabel(o.value, t)}
-            </option>
-          ))}
-        </select>
+          options={AGE_OPTIONS.map((o) => ({ value: o.value, label: ageLabel(o.value, t) }))}
+        />
       </div>
       <div className="mt-6 pt-4">
         <button type="submit" disabled={busy} className={primaryBtn}>
