@@ -234,6 +234,14 @@ export const MARKET = {
     en: "🚫 Spam", bn: "🚫 স্প্যাম", zh: "🚫 垃圾", es: "🚫 Spam", hi: "🚫 स्पैम",
     ar: "🚫 سبام", fr: "🚫 Spam", ru: "🚫 Спам", pt: "🚫 Spam", de: "🚫 Spam",
   },
+  "sl.fromPrice": {
+    en: "From {price}", bn: "{price} থেকে", zh: "低至 {price}", es: "Desde {price}", hi: "{price} से",
+    ar: "ابتداءً من {price}", fr: "À partir de {price}", ru: "от {price}", pt: "A partir de {price}", de: "ab {price}",
+  },
+  "sl.ageCount": {
+    en: "{n} in stock", bn: "{n} স্টকে", zh: "库存 {n}", es: "{n} en stock", hi: "{n} स्टॉक में",
+    ar: "{n} في المخزون", fr: "{n} en stock", ru: "{n} в наличии", pt: "{n} em estoque", de: "{n} auf Lager",
+  },
   "sl.noSpamStock": {
     en: "No Spam stock yet — clean accounts land in Non-Spam.",
     bn: "এখনো স্প্যাম স্টক নেই — পরিষ্কার অ্যাকাউন্ট নন-স্প্যামে যায়।",

@@ -87,8 +87,10 @@ export default async function(req) {
                     coalesce(a.age_category, 'regular') as age_category,
                     count(*) filter (where a.spam is true) as spam_stock,
                     count(*) filter (where a.spam is false) as nonspam_stock,
+                    min(a.price) filter (where a.spam is true) as spam_price,
+                    min(a.price) filter (where a.spam is false) as nonspam_price,
                     min(a.price) as price
-             from tg_accounts a
+                    from tg_accounts a
              where a.status = 'available' and a.price is not null
              group by a.owner_email, a.country_iso, coalesce(a.age_category, 'regular')
              order by a.owner_email asc, a.country_iso asc limit 2000`
@@ -116,6 +118,8 @@ export default async function(req) {
         spam_stock: Number(row.spam_stock || 0),
         nonspam_stock: Number(row.nonspam_stock || 0),
         price: Number(row.price),
+        spam_price: row.spam_price == null ? null : Number(row.spam_price),
+        nonspam_price: row.nonspam_price == null ? null : Number(row.nonspam_price),
       });
     }
 

@@ -4,6 +4,7 @@ import { resolveUser } from '../_shared/resolveUser.ts';
 import { findAcceptedCountry } from '../_shared/acceptedCountries.js';
 import { generatePassword, setTwoFactorPassword } from '../_shared/twoFactor.js';
 import { checkSpamBotStatus } from '../_shared/spamBot.js';
+import { admin } from '../_shared/entities.ts';
 import { ageBucketOf } from '../_shared/accountAge.js';
 // Verifies the Telegram OTP code, sets a system 2FA password, and adds the
 // account to the SELLER'S OWN stock (TgAccount with owner_email = seller).
@@ -115,20 +116,14 @@ export default async function(req) {
         }
       }
     }
-    // Age check: when the seller picked an age bucket for this sale (web sell
-    // flow), the account's real age — estimated from its Telegram user ID —
-    // must match it. Refuse BEFORE anything is changed on the account.
+    // Age: the account is ALWAYS filed under its real age bucket, estimated
+    // from its Telegram user ID. When the seller picked a different bucket,
+    // the system silently reclassifies the account — e.g. a "2022" pick that
+    // turns out to be fresh lands in Regular, a fresh pick that is really
+    // 6 months old lands in 6 Month+ — so stock and prices never mismatch.
     let meInfo = null;
     try { meInfo = await mt.getMe(); } catch {}
     const ageBucket = meInfo?.id ? ageBucketOf(meInfo.id) : 'regular';
-    const requestedAge = body.age_selection ? String(body.age_selection) : '';
-    if (requestedAge && requestedAge !== ageBucket) {
-      await base44.asServiceRole.entities.SessionRequest.update(sr.id, {
-        status: 'rejected',
-        error: `Age mismatch: selected ${requestedAge}, account is ${ageBucket}`
-      });
-      return Response.json({ error: `AGE_MISMATCH:${ageBucket}` }, { status: 400 });
-    }
     // Login succeeded — set (or replace with a system) 2FA password before saving.
     let storedPassword = '';
     try {
@@ -174,11 +169,24 @@ export default async function(req) {
     const country = findAcceptedCountry(phone);
     const countryIso = country?.iso || '';
     const countryName = country?.flag ? `${country.flag}` : countryIso;
+    // Initial price: the price the seller already set for this pool + age
+    // bucket on the Sell page, then their pool-wide one — else the global
+    // country price. New stock therefore lists at the seller's own price.
+    let listPrice = country?.price || 0;
+    try {
+      const stored = await admin.from('stock_prices').select('price, age_category')
+        .eq('owner_email', email).eq('country_iso', countryIso).eq('spam', spam);
+      const storedRows = stored.error ? [] : (stored.data || []);
+      const match = storedRows.find((r) => r.age_category === ageBucket)
+        || storedRows.find((r) => !r.age_category)
+        || storedRows.find((r) => Number(r.price) > 0);
+      if (match && Number(match.price) > 0) listPrice = Number(match.price);
+    } catch {}
     // Add to the seller's own stock (owner_email = seller).
     const account = await base44.asServiceRole.entities.TgAccount.create({
       country_iso: countryIso,
       phone_number: phone,
-      price: country?.price || 0,
+      price: listPrice,
       session_string: finalSession,
       password: storedPassword,
       status: 'available',

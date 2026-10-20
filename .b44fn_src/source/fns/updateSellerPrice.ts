@@ -80,7 +80,8 @@ export default async function(req) {
       country_iso,
       status: 'available',
       owner_email: ownerEmail,
-      spam: poolSpam
+      spam: poolSpam,
+      ...(ageCategory ? { age_category: ageCategory } : {})
     }, {
       $set: {
         price: Number(newPrice.toFixed(2))

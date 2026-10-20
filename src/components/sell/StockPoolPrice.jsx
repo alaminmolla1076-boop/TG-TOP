@@ -10,7 +10,7 @@ const pillClass = (spam) =>
 // One stock-pool price editor inside a country card — the Spam and Non-Spam
 // pools are priced separately, each with its own input + Save. Nordic Frost
 // Glass.
-export default function StockPoolPrice({ pool, value, busy, onValue, onSave }) {
+export default function StockPoolPrice({ pool, age, value, busy, onValue, onSave }) {
   const { t } = useAppLang();
   const spam = !!pool.spam;
   return (
@@ -21,6 +21,11 @@ export default function StockPoolPrice({ pool, value, busy, onValue, onSave }) {
         >
           {t(spam ? "sl.spam" : "sl.nonSpam")}
         </span>
+        {age ? (
+          <span className="shrink-0 rounded-full border border-ring/35 bg-ring/[.12] px-2.5 py-[3px] text-[10px] font-bold uppercase tracking-[.08em] text-ring">
+            {age}
+          </span>
+        ) : null}
         <p className="text-[11px] text-muted-foreground">{t("s1.poolStock", { n: pool.stock })}</p>
         <p className="ml-auto shrink-0 bg-gradient-to-r from-ring to-primary bg-clip-text font-display text-sm font-bold text-transparent">
           {pool.price != null ? formatMoney(pool.price) : t("s1.noPrice")}

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { ChevronLeft, ChevronRight, Globe, ShoppingCart } from "lucide-react";
+import { ChevronLeft, Globe } from "lucide-react";
 import { useTgIdentity } from "@/lib/TgIdentityContext";
 import { useAppLang } from "@/lib/AppLanguageContext";
 import SectionHead from "@/components/market/SectionHead";
 import MarketBackdrop from "@/components/market/MarketBackdrop";
 import SellerHistory from "@/components/market/SellerHistory";
-import { formatMoney } from "@/lib/format";
+import SellerCountryCard from "@/components/market/SellerCountryCard";
 
 // Stock pools: accounts are filed as Spam or Non-Spam at login (SpamBot
 // verdict); the buyer picks which pool to browse.
@@ -127,39 +127,7 @@ export default function MarketSeller() {
             </div>
           ) : null}
           {countries.map((c) => (
-            <Link
-              key={c.country_iso}
-              to={`/market/buy/${seller.id}/${c.country_iso}?pool=${pool}`}
-              className="flex w-full items-center gap-3 rounded-full border border-[#A29BFE]/25 bg-[rgba(45,38,78,.5)] py-2.5 pl-2.5 pr-4 text-left text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,.07)] transition-[border-color,background-color] duration-200 no-underline hover:border-[#A29BFE]/60 hover:bg-[rgba(45,38,78,.8)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A29BFE] active:opacity-85"
-            >
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#A29BFE]/40 bg-[rgba(108,92,231,.14)] text-base font-bold text-[#A29BFE]">
-                {c.flag || c.country_iso}
-              </div>
-              <span className="min-w-0 flex-1">
-                <span className="block truncate text-[15px] font-medium text-foreground">
-                  {c.country_name}
-                  {c.dial_code ? (
-                    <span className="ml-1.5 text-[12px] font-semibold text-[#A29BFE]">
-                      +{String(c.dial_code).replace(/^\+/, "")}
-                    </span>
-                  ) : null}
-                </span>
-                <span className="block truncate text-[11px] text-[#a8a3cf]">
-                  {poolStockOf(c, pool)} {t("c.inStock")}
-                </span>
-              </span>
-              <span
-                title={t("c.buy")}
-                aria-label={t("c.buy")}
-                className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-[#A29BFE]/45 bg-gradient-to-br from-[#6C5CE7] to-[#8E7DFF] text-[#fff] shadow-[0_4px_14px_rgba(108,92,231,.5)] transition-transform duration-200 hover:scale-105"
-              >
-                <ShoppingCart className="h-4 w-4" strokeWidth={2} />
-              </span>
-              <span className="shrink-0 text-[15px] font-bold text-[#A29BFE] tabular-nums">
-                {formatMoney(c.price)}
-              </span>
-              <ChevronRight className="h-4 w-4 shrink-0 text-[#a8a3cf]" strokeWidth={1.5} />
-            </Link>
+            <SellerCountryCard key={c.country_iso} sellerId={seller.id} country={c} pool={pool} />
           ))}
         </section>
       </div>
