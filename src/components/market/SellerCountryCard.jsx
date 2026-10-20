@@ -19,7 +19,8 @@ export default function SellerCountryCard({ sellerId, country, pool, age }) {
       stock: pool === "spam" ? a.spam_stock : a.nonspam_stock,
       price: pool === "spam" ? a.spam_price ?? a.price : a.nonspam_price ?? a.price,
     }))
-    .filter((a) => Number(a.stock) > 0 && a.price != null);
+    .filter((a) => Number(a.stock) > 0 && a.price != null && (!age || String(a.category) === String(age)));
+  const shownStock = age ? ages.reduce((total, a) => total + Number(a.stock), 0) : poolStock;
   const fromPrice = ages.length ? Math.min(...ages.map((a) => Number(a.price))) : country.price;
 
   return (
@@ -41,7 +42,7 @@ export default function SellerCountryCard({ sellerId, country, pool, age }) {
             ) : null}
           </span>
           <span className="block truncate text-[11px] text-[#a8a3cf]">
-            {poolStock} {t("c.inStock")}
+            {shownStock} {t("c.inStock")}
           </span>
         </span>
         <span
@@ -61,7 +62,7 @@ export default function SellerCountryCard({ sellerId, country, pool, age }) {
           {ages.map((a) => (
             <Link
               key={a.category}
-              to={buyUrl}
+              to={`/market/buy/${sellerId}/${country.country_iso}?pool=${pool}&age=${encodeURIComponent(a.category)}`}
               className="flex cursor-pointer flex-col items-center gap-0.5 rounded-2xl border border-[#A29BFE]/25 bg-[rgba(20,16,43,.45)] px-3 py-1.5 no-underline transition-[border-color,background-color] duration-200 hover:border-[#A29BFE]/60 hover:bg-[rgba(108,92,231,.2)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#A29BFE]"
             >
               <span className="text-[10px] font-bold uppercase tracking-[.06em] text-[#a8a3cf]">

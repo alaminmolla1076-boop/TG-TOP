@@ -57,11 +57,15 @@ export default function MarketBuy() {
         );
       })
       .catch(() => setEntry(null));
-  }, [sellerId, countryIso]);
+  }, [sellerId, countryIso, pool]);
 
   // Age buckets available in the current stock pool.
   const poolAges = (entry?.country?.ages || [])
-    .map((a) => ({ ...a, stock: pool === "spam" ? a.spam_stock : a.nonspam_stock }))
+    .map((a) => ({
+      ...a,
+      stock: pool === "spam" ? a.spam_stock : a.nonspam_stock,
+      price: pool === "spam" ? a.spam_price ?? a.price : a.nonspam_price ?? a.price,
+    }))
     .filter((a) => Number(a.stock) > 0);
   const ageInfo = poolAges.find((a) => a.category === age) || null;
 

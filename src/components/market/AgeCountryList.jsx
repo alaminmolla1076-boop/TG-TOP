@@ -60,7 +60,7 @@ export default function AgeCountryList({ sellers, category }) {
             </div>
             <div className="flex flex-col gap-1.5 px-1 pb-1">
               {c.offers.map((o, i) => {
-                const buyUrl = `/market/buy/${o.seller.id}/${c.country_iso}?pool=${o.pool}`;
+                const buyUrl = `/market/buy/${o.seller.id}/${c.country_iso}?pool=${o.pool}&age=${encodeURIComponent(category)}`;
                 return (
                   <Link
                     key={`${o.seller.id}-${o.pool}-${i}`}

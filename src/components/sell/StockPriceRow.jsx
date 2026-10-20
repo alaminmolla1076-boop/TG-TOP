@@ -44,8 +44,11 @@ export default function StockPriceRow({ country, pools, getValue, isBusy, onValu
           .filter((r) => r.age_category && (Number(r.stock) || 0) > 0)
           .sort((a, b) => ageOrder(a.age_category) - ageOrder(b.age_category))[0]?.age_category
       : undefined;
-  const [age, setAge] = useState(() => stockedAgeOf(ordered.find((p) => !p.spam) || ordered[0]) || "regular");
+  const [agesByPool, setAgesByPool] = useState({});
   const active = ordered.find((p) => !!p.spam === activeSpam) || ordered[0];
+  const poolKey = active?.spam ? "spam" : "nonspam";
+  const age = agesByPool[poolKey] ?? stockedAgeOf(active) ?? "regular";
+  const setAge = (value) => setAgesByPool((prev) => ({ ...prev, [poolKey]: value }));
 
   const totalOf = (p) => (p ? [...p.rows.values()].reduce((n, r) => n + (Number(r.stock) || 0), 0) : 0);
 
