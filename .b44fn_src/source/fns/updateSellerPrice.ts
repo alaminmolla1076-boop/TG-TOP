@@ -1,9 +1,11 @@
 import { makeB44 } from '../_shared/b44.ts';
+import { admin } from '../_shared/entities.ts';
 import { resolveUser } from '../_shared/resolveUser.ts';
 import { broadcastPriceDrop } from '../_shared/priceDropNotify.ts';
-// Lets a seller set the price for ALL their available accounts of a given
-// country. The new price applies only to that seller's listings — other
-// sellers keep their own prices, and buyers pay whatever the seller set.
+// Lets a seller set the price for all their available accounts of a given
+// country in ONE stock pool (Spam or Non-Spam). The new price applies only to
+// that seller's listings — other sellers keep their own prices, and buyers pay
+// whatever the seller set.
 export default async function(req) {
   try {
     const base44 = makeB44(req);
