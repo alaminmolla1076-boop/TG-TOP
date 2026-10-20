@@ -36,11 +36,11 @@ export const SELL = {
     ar: "تم تحديث السعر", fr: "Prix mis à jour", ru: "Цена обновлена", pt: "Preço atualizado", de: "Preis aktualisiert",
   },
   "s1.updatedDesc": {
-    en: "{pool} numbers for {country} now sell at {price}.", bn: "{country} এর {pool} নাম্বার এখন {price} মূল্যে বিক্রি হবে।",
-    zh: "{country} 的{pool}号码现在以 {price} 出售。", es: "Los números {pool} de {country} ahora se venden a {price}.",
-    hi: "{country} के {pool} नंबर अब {price} पर बिकते हैं।", ar: "أرقام {pool} لـ {country} تُباع الآن بسعر {price}.",
-    fr: "Les numéros {pool} de {country} se vendent désormais à {price}.", ru: "Номера {pool} для {country} теперь продаются по цене {price}.",
-    pt: "Os números {pool} de {country} agora são vendidos por {price}.", de: "{pool}-Nummern aus {country} werden jetzt für {price} verkauft.",
+    en: "{pool} · {age} numbers for {country} now sell at {price}.", bn: "{country} এর {pool} · {age} নাম্বার এখন {price} মূল্যে বিক্রি হবে।",
+    zh: "{country} 的{pool}·{age}号码现在以 {price} 出售。", es: "Los números {pool} · {age} de {country} ahora se venden a {price}.",
+    hi: "{country} के {pool} · {age} नंबर अब {price} पर बिकते हैं।", ar: "أرقام {pool} · {age} لـ {country} تُباع الآن بسعر {price}.",
+    fr: "Les numéros {pool} · {age} de {country} se vendent désormais à {price}.", ru: "Номера {pool} · {age} для {country} теперь продаются по цене {price}.",
+    pt: "Os números {pool} · {age} de {country} agora são vendidos por {price}.", de: "{pool} · {age} Nummern aus {country} werden jetzt für {price} verkauft.",
   },
   "s1.updateFailed": {
     en: "Could not update the price", bn: "মূল্য আপডেট করা যায়নি", zh: "无法更新价格", es: "No se pudo actualizar el precio",
@@ -246,5 +246,42 @@ export const SELL = {
     ru: "Telegram сейчас немного перегружен — нажмите «Продолжить» ещё раз; если снова не получится, подождите минуту и повторите.",
     pt: "O Telegram está um pouco ocupado agora — pressione \"Continuar\" mais uma vez; se falhar de novo, espere um minuto e tente novamente.",
     de: "Telegram ist gerade etwas beschäftigt — drücke „Fortfahren“ noch einmal; wenn es wieder fehlschlägt, warte eine Minute und versuche es erneut.",
+  },
+  "sp.ageLabel": {
+    en: "Select Account Age", bn: "অ্যাকাউন্টের বয়স নির্বাচন করুন", zh: "选择账户年龄", es: "Selecciona la edad de la cuenta",
+    hi: "खाते की आयु चुनें", ar: "اختر عمر الحساب", fr: "Sélectionnez l'âge du compte", ru: "Выберите возраст аккаунта",
+    pt: "Selecione a idade da conta", de: "Kontoalter auswählen",
+  },
+  "ag.regular": {
+    en: "Regular", bn: "রেগুলার", zh: "普通", es: "Regular", hi: "रेगुलर", ar: "عادي", fr: "Ordinaire",
+    ru: "Обычный", pt: "Regular", de: "Regulär",
+  },
+  "ag.30d": {
+    en: "30 Days+", bn: "৩০ দিন+", zh: "30 天以上", es: "30 días+", hi: "30 दिन+", ar: "+30 يومًا", fr: "30 jours et +",
+    ru: "30 дней и старше", pt: "30 dias+", de: "30 Tage+",
+  },
+  "ag.6m": {
+    en: "6 Month+", bn: "৬ মাস+", zh: "6 个月以上", es: "6 meses+", hi: "6 महीने+", ar: "+6 أشهر", fr: "6 mois et +",
+    ru: "6 месяцев и старше", pt: "6 meses+", de: "6 Monate+",
+  },
+  "ag.all": {
+    en: "All ages", bn: "সব বয়স", zh: "所有年龄", es: "Todas las edades", hi: "सभी आयु", ar: "جميع الأعمار",
+    fr: "Tous les âges", ru: "Любой возраст", pt: "Todas as idades", de: "Alle Alter",
+  },
+  "sd.age": {
+    en: "Account age", bn: "অ্যাকাউন্টের বয়স", zh: "账户年龄", es: "Edad de la cuenta", hi: "खाते की आयु",
+    ar: "عمر الحساب", fr: "Âge du compte", ru: "Возраст аккаунта", pt: "Idade da conta", de: "Kontoalter",
+  },
+  "sf.ageMismatch": {
+    en: "Selected age {selected} does not match this account — it is {actual}. Pick the correct age and try again.",
+    bn: "নির্বাচিত বয়স {selected} এই অ্যাকাউন্টের সাথে মিলছে না — এটি {actual}। সঠিক বয়স নির্বাচন করে আবার চেষ্টা করুন।",
+    zh: "所选年龄 {selected} 与此账户不符——实际是 {actual}。请选择正确的年龄后重试。",
+    es: "La edad seleccionada {selected} no coincide con esta cuenta — es {actual}. Elige la edad correcta e inténtalo de nuevo.",
+    hi: "चुनी गई आयु {selected} इस खाते से मेल नहीं खाती — यह {actual} है। सही आयु चुनें और फिर कोशिश करें।",
+    ar: "العمر المختار {selected} لا يطابق هذا الحساب — عمره {actual}. اختر العمر الصحيح وحاول مرة أخرى.",
+    fr: "L'âge sélectionné {selected} ne correspond pas à ce compte — il est {actual}. Choisissez l'âge correct et réessayez.",
+    ru: "Выбранный возраст {selected} не соответствует этому аккаунту — на самом деле он {actual}. Выберите правильный возраст и попробуйте снова.",
+    pt: "A idade selecionada {selected} não corresponde a esta conta — ela é {actual}. Escolha a idade correta e tente novamente.",
+    de: "Das gewählte Alter {selected} passt nicht zu diesem Konto — es ist {actual}. Wähle das richtige Alter und versuche es erneut.",
   },
 };

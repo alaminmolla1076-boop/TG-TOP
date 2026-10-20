@@ -3,7 +3,7 @@ import { tgSend, tgSendMenu, tgDeleteMessage, tgSendDoc, tgDownloadFileBytes } f
 import { getRealBalance } from '../_shared/balance.ts';
 import { extractSessionsFromFile } from '../_shared/extractSessions.js';
 import { waitUntil } from '../_shared/b44.ts';
-import { selfTrigger } from '../_shared/selfInvoke.ts';
+import { selfInvoke, selfTrigger } from '../_shared/selfInvoke.ts';
 import { getState, setState, clearState, getUserContext, findUserByTelegramId } from './state.ts';
 import { buildCountryKeyboard } from './keyboards.ts';
 import { showMarketConfirm } from './market.ts';
@@ -298,7 +298,7 @@ export async function handleSellFlow(base44, token, ctx, sellState) {
       verifyMsg?.result?.message_id
     ].filter(Boolean);
     try {
-      const result = await base44.asServiceRole.functions.invoke('verifyLoginCode', {
+      const result = await selfInvoke('verifyLoginCode', {
         request_id: sellState.request_id,
         password,
         user_email: user.email
@@ -330,7 +330,7 @@ export async function handleSellFlow(base44, token, ctx, sellState) {
     }
     const connectingMsg = await tgSend(token, chatId, t(lang, 'sf.connecting', { phone }), replyTo);
     try {
-      const result = await base44.asServiceRole.functions.invoke('sendLoginCode', {
+      const result = await selfInvoke('sendLoginCode', {
         phone_number: phone,
         user_email: user.email
       });
@@ -375,7 +375,7 @@ export async function handleSellFlow(base44, token, ctx, sellState) {
       verifyMsg?.result?.message_id
     ].filter(Boolean);
     try {
-      const result = await base44.asServiceRole.functions.invoke('verifyLoginCode', {
+      const result = await selfInvoke('verifyLoginCode', {
         request_id: sellState.request_id,
         phone_code: code,
         user_email: user.email
@@ -543,37 +543,21 @@ const extractPhoneNumbers = (text) => {
   return out;
 };
 
-// Starts the next number in the queue, or reports completion.
-async function sellMultiNext(base44, token, ctx, st) {
-  const { chatId, replyTo, user, lang } = ctx;
-  const L = lang || 'en';
-  const tid = String(ctx.tgUser.id);
-  while (st.idx < st.numbers.length) {
-    const phone = st.numbers[st.idx];
-    try {
-      const result = await base44.asServiceRole.functions.invoke('sendLoginCode', {
-        phone_number: phone,
-        user_email: user.email
-      });
-      const data = result.data || result;
-      if (data.error) throw new Error(data.error);
-      st.request_id = data.request_id;
-      st.phone = phone;
-      st.sub = 'otp';
-      await setState(base44, `sellmulti:${tid}`, JSON.stringify(st));
-      await tgSend(token, chatId, t(L, 'sf.connecting', { phone }), replyTo);
-      await tgSend(token, chatId, t(L, 'sf.codeSent', { phone }), replyTo);
-      return;
-    } catch (err) {
-      const m = String(err.message || '');
-      const reason = /409|already exists|NUMBER_EXISTS/i.test(m) ? t(L, 'sf.alreadyIn') : m;
-      await tgSend(token, chatId, t(L, 'sf.phoneIssue', { phone, reason }), replyTo);
-      st.idx++;
-    }
-  }
-  await clearState(base44, `sellmulti:${tid}`);
-  await tgSend(token, chatId, t(L, 'sf.sellMultiDone', { done: st.done || 0, total: st.numbers.length }), replyTo);
+// Hands the queue to the background worker (sellMultiWorker), which scans
+// forward one number per request — its own CPU budget each time, so even a
+// 200+ number list keeps running no matter how many numbers fail in a row.
+// The scan token makes the trigger single-flight: only the newest trigger's
+// worker may touch the queue.
+async function sellMultiAdvance(base44, tid, st) {
+  st.sub = 'scan';
+  st.scan_token = `${Date.now()}:${Math.random().toString(36).slice(2)}`;
+  st.scan_at = Date.now();
+  await setState(base44, `sellmulti:${tid}`, JSON.stringify(st));
+  waitUntil(selfTrigger('sellMultiWorker', { tid, token: st.scan_token }));
 }
+
+// A scan is considered dead (worker killed) once its stamp is older than this.
+const SCAN_STALE_MS = 120000;
 
 export async function handleSellMultiFlow(base44, token, ctx, st) {
   const { chatId, replyTo, rawText, tgUser, user, lang } = ctx;
@@ -586,19 +570,37 @@ export async function handleSellMultiFlow(base44, token, ctx, st) {
       return true;
     }
     await tgSend(token, chatId, t(lang, 'sf.phonesReceived', { count: numbers.length }), replyTo);
+    if (!user) {
+      await clearState(base44, `sellmulti:${tid}`);
+      await tgSend(token, chatId, t(lang, 'bind.required'), replyTo);
+      return true;
+    }
     st = {
       status: 'processing',
       numbers,
       idx: 0,
-      done: 0
+      done: 0,
+      chat_id: chatId,
+      reply_to: replyTo,
+      user_email: user.email,
+      lang
     };
-    await sellMultiNext(base44, token, ctx, st);
+    await sellMultiAdvance(base44, tid, st);
     return true;
   }
   if (st.status !== 'processing') return false;
   if (!user) {
     await clearState(base44, `sellmulti:${tid}`);
     return false;
+  }
+  // The worker is scanning the list for the next number that accepts a login
+  // code. Fresh scans: ask the seller to wait. A stale stamp means the worker
+  // died — restart it from the saved position.
+  if (st.sub === 'scan') {
+    const stale = !st.scan_at || Date.now() - st.scan_at > SCAN_STALE_MS;
+    if (stale) await sellMultiAdvance(base44, tid, st);
+    await tgSend(token, chatId, t(lang, 'sf.processingWait'), replyTo);
+    return true;
   }
   // OTP reply for the current number.
   if (st.sub === 'otp') {
@@ -609,7 +611,7 @@ export async function handleSellMultiFlow(base44, token, ctx, st) {
     }
     const verifyMsg = await tgSend(token, chatId, t(lang, 'sf.verifying'), replyTo);
     try {
-      const result = await base44.asServiceRole.functions.invoke('verifyLoginCode', {
+      const result = await selfInvoke('verifyLoginCode', {
         request_id: st.request_id,
         phone_code: code,
         user_email: user.email
@@ -623,7 +625,7 @@ export async function handleSellMultiFlow(base44, token, ctx, st) {
       await tgSend(token, chatId, t(lang, 'sf.loggedIn', { phone: data.phone || st.phone }), replyTo);
       st.done++;
       st.idx++;
-      await sellMultiNext(base44, token, ctx, st);
+      await sellMultiAdvance(base44, tid, st);
     } catch (err) {
       try {
         if (verifyMsg?.result?.message_id) await tgDeleteMessage(token, chatId, verifyMsg.result.message_id);
@@ -641,7 +643,7 @@ export async function handleSellMultiFlow(base44, token, ctx, st) {
       }
       await tgSend(token, chatId, t(lang, 'sf.phoneError', { phone: st.phone, error: m }), replyTo);
       st.idx++;
-      await sellMultiNext(base44, token, ctx, st);
+      await sellMultiAdvance(base44, tid, st);
     }
     return true;
   }
@@ -650,7 +652,7 @@ export async function handleSellMultiFlow(base44, token, ctx, st) {
     const password = rawText.trim();
     const verifyMsg = await tgSend(token, chatId, t(lang, 'sf.checking2fa'), replyTo);
     try {
-      const result = await base44.asServiceRole.functions.invoke('verifyLoginCode', {
+      const result = await selfInvoke('verifyLoginCode', {
         request_id: st.request_id,
         password,
         user_email: user.email
@@ -663,7 +665,7 @@ export async function handleSellMultiFlow(base44, token, ctx, st) {
       await tgSend(token, chatId, t(lang, 'sf.twofaChanged', { phone: data.phone || st.phone }), replyTo);
       st.done++;
       st.idx++;
-      await sellMultiNext(base44, token, ctx, st);
+      await sellMultiAdvance(base44, tid, st);
     } catch (err) {
       try {
         if (verifyMsg?.result?.message_id) await tgDeleteMessage(token, chatId, verifyMsg.result.message_id);
@@ -675,7 +677,7 @@ export async function handleSellMultiFlow(base44, token, ctx, st) {
       }
       await tgSend(token, chatId, t(lang, 'sf.phoneError', { phone: st.phone, error: m }), replyTo);
       st.idx++;
-      await sellMultiNext(base44, token, ctx, st);
+      await sellMultiAdvance(base44, tid, st);
     }
     return true;
   }

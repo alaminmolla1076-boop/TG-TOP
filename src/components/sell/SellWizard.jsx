@@ -20,7 +20,7 @@ const WATERMARKS = {
 // Step-by-step sell flow: the number → login code → system login + 2FA →
 // stock steps appear one at a time, like the Top Up and Withdraw wizards.
 export default function SellWizard({ onDone }) {
-  const { step, phone, setPhone, code, setCode, requestId, result, busy, error, sendCode, verifyCode, back, reset } = useSellFlow(onDone);
+  const { step, phone, setPhone, age, setAge, code, setCode, requestId, result, busy, error, sendCode, verifyCode, back, reset } = useSellFlow(onDone);
   const { t } = useAppLang();
   const WatermarkIcon = WATERMARKS[step] || Smartphone;
 
@@ -45,7 +45,7 @@ export default function SellWizard({ onDone }) {
             transition={{ duration: 0.22 }}
           >
             {step === "phone" && (
-              <SellPhoneStep phone={phone} onPhone={setPhone} onSubmit={sendCode} busy={busy} />
+              <SellPhoneStep phone={phone} onPhone={setPhone} age={age} onAge={setAge} onSubmit={sendCode} busy={busy} />
             )}
             {step === "code" && (
               <SellCodeStep

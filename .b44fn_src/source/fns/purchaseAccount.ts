@@ -4,6 +4,7 @@ import { notifySellerOfPurchase } from '../_shared/saleNotify.ts';
 import { deliverSeasonZip } from '../bot/delivery.ts';
 import { getRealBalance } from '../_shared/balance.ts';
 import { getAvailableAccounts, syncCountryStock } from '../_shared/inventory.js';
+import { isValidAgeCategory } from '../_shared/accountAge.js';
 import { clearTwoFactorGuaranteed } from '../_shared/twoFactor.js';
 import { resolveUser } from '../_shared/resolveUser.ts';
 // Direct port of base44/functions/purchaseAccount — same budget/concurrency
@@ -23,6 +24,14 @@ export default async function(req) {
       status: 401
     });
     const { country_iso, quantity, owner_email, mode, spam_pool } = body;
+    // Optional age bucket — the buyer picked an account age on the purchase
+    // page; only that bucket's accounts are claimed.
+    const ageCategory = body.age_category ? String(body.age_category).trim() : '';
+    if (ageCategory && !isValidAgeCategory(ageCategory)) return Response.json({
+      error: 'Invalid account age'
+    }, {
+      status: 400
+    });
     const qty = quantity == null ? 1 : Number(quantity);
     if (!Number.isInteger(qty) || qty < 1 || qty > 3000) return Response.json({
       error: 'Quantity must be a whole number between 1 and 3000'
@@ -39,7 +48,7 @@ export default async function(req) {
     // When owner_email is given, buy from that specific seller — so the buyer
     // pays the seller's own price (per-seller pricing). When spam_pool is
     // given, claim from that stock pool (Spam / Non-Spam) only.
-    const stockBuffer = await getAvailableAccounts(base44, country_iso, qty * 3, owner_email || null, spam_pool || null);
+    const stockBuffer = await getAvailableAccounts(base44, country_iso, qty * 3, owner_email || null, spam_pool || null, ageCategory || null);
     if (stockBuffer.length < qty) {
       return Response.json({
         error: 'Out of stock — no available numbers for this country',

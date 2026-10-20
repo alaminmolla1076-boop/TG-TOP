@@ -1,5 +1,6 @@
 import { runSql, sqlString, callB44 } from '../_shared/webApi.ts';
 import { resolveIdentity } from '../_shared/webIdentity.ts';
+import { isValidAgeCategory } from '../_shared/accountAge.js';
 
 // Step 2 of the sell flow: submits the Telegram login code the seller received.
 // Supabase signs in to the account, adds a system 2FA password and puts the
@@ -18,6 +19,11 @@ export default async function(req) {
     if (!code) {
       return Response.json({ error: "Enter the login code you received" }, { status: 400 });
     }
+    // The age bucket the seller picked on the phone step, e.g. '30d' or '2024'.
+    const ageSelection = String(body.age_selection || '').trim();
+    if (ageSelection && !isValidAgeCategory(ageSelection)) {
+      return Response.json({ error: "Invalid account age selection" }, { status: 400 });
+    }
 
     const identity = await resolveIdentity(body.initData);
     // The pending code request must belong to the caller — nobody may
@@ -32,7 +38,7 @@ export default async function(req) {
       return Response.json({ error: "This sale request does not belong to you" }, { status: 403 });
     }
 
-    const res = await callB44("verifyLoginCode", { initData: body.initData, request_id: requestId, phone_code: code }, 180000);
+    const res = await callB44("verifyLoginCode", { initData: body.initData, request_id: requestId, phone_code: code, ...(ageSelection ? { age_selection: ageSelection } : {}) }, 180000);
     if (res.success !== true) {
       return Response.json({ error: res.error || "Supabase did not confirm the account was saved" }, { status: 400 });
     }
@@ -42,6 +48,7 @@ export default async function(req) {
       country: res.country,
       country_iso: res.country_iso,
       spam: res.spam === true,
+      age_category: res.age_category || 'regular',
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 400 });

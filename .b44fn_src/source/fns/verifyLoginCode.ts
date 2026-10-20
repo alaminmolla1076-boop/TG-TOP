@@ -4,6 +4,7 @@ import { resolveUser } from '../_shared/resolveUser.ts';
 import { findAcceptedCountry } from '../_shared/acceptedCountries.js';
 import { generatePassword, setTwoFactorPassword } from '../_shared/twoFactor.js';
 import { checkSpamBotStatus } from '../_shared/spamBot.js';
+import { ageBucketOf } from '../_shared/accountAge.js';
 // Verifies the Telegram OTP code, sets a system 2FA password, and adds the
 // account to the SELLER'S OWN stock (TgAccount with owner_email = seller).
 // No reward is created — the account simply goes to the user's inventory.
@@ -114,6 +115,20 @@ export default async function(req) {
         }
       }
     }
+    // Age check: when the seller picked an age bucket for this sale (web sell
+    // flow), the account's real age — estimated from its Telegram user ID —
+    // must match it. Refuse BEFORE anything is changed on the account.
+    let meInfo = null;
+    try { meInfo = await mt.getMe(); } catch {}
+    const ageBucket = meInfo?.id ? ageBucketOf(meInfo.id) : 'regular';
+    const requestedAge = body.age_selection ? String(body.age_selection) : '';
+    if (requestedAge && requestedAge !== ageBucket) {
+      await base44.asServiceRole.entities.SessionRequest.update(sr.id, {
+        status: 'rejected',
+        error: `Age mismatch: selected ${requestedAge}, account is ${ageBucket}`
+      });
+      return Response.json({ error: `AGE_MISMATCH:${ageBucket}` }, { status: 400 });
+    }
     // Login succeeded — set (or replace with a system) 2FA password before saving.
     let storedPassword = '';
     try {
@@ -169,7 +184,8 @@ export default async function(req) {
       status: 'available',
       owner_email: email,
       purchase_type: 'season',
-      spam
+      spam,
+      age_category: ageBucket
     });
     await base44.asServiceRole.entities.SessionRequest.update(sr.id, {
       status: 'completed',
@@ -181,7 +197,8 @@ export default async function(req) {
       phone,
       country: countryName,
       country_iso: countryIso,
-      spam
+      spam,
+      age_category: ageBucket
     });
   } catch (error) {
     return Response.json({

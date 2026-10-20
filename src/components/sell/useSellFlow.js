@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { useTgIdentity } from "@/lib/TgIdentityContext";
 import { useAppLang } from "@/lib/AppLanguageContext";
+import { ageLabel } from "@/lib/accountAge";
 
 export default function useSellFlow(onDone) {
   const { invoke } = useTgIdentity();
@@ -8,6 +9,9 @@ export default function useSellFlow(onDone) {
   const pending = useRef(false);
   const [step, setStep] = useState("phone");
   const [phone, setPhone] = useState("");
+  // Age bucket the seller picked for this sale — checked against the
+  // account's real age (estimated from its Telegram user ID) at verify.
+  const [age, setAge] = useState("regular");
   const [code, setCode] = useState("");
   const [requestId, setRequestId] = useState("");
   const [result, setResult] = useState(null);
@@ -59,7 +63,11 @@ export default function useSellFlow(onDone) {
     setStep("secure");
     let completed = false;
     try {
-      const { data } = await invoke("sellVerifyCode", { request_id: requestId, phone_code: code.trim() });
+      const { data } = await invoke("sellVerifyCode", {
+        request_id: requestId,
+        phone_code: code.trim(),
+        age_selection: age,
+      });
       if (data?.success !== true) {
         throw new Error(data?.error || t("sf.noConfirmSave"));
       }
@@ -68,12 +76,25 @@ export default function useSellFlow(onDone) {
       completed = true;
     } catch (err) {
       const raw = err.response?.data?.error || err.message || "";
-      setError(
-        /compute resources/i.test(raw)
-          ? t("sf.busyVerify")
-          : raw
-      );
-      setStep("code");
+      // The account's real age does not match the selected age bucket — show
+      // which age it actually is and go back to pick the right one.
+      const mismatch = /^AGE_MISMATCH:(.+)$/.exec(raw);
+      if (mismatch) {
+        setError(
+          t("sf.ageMismatch", {
+            selected: ageLabel(age, t),
+            actual: ageLabel(mismatch[1], t),
+          })
+        );
+        setStep("phone");
+      } else {
+        setError(
+          /compute resources/i.test(raw)
+            ? t("sf.busyVerify")
+            : raw
+        );
+        setStep("code");
+      }
     } finally {
       pending.current = false;
       setBusy(false);
@@ -93,7 +114,8 @@ export default function useSellFlow(onDone) {
   function reset() {
     back();
     setPhone("");
+    setAge("regular");
   }
 
-  return { step, phone, setPhone, code, setCode, requestId, result, busy, error, sendCode, verifyCode, back, reset };
+  return { step, phone, setPhone, age, setAge, code, setCode, requestId, result, busy, error, sendCode, verifyCode, back, reset };
 }

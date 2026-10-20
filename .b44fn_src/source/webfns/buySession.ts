@@ -1,5 +1,6 @@
 import { runSql, sqlString, callB44 } from '../_shared/webApi.ts';
 import { resolveIdentity } from '../_shared/webIdentity.ts';
+import { isValidAgeCategory } from '../_shared/accountAge.js';
 
 // Buys accounts from a seller's stock. Supabase's purchaseAccount owns the
 // whole flow: it claims the accounts, charges the balance and delivers to the
@@ -25,6 +26,11 @@ export default async function (req) {
     // Spam / Non-Spam stock pool chosen on the seller's page.
     const spamPool = String(body.spam_pool || '').trim().toLowerCase();
     const pool = ['spam', 'nonspam'].includes(spamPool) ? spamPool : '';
+    // Account age bucket picked on the purchase page, e.g. '30d' or '2024'.
+    const ageCategory = String(body.age_category || '').trim();
+    if (ageCategory && !isValidAgeCategory(ageCategory)) {
+      return Response.json({ error: 'Invalid account age' }, { status: 400 });
+    }
     // Your own listings are visible to you on the market but can't be bought.
     if (sellerEmail) {
       const identity = await resolveIdentity(body.initData);
@@ -41,6 +47,7 @@ export default async function (req) {
       ...(qty > 1 ? { mode: 'session' } : {}),
       ...(sellerEmail ? { seller_email: sellerEmail, owner_email: sellerEmail } : {}),
       ...(pool ? { spam_pool: pool } : {}),
+      ...(ageCategory ? { age_category: ageCategory } : {}),
     }, 110000);
 
     const ids = (Array.isArray(res.accounts)

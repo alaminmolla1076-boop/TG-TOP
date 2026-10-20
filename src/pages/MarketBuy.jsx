@@ -7,6 +7,7 @@ import { useAppLang } from "@/lib/AppLanguageContext";
 import MarketBackdrop from "@/components/market/MarketBackdrop";
 import PurchaseResult from "@/components/market/PurchaseResult";
 import { formatMoney } from "@/lib/format";
+import { ageLabel } from "@/lib/accountAge";
 
 const QUICK_QTY = [5, 10, 20, 50, 100, 500, 1000];
 
@@ -31,6 +32,9 @@ export default function MarketBuy() {
   const [pendingQty, setPendingQty] = useState(null); // quantity awaiting confirmation
   const [busy, setBusy] = useState(false);
   const [purchased, setPurchased] = useState(null); // last single purchase, shown on-page
+  // Account age bucket picked by the buyer — each bucket has its own stock
+  // and price (set by the seller on the Sell page).
+  const [age, setAge] = useState(null);
 
   useEffect(() => {
     invoke("getMarketProducts", {})
@@ -38,16 +42,28 @@ export default function MarketBuy() {
         const seller = (res.data.sellers || []).find((s) => s.id === sellerId);
         const country = seller?.countries.find((c) => c.country_iso === countryIso);
         setEntry(seller && country ? { seller, country } : null);
+        const ages = (country?.ages || [])
+          .map((a) => ({ ...a, stock: pool === "spam" ? a.spam_stock : a.nonspam_stock }))
+          .filter((a) => Number(a.stock) > 0);
+        setAge(ages.some((a) => a.category === "regular") ? "regular" : ages[0]?.category || null);
       })
       .catch(() => setEntry(null));
   }, [sellerId, countryIso]);
 
-  const stock =
-    entry?.country == null
+  // Age buckets available in the current stock pool.
+  const poolAges = (entry?.country?.ages || [])
+    .map((a) => ({ ...a, stock: pool === "spam" ? a.spam_stock : a.nonspam_stock }))
+    .filter((a) => Number(a.stock) > 0);
+  const ageInfo = poolAges.find((a) => a.category === age) || null;
+
+  const stock = ageInfo
+    ? Number(ageInfo.stock)
+    : entry?.country == null
       ? 0
       : pool === "spam"
         ? entry.country.spam_stock ?? entry.country.stock ?? 0
         : entry.country.nonspam_stock ?? entry.country.stock ?? 0;
+  const unitPrice = ageInfo ? Number(ageInfo.price) : entry?.country?.price ?? 0;
   const parsed = parseInt(custom, 10);
   const customValid = Number.isInteger(parsed) && parsed >= 1 && parsed <= stock;
 
@@ -60,6 +76,7 @@ export default function MarketBuy() {
         quantity: qty,
         seller_email: entry.seller.email,
         spam_pool: pool,
+        ...(age ? { age_category: age } : {}),
       });
       const bought = res.data.accounts || [];
       if (qty === 1 && bought[0]?.phone_number) {
@@ -129,11 +146,27 @@ export default function MarketBuy() {
               {t("bp.fromLine", { name: seller.name })}
               </div>
             <div className="mt-1 bg-gradient-to-r from-[#A29BFE] to-[#6C5CE7] bg-clip-text font-display text-[34px] font-bold leading-none text-transparent tabular-nums">
-              {formatMoney(country.price)}
+              {formatMoney(unitPrice)}
             </div>
             <p className="mt-1 text-[13px] text-[#a8a3cf]">
               {pool === "spam" ? t("bp.spamStock") : t("bp.nonSpamStock")} · {stock} {t("c.inStock")}
             </p>
+            {poolAges.length > 0 && (
+              <div className="mt-2 flex items-center gap-2">
+                <span className="shrink-0 text-[11px] font-semibold text-[#a8a3cf]">{t("sp.ageLabel")}</span>
+                <select
+                  value={age || ""}
+                  onChange={(e) => setAge(e.target.value)}
+                  className="h-8 min-w-0 flex-1 cursor-pointer rounded-full border border-[#A29BFE]/30 bg-[rgba(45,38,78,.7)] px-2.5 text-[12px] font-semibold text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#A29BFE]"
+                >
+                  {poolAges.map((a) => (
+                    <option key={a.category} value={a.category}>
+                      {ageLabel(a.category, t)} · {formatMoney(a.price)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
         </div>
 
@@ -175,7 +208,7 @@ export default function MarketBuy() {
             </button>
 
             <p className="px-1 text-center text-[11px] text-[#a8a3cf]">
-              {t("bp.feeNote", { a: formatMoney(country.price), b: formatMoney(country.price + feeOf(country.price)) })}
+              {t("bp.feeNote", { a: formatMoney(unitPrice), b: formatMoney(unitPrice + feeOf(unitPrice)) })}
             </p>
 
             {formatsOpen && (
@@ -225,17 +258,17 @@ export default function MarketBuy() {
                   <p className="text-[13px] font-semibold text-foreground">{t("bp.confirmTitle")}</p>
                   <div className="mt-1.5 space-y-1 text-[12px] leading-relaxed text-[#a8a3cf]">
                     <div className="flex justify-between gap-2">
-                      <span>{pendingQty} × {formatMoney(country.price)}</span>
-                      <span className="tabular-nums">{formatMoney(pendingQty * country.price)}</span>
+                      <span>{pendingQty} × {formatMoney(unitPrice)}</span>
+                      <span className="tabular-nums">{formatMoney(pendingQty * unitPrice)}</span>
                     </div>
                     <div className="flex justify-between gap-2">
                       <span>{t("bp.serviceFee")}</span>
-                      <span className="tabular-nums">{formatMoney(feeOf(pendingQty * country.price))}</span>
+                      <span className="tabular-nums">{formatMoney(feeOf(pendingQty * unitPrice))}</span>
                     </div>
                     <div className="flex justify-between gap-2 font-semibold text-[#A29BFE]">
                       <span>{t("bp.totalCharge")}</span>
                       <span className="tabular-nums">
-                        {formatMoney(pendingQty * country.price + feeOf(pendingQty * country.price))}
+                        {formatMoney(pendingQty * unitPrice + feeOf(pendingQty * unitPrice))}
                       </span>
                     </div>
                   </div>

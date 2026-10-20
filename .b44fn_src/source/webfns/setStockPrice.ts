@@ -1,4 +1,5 @@
 import { callB44, runSql } from '../_shared/webApi.ts';
+import { isValidAgeCategory } from '../_shared/accountAge.js';
 
 // Lets a seller set the sale price for all of their available numbers of one
 // country in ONE stock pool (spam: true / false). Delegated to the
@@ -20,6 +21,12 @@ export default async function(req) {
       return Response.json({ error: "Enter a valid price greater than 0" }, { status: 400 });
     }
     const spam = !!body.spam;
+    // Optional age bucket ('' = the whole pool). One price per
+    // seller + country + pool + age.
+    const ageCategory = String(body.age_category || '').trim();
+    if (ageCategory && !isValidAgeCategory(ageCategory)) {
+      return Response.json({ error: "Invalid account age" }, { status: 400 });
+    }
 
     // Idempotent bootstrap — pool prices the daily @SpamBot sweep reads when an
     // account moves from the Spam pool into the Non-Spam pool.
@@ -28,9 +35,10 @@ export default async function(req) {
         owner_email text not null,
         country_iso text not null,
         spam boolean not null default false,
+        age_category text not null default '',
         price numeric not null,
         updated_date timestamptz not null default now(),
-        primary key (owner_email, country_iso, spam)
+        primary key (owner_email, country_iso, spam, age_category)
       )`
     );
 
@@ -38,7 +46,8 @@ export default async function(req) {
       init_data: body.initData,
       country_iso: iso,
       price,
-      spam
+      spam,
+      ...(ageCategory ? { age_category: ageCategory } : {})
     });
     return Response.json(res);
   } catch (error) {

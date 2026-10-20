@@ -56,6 +56,7 @@ export default async function (req) {
         runSql(
         `select a.country_iso,
               coalesce(a.spam, false) as spam,
+              a.age_category,
               coalesce(r.country_name, c.name, a.country_iso) as country_name,
               coalesce(r.flag, c.flag, '') as flag,
               count(*) as stock,
@@ -64,13 +65,14 @@ export default async function (req) {
         left join reward_prices r on r.country_iso = a.country_iso and r.active = true
         left join countries c on c.iso = a.country_iso
         where a.owner_email = ${email} and a.status = 'available'
-        group by a.country_iso, coalesce(a.spam, false), r.country_name, c.name, r.flag, c.flag
-        order by country_name asc limit 100`
+        group by a.country_iso, coalesce(a.spam, false), a.age_category, r.country_name, c.name, r.flag, c.flag
+        order by country_name asc limit 200`
         ),
-        // Remembered pool prices: a pool the seller priced with no live numbers
-        // still shows on the Sell page (table may not exist yet — ignore).
+        // Remembered pool prices (per age, '' = whole pool): a bucket the seller
+        // priced with no live numbers still shows on the Sell page.
         runSql(
-        `select country_iso, spam, price from stock_prices where owner_email = ${email}`
+        `select country_iso, spam, coalesce(age_category, '') as age_category, price
+         from stock_prices where owner_email = ${email}`
         ).catch(() => []),
         ]);
 
@@ -80,24 +82,29 @@ export default async function (req) {
       balance = Number(recomputed);
     }
 
-    // Merge the seller's remembered pool prices (stock_prices) into the stock
-    // rows: a pool priced with no live numbers still shows (stock 0), and a
-    // live pool whose account price is null shows the remembered price.
-    const poolKeyOf = (iso, spam) => `${iso}|${!!spam}`;
+    // Merge the seller's remembered prices (stock_prices) into the stock
+    // rows: a bucket priced with no live numbers still shows (stock 0), and a
+    // live bucket whose account price is null shows the remembered price —
+    // its own first, then the pool-wide ('') one.
+    const poolKeyOf = (iso, spam, age) => `${iso}|${!!spam}|${age || ''}`;
     const storedPrice = new Map();
-    for (const p of poolPrices || []) storedPrice.set(poolKeyOf(p.country_iso, p.spam), Number(p.price));
+    for (const p of poolPrices || []) storedPrice.set(poolKeyOf(p.country_iso, p.spam, p.age_category), Number(p.price));
     const countryInfo = new Map((countries || []).map((c) => [c.country_iso, c]));
-    const stockRows = (myStock || []).map((s) => ({
-      ...s,
-      price: s.price !== null && s.price !== undefined ? s.price : storedPrice.get(poolKeyOf(s.country_iso, s.spam)) ?? null,
-    }));
+    const stockRows = (myStock || []).map((s) => {
+      const age = s.age_category || 'regular';
+      const price = s.price !== null && s.price !== undefined
+        ? s.price
+        : storedPrice.get(poolKeyOf(s.country_iso, s.spam, age)) ?? storedPrice.get(poolKeyOf(s.country_iso, s.spam, '')) ?? null;
+      return { ...s, age_category: age, price };
+    });
     for (const [key, price] of storedPrice) {
-      if (!stockRows.some((s) => poolKeyOf(s.country_iso, s.spam) === key)) {
-        const [iso, spamStr] = key.split('|');
+      if (!stockRows.some((s) => poolKeyOf(s.country_iso, s.spam, s.age_category) === key)) {
+        const [iso, spamStr, age] = key.split('|');
         const info = countryInfo.get(iso) || {};
         stockRows.push({
           country_iso: iso,
           spam: spamStr === 'true',
+          age_category: age,
           country_name: info.country_name || iso,
           flag: info.flag || '',
           stock: 0,
@@ -122,6 +129,7 @@ export default async function (req) {
       my_stock: stockRows.map((s) => ({
         country_iso: s.country_iso,
         spam: !!s.spam,
+        age_category: s.age_category,
         country_name: s.country_name,
         flag: s.flag,
         stock: Number(s.stock),

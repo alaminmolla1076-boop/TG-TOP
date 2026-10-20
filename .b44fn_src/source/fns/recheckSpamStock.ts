@@ -45,11 +45,18 @@ export default async function(req) {
     // that country — else the account keeps its current price until the seller
     // sets one on the Sell page.
     const nonSpamPrice = async (acc)=>{
-      const stored = await admin.from('stock_prices').select('price')
+      // Age-aware: prefer the price stored for this account's age bucket,
+      // then the pool-wide ('') one, then any stored non-spam price.
+      const stored = await admin.from('stock_prices').select('price, age_category')
         .eq('owner_email', acc.owner_email).eq('country_iso', acc.country_iso)
-        .eq('spam', false).maybeSingle();
-      if (!stored.error && stored.data && Number(stored.data.price) > 0) {
-        return Number(stored.data.price);
+        .eq('spam', false);
+      const storedRows = stored.error ? [] : (stored.data || []);
+      const accAge = acc.age_category || 'regular';
+      const match = storedRows.find((r) => r.age_category === accAge)
+        || storedRows.find((r) => !r.age_category)
+        || storedRows.find((r) => Number(r.price) > 0);
+      if (match && Number(match.price) > 0) {
+        return Number(match.price);
       }
       const peers = await admin.from('tg_accounts').select('price')
         .eq('owner_email', acc.owner_email).eq('country_iso', acc.country_iso)
