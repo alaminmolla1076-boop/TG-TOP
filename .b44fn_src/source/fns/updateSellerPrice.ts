@@ -42,11 +42,22 @@ export default async function(req) {
       owner_email: ownerEmail,
       spam: poolSpam
     });
+    // Empty pool: still remember the price for this pool (stock_prices), so
+    // future stock — e.g. accounts the daily @SpamBot sweep promotes into the
+    // Non-Spam pool — is listed at this price. No account update, no notice.
     if (!accounts.length) {
+      await admin.from('stock_prices').upsert({
+        owner_email: ownerEmail,
+        country_iso,
+        spam: poolSpam,
+        price: Number(newPrice.toFixed(2))
+      }, { onConflict: 'owner_email,country_iso,spam' });
       return Response.json({
-        error: `No available ${poolSpam ? 'spam' : 'non-spam'} accounts for this country`
-      }, {
-        status: 400
+        success: true,
+        country_iso,
+        spam: poolSpam,
+        price: Number(newPrice.toFixed(2)),
+        updated: 0
       });
     }
     // Snapshot taken BEFORE the update: the previous price and the stock pools

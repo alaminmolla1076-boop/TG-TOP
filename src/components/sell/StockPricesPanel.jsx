@@ -76,6 +76,22 @@ export default function StockPricesPanel({ stock, onSaved }) {
     }
     g.pools.push(row);
   }
+  // Always show BOTH pools per country (Non-Spam + Spam) — even when one pool
+  // is empty, so its price can be set ahead of time for future stock.
+  for (const g of groups) {
+    for (const spam of [false, true]) {
+      if (!g.pools.some((p) => !!p.spam === spam)) {
+        g.pools.push({
+          country_iso: g.country_iso,
+          country_name: g.country_name,
+          flag: g.flag,
+          spam,
+          stock: 0,
+          price: null,
+        });
+      }
+    }
+  }
 
   return (
     <section className="flex flex-col gap-2.5">
