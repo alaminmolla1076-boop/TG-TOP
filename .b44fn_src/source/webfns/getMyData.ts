@@ -56,7 +56,7 @@ export default async function (req) {
         runSql(
         `select a.country_iso,
               coalesce(a.spam, false) as spam,
-              a.age_category,
+              coalesce(a.age_category, 'regular') as age_category,
               coalesce(r.country_name, c.name, a.country_iso) as country_name,
               coalesce(r.flag, c.flag, '') as flag,
               count(*) as stock,
@@ -65,7 +65,7 @@ export default async function (req) {
         left join reward_prices r on r.country_iso = a.country_iso and r.active = true
         left join countries c on c.iso = a.country_iso
         where a.owner_email = ${email} and a.status = 'available'
-        group by a.country_iso, coalesce(a.spam, false), a.age_category, r.country_name, c.name, r.flag, c.flag
+        group by a.country_iso, coalesce(a.spam, false), coalesce(a.age_category, 'regular'), r.country_name, c.name, r.flag, c.flag
         order by country_name asc limit 200`
         ),
         // Remembered pool prices (per age, '' = whole pool): a bucket the seller

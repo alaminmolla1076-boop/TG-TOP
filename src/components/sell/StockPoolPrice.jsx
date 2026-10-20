@@ -15,7 +15,7 @@ export default function StockPoolPrice({ pool, age, value, busy, onValue, onSave
   const spam = !!pool.spam;
   return (
     <div className="rounded-2xl border border-ring/[.14] bg-secondary/45 px-3.5 py-3">
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <span
           className={`shrink-0 rounded-full px-2.5 py-[3px] text-[10px] font-bold uppercase tracking-[.08em] ${pillClass(spam)}`}
         >
@@ -32,7 +32,7 @@ export default function StockPoolPrice({ pool, age, value, busy, onValue, onSave
         </p>
       </div>
       <div className="mt-2.5 flex gap-2">
-        <div className="relative flex-1">
+        <div className="relative min-w-0 flex-1">
           <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-ring">$</span>
           <input
             value={value}

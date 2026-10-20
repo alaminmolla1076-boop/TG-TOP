@@ -76,9 +76,11 @@ export default function useSellFlow(onDone) {
     } catch (err) {
       const raw = err.response?.data?.error || err.message || "";
       setError(
-        /compute resources/i.test(raw)
-          ? t("sf.busyVerify")
-          : raw
+        raw === "AGE_VERIFICATION_UNAVAILABLE"
+          ? t("sf.ageUnavailable")
+          : /compute resources/i.test(raw)
+            ? t("sf.busyVerify")
+            : raw
       );
       setStep("code");
     } finally {

@@ -1,7 +1,7 @@
 import React from "react";
 import { PackageCheck } from "lucide-react";
 import { useAppLang } from "@/lib/AppLanguageContext";
-import { ageLabel } from "@/lib/accountAge";
+import AccountAgeSummary from "@/components/sell/AccountAgeSummary";
 
 const iconBadge =
   "grid h-11 w-11 place-items-center rounded-full border border-ring/30 bg-secondary/80 text-ring shadow-[0_0_24px_-10px_#6C5CE7]";
@@ -26,11 +26,7 @@ export default function SellDoneStep({ result, onReset }) {
         <strong className="font-semibold text-foreground">{result?.phone}</strong>
         {descB}
       </p>
-      {result?.age_category ? (
-        <span className="mt-2.5 inline-flex w-fit items-center rounded-full border border-ring/35 bg-ring/[.12] px-2.5 py-1 text-[11px] font-semibold text-ring">
-          {t("sd.age")}: {ageLabel(result.age_category, t)}
-        </span>
-      ) : null}
+      <AccountAgeSummary result={result} />
       <div className="mt-6 pt-4">
         <button
           type="button"

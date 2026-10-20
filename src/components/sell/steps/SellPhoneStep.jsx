@@ -46,6 +46,7 @@ export default function SellPhoneStep({ phone, onPhone, age, onAge, onSubmit, bu
           disabled={busy}
           options={AGE_OPTIONS.map((o) => ({ value: o.value, label: ageLabel(o.value, t) }))}
         />
+        <p className="text-[11px] leading-relaxed text-muted-foreground">{t("sp.ageNotice")}</p>
       </div>
       <div className="mt-6 pt-4">
         <button type="submit" disabled={busy} className={primaryBtn}>

@@ -8,6 +8,7 @@ import MarketBackdrop from "@/components/market/MarketBackdrop";
 import SellerHistory from "@/components/market/SellerHistory";
 import SellerCountryCard from "@/components/market/SellerCountryCard";
 import AgeFilterBar from "@/components/market/AgeFilterBar";
+import { ageStockTotals } from "@/lib/marketAges";
 
 // Stock pools: accounts are filed as Spam or Non-Spam at login (SpamBot
 // verdict); the buyer picks which pool to browse.
@@ -55,12 +56,16 @@ export default function MarketSeller() {
     );
   }
 
+  const stockedAges = ageStockTotals([seller], pool);
+  const activeAge = stockedAges.some((bucket) => bucket.category === ageFilter)
+    ? ageFilter
+    : stockedAges[0]?.category || null;
   const countries = (seller.countries || []).filter((c) => {
     if (poolStockOf(c, pool) <= 0) return false;
-    if (!ageFilter) return true;
+    if (!activeAge) return true;
     return (c.ages || []).some(
       (a) =>
-        String(a.category) === ageFilter &&
+        String(a.category) === activeAge &&
         Number(pool === "spam" ? a.spam_stock : a.nonspam_stock) > 0
     );
   });
@@ -108,11 +113,6 @@ export default function MarketSeller() {
         <SellerHistory seller={seller} />
 
         <section className="mk-sec flex flex-col gap-3">
-          <SectionHead
-            icon={<Globe className="h-4 w-4" strokeWidth={1.5} />}
-            title={t("sl.countryStock")}
-            badge={`${countries.length} ${countries.length === 1 ? t("c.country") : t("c.countries")}`}
-          />
           <div className="grid grid-cols-2 gap-2.5" role="tablist">
             {[
               { key: "nonspam", label: t("sl.nonSpam") },
@@ -134,10 +134,15 @@ export default function MarketSeller() {
               </button>
             ))}
           </div>
-          <AgeFilterBar sellers={[seller]} pool={pool} active={ageFilter} onChange={setAgeFilter} />
+          <AgeFilterBar sellers={[seller]} pool={pool} active={activeAge} onChange={setAgeFilter} />
+          <SectionHead
+            icon={<Globe className="h-4 w-4" strokeWidth={1.5} />}
+            title={t("sl.countryStock")}
+            badge={`${countries.length} ${countries.length === 1 ? t("c.country") : t("c.countries")}`}
+          />
           {countries.length === 0 ? (
             <div className="rounded-[22px] border border-dashed border-[#A29BFE]/30 bg-[rgba(45,38,78,.3)] p-[18px] text-[13px] text-[#a8a3cf]">
-              {ageFilter
+              {activeAge
                 ? t("mk.ageNoStock")
                 : pool === "spam"
                   ? t("sl.noSpamStock")
@@ -150,7 +155,7 @@ export default function MarketSeller() {
               sellerId={seller.id}
               country={c}
               pool={pool}
-              age={ageFilter}
+              age={activeAge}
             />
           ))}
         </section>

@@ -3,7 +3,7 @@ import { useAppLang } from "@/lib/AppLanguageContext";
 import { AGE_OPTIONS, ageLabel } from "@/lib/accountAge";
 import StockPoolPrice from "./StockPoolPrice";
 import GlassSelect from "@/components/ui/GlassSelect";
-import { formatMoney } from "@/lib/format";
+import StockAgeList from "@/components/sell/StockAgeList";
 
 const tabClass = (active, spam) =>
   `flex-1 cursor-pointer rounded-full border px-3 py-2 text-[10px] font-bold uppercase tracking-[.08em] transition-colors duration-200 ${
@@ -12,14 +12,6 @@ const tabClass = (active, spam) =>
         ? "border-red-400/60 bg-red-400/15 text-red-200"
         : "border-emerald-400/60 bg-emerald-400/15 text-emerald-200"
       : "border-ring/20 bg-secondary/60 text-muted-foreground hover:text-foreground"
-  }`;
-
-// Per-age chip: inactive = frosted violet, active = glowing gradient edge.
-const chipClass = (active) =>
-  `flex cursor-pointer flex-col items-center gap-0.5 rounded-2xl border px-3 py-2 transition-[border-color,background-color,box-shadow] duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring ${
-    active
-      ? "border-ring/70 bg-ring/[.16] shadow-[inset_0_1px_0_rgba(255,255,255,.1),0_0_16px_rgba(108,92,231,.35)]"
-      : "border-ring/20 bg-secondary/55 hover:border-ring/45 hover:bg-secondary/80"
   }`;
 
 const ageOrder = (v) => {
@@ -105,52 +97,19 @@ export default function StockPriceRow({ country, pools, getValue, isBusy, onValu
       </div>
       {active && (
         <>
-          {ageStock.length > 0 && (
-            <div className="mt-2.5 flex flex-wrap gap-1.5">
-              {ageStock.map((r) => {
-                const on = age === r.age_category;
-                return (
-                  <button
-                    key={r.age_category}
-                    type="button"
-                    onClick={() => setAge(r.age_category)}
-                    className={chipClass(on)}
-                    aria-pressed={on}
-                  >
-                    <span
-                      className={`text-[10px] font-bold uppercase tracking-[.06em] ${
-                        on ? "text-foreground" : "text-muted-foreground"
-                      }`}
-                    >
-                      {ageLabel(r.age_category, t)}
-                    </span>
-                    <span
-                      className={`font-display text-[13px] font-bold tabular-nums ${
-                        r.price != null
-                          ? "bg-gradient-to-r from-ring to-primary bg-clip-text text-transparent"
-                          : "text-muted-foreground"
-                      }`}
-                    >
-                      {r.price != null ? formatMoney(r.price) : t("s1.noPrice")}
-                    </span>
-                    <span className="text-[10px] text-muted-foreground">{t("s1.poolStock", { n: r.stock })}</span>
-                  </button>
-                );
-              })}
-            </div>
-          )}
+          <StockAgeList rows={ageStock} active={age} onChange={setAge} />
           <div className="mt-2.5 flex items-center gap-2 rounded-2xl border border-ring/[.14] bg-secondary/45 px-3.5 py-2.5">
             <label
               htmlFor={`age-${active.country_iso}-${active.spam ? "spam" : "nonspam"}`}
               className="shrink-0 text-[11px] font-semibold text-foreground"
             >
-              {t("sp.ageLabel")}
+              {t("sd.age")}
             </label>
             <GlassSelect
               id={`age-${active.country_iso}-${active.spam ? "spam" : "nonspam"}`}
               value={age}
               onChange={setAge}
-              options={[{ value: "", label: t("ag.all") }, ...AGE_OPTIONS.map((o) => ({ value: o.value, label: ageLabel(o.value, t) }))]}
+              options={[{ value: "", label: t("ag.all") }, ...AGE_OPTIONS.map((o) => ({ value: o.value, label: `${ageLabel(o.value, t)} · ${Number(active.rows.get(o.value)?.stock || 0)}` }))]}
               className="min-w-0 flex-1"
               triggerClass="h-9 rounded-full px-3.5 text-[13px]"
             />

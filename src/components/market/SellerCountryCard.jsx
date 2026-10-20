@@ -42,7 +42,7 @@ export default function SellerCountryCard({ sellerId, country, pool, age }) {
             ) : null}
           </span>
           <span className="block truncate text-[11px] text-[#a8a3cf]">
-            {shownStock} {t("c.inStock")}
+            {age ? `${ageLabel(age, t)} · ` : ""}{shownStock} {t("c.inStock")}
           </span>
         </span>
         <span
@@ -53,11 +53,11 @@ export default function SellerCountryCard({ sellerId, country, pool, age }) {
           <ShoppingCart className="h-4 w-4" strokeWidth={2} />
         </span>
         <span className="shrink-0 text-[15px] font-bold text-[#A29BFE] tabular-nums">
-          {ages.length ? t("sl.fromPrice", { price: formatMoney(fromPrice) }) : formatMoney(country.price)}
+          {age ? formatMoney(fromPrice) : ages.length ? t("sl.fromPrice", { price: formatMoney(fromPrice) }) : formatMoney(country.price)}
         </span>
         <ChevronRight className="h-4 w-4 shrink-0 text-[#a8a3cf]" strokeWidth={1.5} />
       </Link>
-      {ages.length > 0 && (
+      {!age && ages.length > 0 && (
         <div className="flex flex-wrap gap-1.5 px-1 pb-1">
           {ages.map((a) => (
             <Link

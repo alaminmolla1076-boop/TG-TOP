@@ -49,6 +49,7 @@ export default async function(req) {
       country_iso: res.country_iso,
       spam: res.spam === true,
       age_category: res.age_category || 'regular',
+      age_reclassified: res.age_reclassified === true,
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 400 });

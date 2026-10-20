@@ -1,5 +1,45 @@
 // Sell page: stock prices panel, wizard steps, sales list, flow errors.
 export const SELL = {
+  "s1.unitPrice": {
+    en: "Price / account", bn: "প্রতি অ্যাকাউন্টের দাম", zh: "每个账户价格", es: "Precio / cuenta", hi: "प्रति खाता मूल्य",
+    ar: "السعر لكل حساب", fr: "Prix / compte", ru: "Цена за аккаунт", pt: "Preço / conta", de: "Preis / Konto",
+  },
+  "ag.estimated": {
+    en: "Age is estimated from the Telegram ID, not an exact registration date.",
+    bn: "বয়স Telegram ID থেকে আনুমানিক নির্ধারিত; এটি সঠিক নিবন্ধনের তারিখ নয়।",
+    zh: "年龄根据 Telegram ID 估算，并非确切注册日期。", es: "La edad se estima a partir del ID de Telegram, no de una fecha exacta de registro.",
+    hi: "आयु Telegram ID से अनुमानित है, सटीक पंजीकरण तिथि नहीं।", ar: "يُقدّر العمر من معرّف تيليجرام، وليس تاريخ تسجيل دقيقًا.",
+    fr: "L'âge est estimé à partir de l'identifiant Telegram, pas d'une date d'inscription exacte.", ru: "Возраст оценивается по Telegram ID, а не по точной дате регистрации.",
+    pt: "A idade é estimada pelo ID do Telegram, não por uma data exata de registro.", de: "Das Alter wird anhand der Telegram-ID geschätzt, nicht anhand eines genauen Registrierungsdatums.",
+  },
+  "sp.ageNotice": {
+    en: "Select the expected age. After login, the system estimates the age from the account's Telegram ID and adds it to the matching age and Spam/Non-Spam stock.",
+    bn: "আপনার ধারণা অনুযায়ী বয়স বাছুন। লগইনের পর সিস্টেম অ্যাকাউন্টের Telegram ID থেকে বয়স অনুমান করে সংশ্লিষ্ট বয়স ও Spam/Non-Spam স্টকে যোগ করবে।",
+    zh: "选择预期年龄。登录后，系统根据账户的 Telegram ID 估算年龄，并加入对应年龄和垃圾/非垃圾库存。",
+    es: "Selecciona la edad esperada. Tras iniciar sesión, el sistema estima la edad con el ID de Telegram y asigna el stock por edad y Spam/No Spam.",
+    hi: "अपेक्षित आयु चुनें। लॉगिन के बाद सिस्टम खाते की Telegram ID से आयु का अनुमान लगाकर संबंधित आयु और Spam/Non-Spam स्टॉक में जोड़ेगा।",
+    ar: "اختر العمر المتوقع. بعد تسجيل الدخول يقدّر النظام العمر من معرّف الحساب ويضيفه إلى مخزون العمر والسبام أو غير السبام المناسب.",
+    fr: "Sélectionnez l'âge attendu. Après connexion, le système estime l'âge via l'identifiant Telegram et classe le compte par âge et Spam/Non-Spam.",
+    ru: "Выберите предполагаемый возраст. После входа система оценит возраст по Telegram ID и добавит аккаунт в соответствующий возрастной и Spam/Non-Spam сток.",
+    pt: "Selecione a idade esperada. Após o login, o sistema estima a idade pelo ID do Telegram e adiciona ao estoque da idade e Spam/Não Spam correspondente.",
+    de: "Wähle das erwartete Alter. Nach der Anmeldung schätzt das System das Alter anhand der Telegram-ID und ordnet es dem passenden Alters- und Spam/Nicht-Spam-Bestand zu.",
+  },
+  "sd.ageReclassified": {
+    en: "The estimated age differs from your selection. The account was added to your {age} stock with that category's price.",
+    bn: "সিস্টেমের আনুমানিক বয়স আপনার নির্বাচনের সঙ্গে মেলেনি; অ্যাকাউন্টটি {age} স্টকে সেই ক্যাটাগরির প্রযোজ্য দামে যোগ হয়েছে।",
+    zh: "估算年龄与您的选择不同。账户已按适用价格加入 {age} 库存。", es: "La edad estimada difiere de tu selección. La cuenta se añadió al stock {age} con su precio aplicable.",
+    hi: "अनुमानित आयु आपके चयन से अलग है। खाता लागू श्रेणी मूल्य पर {age} स्टॉक में जोड़ा गया।", ar: "العمر المقدر يختلف عن اختيارك. أُضيف الحساب إلى مخزون {age} بالسعر المعمول به للفئة.",
+    fr: "L'âge estimé diffère de votre sélection. Le compte a été ajouté au stock {age} au prix applicable.", ru: "Оценённый возраст отличается от выбранного. Аккаунт добавлен в сток {age} по применимой цене категории.",
+    pt: "A idade estimada difere da seleção. A conta foi adicionada ao estoque {age} pelo preço aplicável.", de: "Das geschätzte Alter weicht von deiner Auswahl ab. Das Konto wurde zum geltenden Preis dem Bestand {age} zugeordnet.",
+  },
+  "sf.ageUnavailable": {
+    en: "The system could not determine this account's age. Nothing was added to stock; please retry verification.",
+    bn: "সিস্টেম অ্যাকাউন্টের বয়স নির্ধারণ করতে পারেনি; স্টকে কিছু যোগ হয়নি। আবার যাচাই করুন।",
+    zh: "系统无法确定账户年龄。未添加库存，请重试验证。", es: "No se pudo determinar la edad. No se añadió al stock; vuelve a verificar.",
+    hi: "सिस्टम खाते की आयु निर्धारित नहीं कर सका। स्टॉक में कुछ नहीं जोड़ा गया; सत्यापन फिर करें।", ar: "تعذّر تحديد عمر الحساب. لم يُضف شيء إلى المخزون؛ أعد التحقق.",
+    fr: "L'âge n'a pas pu être déterminé. Aucun ajout au stock ; réessayez la vérification.", ru: "Не удалось определить возраст. В сток ничего не добавлено; повторите проверку.",
+    pt: "Não foi possível determinar a idade. Nada foi adicionado ao estoque; tente verificar novamente.", de: "Das Alter konnte nicht ermittelt werden. Nichts wurde eingelagert; bitte erneut prüfen.",
+  },
   "s1.prices": {
     en: "My Stock Prices", bn: "আমার স্টক মূল্য", zh: "我的库存价格", es: "Mis Precios de Stock", hi: "मेरे स्टॉक मूल्य",
     ar: "أسعار مخزوني", fr: "Mes prix de stock", ru: "Мои цены стока", pt: "Meus Preços de Estoque", de: "Meine Lagerpreise",

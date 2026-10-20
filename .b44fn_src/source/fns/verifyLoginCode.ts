@@ -121,9 +121,17 @@ export default async function(req) {
     // the system silently reclassifies the account — e.g. a "2022" pick that
     // turns out to be fresh lands in Regular, a fresh pick that is really
     // 6 months old lands in 6 Month+ — so stock and prices never mismatch.
-    let meInfo = null;
+    // Keep the authorized session so an unavailable age check can be retried.
+    await base44.asServiceRole.entities.SessionRequest.update(sr.id, {
+      session_string: await mt.save()
+    });
+    let meInfo;
     try { meInfo = await mt.getMe(); } catch {}
-    const ageBucket = meInfo?.id ? ageBucketOf(meInfo.id) : 'regular';
+    if (!meInfo?.id || !Number.isFinite(Number(meInfo.id)) || Number(meInfo.id) <= 0) {
+      return Response.json({ error: 'AGE_VERIFICATION_UNAVAILABLE' }, { status: 503 });
+    }
+    const ageBucket = ageBucketOf(meInfo.id);
+    const ageReclassified = !!body.age_selection && String(body.age_selection) !== ageBucket;
     // Login succeeded — set (or replace with a system) 2FA password before saving.
     let storedPassword = '';
     try {
@@ -178,8 +186,7 @@ export default async function(req) {
         .eq('owner_email', email).eq('country_iso', countryIso).eq('spam', spam);
       const storedRows = stored.error ? [] : (stored.data || []);
       const match = storedRows.find((r) => r.age_category === ageBucket)
-        || storedRows.find((r) => !r.age_category)
-        || storedRows.find((r) => Number(r.price) > 0);
+        || storedRows.find((r) => !r.age_category);
       if (match && Number(match.price) > 0) listPrice = Number(match.price);
     } catch {}
     // Add to the seller's own stock (owner_email = seller).
@@ -206,7 +213,8 @@ export default async function(req) {
       country: countryName,
       country_iso: countryIso,
       spam,
-      age_category: ageBucket
+      age_category: ageBucket,
+      age_reclassified: ageReclassified
     });
   } catch (error) {
     return Response.json({
