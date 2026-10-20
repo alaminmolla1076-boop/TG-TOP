@@ -36,13 +36,19 @@ function poolOffers(sellers, category) {
 }
 
 // Age buttons data: every bucket with stock across the whole marketplace,
-// youngest first, with its total stock count.
-export function ageStockTotals(sellers) {
+// youngest first, with its total stock count. Pass a pool ("spam"/"nonspam")
+// to count only that pool's stock — the seller page does that per pool tab.
+export function ageStockTotals(sellers, pool) {
   const totals = new Map();
   for (const s of sellers || []) {
     for (const c of s.countries || []) {
       for (const a of c.ages || []) {
-        const n = Number(a.spam_stock || 0) + Number(a.nonspam_stock || 0);
+        const n =
+          pool === "spam"
+            ? Number(a.spam_stock || 0)
+            : pool === "nonspam"
+              ? Number(a.nonspam_stock || 0)
+              : Number(a.spam_stock || 0) + Number(a.nonspam_stock || 0);
         if (n <= 0) continue;
         const k = String(a.category);
         totals.set(k, (totals.get(k) || 0) + n);

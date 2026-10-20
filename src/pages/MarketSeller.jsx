@@ -7,6 +7,7 @@ import SectionHead from "@/components/market/SectionHead";
 import MarketBackdrop from "@/components/market/MarketBackdrop";
 import SellerHistory from "@/components/market/SellerHistory";
 import SellerCountryCard from "@/components/market/SellerCountryCard";
+import AgeFilterBar from "@/components/market/AgeFilterBar";
 
 // Stock pools: accounts are filed as Spam or Non-Spam at login (SpamBot
 // verdict); the buyer picks which pool to browse.
@@ -25,6 +26,9 @@ export default function MarketSeller() {
   const [pool, setPool] = useState(
     new URLSearchParams(window.location.search).get("pool") === "spam" ? "spam" : "nonspam"
   );
+  // Age bucket picked inside this pool (null = All ages) — filters the
+  // country list down to the countries holding stock of that age.
+  const [ageFilter, setAgeFilter] = useState(null);
 
   useEffect(() => {
     invoke("getMarketProducts", {})
@@ -36,6 +40,7 @@ export default function MarketSeller() {
 
   function choosePool(next) {
     setPool(next);
+    setAgeFilter(null);
     navigate(`/market/seller/${sellerId}?pool=${next}`, { replace: true });
   }
 
@@ -50,7 +55,15 @@ export default function MarketSeller() {
     );
   }
 
-  const countries = (seller.countries || []).filter((c) => poolStockOf(c, pool) > 0);
+  const countries = (seller.countries || []).filter((c) => {
+    if (poolStockOf(c, pool) <= 0) return false;
+    if (!ageFilter) return true;
+    return (c.ages || []).some(
+      (a) =>
+        String(a.category) === ageFilter &&
+        Number(pool === "spam" ? a.spam_stock : a.nonspam_stock) > 0
+    );
+  });
 
   return (
     <div className="relative">
@@ -121,13 +134,24 @@ export default function MarketSeller() {
               </button>
             ))}
           </div>
+          <AgeFilterBar sellers={[seller]} pool={pool} active={ageFilter} onChange={setAgeFilter} />
           {countries.length === 0 ? (
             <div className="rounded-[22px] border border-dashed border-[#A29BFE]/30 bg-[rgba(45,38,78,.3)] p-[18px] text-[13px] text-[#a8a3cf]">
-              {pool === "spam" ? t("sl.noSpamStock") : t("sl.noNonSpamStock")}
+              {ageFilter
+                ? t("mk.ageNoStock")
+                : pool === "spam"
+                  ? t("sl.noSpamStock")
+                  : t("sl.noNonSpamStock")}
             </div>
           ) : null}
           {countries.map((c) => (
-            <SellerCountryCard key={c.country_iso} sellerId={seller.id} country={c} pool={pool} />
+            <SellerCountryCard
+              key={c.country_iso}
+              sellerId={seller.id}
+              country={c}
+              pool={pool}
+              age={ageFilter}
+            />
           ))}
         </section>
       </div>

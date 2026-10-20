@@ -15,9 +15,9 @@ const pillClass = (active) =>
 // Capsule List Market — account-age filter: "All ages" plus one button per
 // bucket that actually holds stock, each showing its live total. Selecting a
 // bucket switches the page to the per-country age catalog. Nordic Frost Glass.
-export default function AgeFilterBar({ sellers, active, onChange }) {
+export default function AgeFilterBar({ sellers, active, onChange, pool }) {
   const { t } = useAppLang();
-  const buckets = ageStockTotals(sellers);
+  const buckets = ageStockTotals(sellers, pool);
 
   return (
     <section className="mk-sec flex flex-col gap-2.5">

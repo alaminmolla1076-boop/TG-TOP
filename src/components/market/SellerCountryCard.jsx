@@ -9,9 +9,9 @@ import { formatMoney } from "@/lib/format";
 // with the chosen pool, and under it the per-age price chips for that pool —
 // each chip shows the exact price the buyer pays for that account age and
 // also opens the purchase page. Nordic Frost Glass.
-export default function SellerCountryCard({ sellerId, country, pool }) {
+export default function SellerCountryCard({ sellerId, country, pool, age }) {
   const { t } = useAppLang();
-  const buyUrl = `/market/buy/${sellerId}/${country.country_iso}?pool=${pool}`;
+  const buyUrl = `/market/buy/${sellerId}/${country.country_iso}?pool=${pool}${age ? `&age=${encodeURIComponent(age)}` : ""}`;
   const poolStock = pool === "spam" ? country.spam_stock ?? 0 : country.nonspam_stock ?? country.stock ?? 0;
   const ages = (country.ages || [])
     .map((a) => ({
