@@ -3,7 +3,7 @@ import { tgSend, tgSendMenu, tgDeleteMessage, tgSendDoc, tgDownloadFileBytes } f
 import { getRealBalance } from '../_shared/balance.ts';
 import { extractSessionsFromFile } from '../_shared/extractSessions.js';
 import { waitUntil } from '../_shared/b44.ts';
-import { selfTrigger } from '../_shared/selfInvoke.ts';
+import { selfInvoke, selfTrigger } from '../_shared/selfInvoke.ts';
 import { getState, setState, clearState, getUserContext, findUserByTelegramId } from './state.ts';
 import { buildCountryKeyboard } from './keyboards.ts';
 import { showMarketConfirm } from './market.ts';
@@ -298,7 +298,7 @@ export async function handleSellFlow(base44, token, ctx, sellState) {
       verifyMsg?.result?.message_id
     ].filter(Boolean);
     try {
-      const result = await base44.asServiceRole.functions.invoke('verifyLoginCode', {
+      const result = await selfInvoke('verifyLoginCode', {
         request_id: sellState.request_id,
         password,
         user_email: user.email
@@ -330,7 +330,7 @@ export async function handleSellFlow(base44, token, ctx, sellState) {
     }
     const connectingMsg = await tgSend(token, chatId, t(lang, 'sf.connecting', { phone }), replyTo);
     try {
-      const result = await base44.asServiceRole.functions.invoke('sendLoginCode', {
+      const result = await selfInvoke('sendLoginCode', {
         phone_number: phone,
         user_email: user.email
       });
@@ -375,7 +375,7 @@ export async function handleSellFlow(base44, token, ctx, sellState) {
       verifyMsg?.result?.message_id
     ].filter(Boolean);
     try {
-      const result = await base44.asServiceRole.functions.invoke('verifyLoginCode', {
+      const result = await selfInvoke('verifyLoginCode', {
         request_id: sellState.request_id,
         phone_code: code,
         user_email: user.email
@@ -551,7 +551,7 @@ async function sellMultiNext(base44, token, ctx, st) {
   while (st.idx < st.numbers.length) {
     const phone = st.numbers[st.idx];
     try {
-      const result = await base44.asServiceRole.functions.invoke('sendLoginCode', {
+      const result = await selfInvoke('sendLoginCode', {
         phone_number: phone,
         user_email: user.email
       });
@@ -609,7 +609,7 @@ export async function handleSellMultiFlow(base44, token, ctx, st) {
     }
     const verifyMsg = await tgSend(token, chatId, t(lang, 'sf.verifying'), replyTo);
     try {
-      const result = await base44.asServiceRole.functions.invoke('verifyLoginCode', {
+      const result = await selfInvoke('verifyLoginCode', {
         request_id: st.request_id,
         phone_code: code,
         user_email: user.email
@@ -650,7 +650,7 @@ export async function handleSellMultiFlow(base44, token, ctx, st) {
     const password = rawText.trim();
     const verifyMsg = await tgSend(token, chatId, t(lang, 'sf.checking2fa'), replyTo);
     try {
-      const result = await base44.asServiceRole.functions.invoke('verifyLoginCode', {
+      const result = await selfInvoke('verifyLoginCode', {
         request_id: st.request_id,
         password,
         user_email: user.email
