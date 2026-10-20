@@ -46,7 +46,15 @@ export default function MarketBuy() {
         const ages = (country?.ages || [])
           .map((a) => ({ ...a, stock: pool === "spam" ? a.spam_stock : a.nonspam_stock }))
           .filter((a) => Number(a.stock) > 0);
-        setAge(ages.some((a) => a.category === "regular") ? "regular" : ages[0]?.category || null);
+        // Age preselected from the seller page (?age=), else Regular, else first.
+        const wanted = new URLSearchParams(window.location.search).get("age");
+        setAge(
+          ages.some((a) => a.category === wanted)
+            ? wanted
+            : ages.some((a) => a.category === "regular")
+              ? "regular"
+              : ages[0]?.category || null
+        );
       })
       .catch(() => setEntry(null));
   }, [sellerId, countryIso]);

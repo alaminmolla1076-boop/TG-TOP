@@ -1,7 +1,6 @@
 import { useRef, useState } from "react";
 import { useTgIdentity } from "@/lib/TgIdentityContext";
 import { useAppLang } from "@/lib/AppLanguageContext";
-import { ageLabel } from "@/lib/accountAge";
 
 export default function useSellFlow(onDone) {
   const { invoke } = useTgIdentity();
@@ -76,25 +75,12 @@ export default function useSellFlow(onDone) {
       completed = true;
     } catch (err) {
       const raw = err.response?.data?.error || err.message || "";
-      // The account's real age does not match the selected age bucket — show
-      // which age it actually is and go back to pick the right one.
-      const mismatch = /^AGE_MISMATCH:(.+)$/.exec(raw);
-      if (mismatch) {
-        setError(
-          t("sf.ageMismatch", {
-            selected: ageLabel(age, t),
-            actual: ageLabel(mismatch[1], t),
-          })
-        );
-        setStep("phone");
-      } else {
-        setError(
-          /compute resources/i.test(raw)
-            ? t("sf.busyVerify")
-            : raw
-        );
-        setStep("code");
-      }
+      setError(
+        /compute resources/i.test(raw)
+          ? t("sf.busyVerify")
+          : raw
+      );
+      setStep("code");
     } finally {
       pending.current = false;
       setBusy(false);
