@@ -6,6 +6,8 @@ import MarketBackdrop from "@/components/market/MarketBackdrop";
 import TopSellerCapsule from "@/components/market/TopSellerCapsule";
 import SellerList from "@/components/market/SellerList";
 import SellerSearchBar from "@/components/market/SellerSearchBar";
+import AgeFilterBar from "@/components/market/AgeFilterBar";
+import AgeCountryList from "@/components/market/AgeCountryList";
 import ProductsList from "@/components/market/ProductsList";
 import HowItWorksBand from "@/components/market/HowItWorksBand";
 import LegalFooter from "@/components/market/LegalFooter";
@@ -25,6 +27,9 @@ export default function Market() {
   const [loadError, setLoadError] = useState(false);
   const [searchQuery, setSearchQuery] = useState(null);
   const [searching, setSearching] = useState(false);
+  // Selected account-age bucket (null = All ages): switches the page from
+  // the seller directory to the per-country age catalog.
+  const [ageFilter, setAgeFilter] = useState(null);
 
   async function load() {
     setLoadError(false);
@@ -99,7 +104,10 @@ export default function Market() {
           searching={searching}
           activeQuery={searchQuery}
         />
-        {loadError ? (
+        <AgeFilterBar sellers={sellers} active={ageFilter} onChange={setAgeFilter} />
+        {ageFilter ? (
+          <AgeCountryList sellers={sellers} category={ageFilter} />
+        ) : loadError ? (
           <div className="mk-sec flex flex-col items-center gap-3 rounded-[22px] border border-[#A29BFE]/30 bg-[rgba(45,38,78,.5)] p-[18px] text-center">
             <p className="text-[13px] text-[#a8a3cf]">{t("mk.loadError")}</p>
             <button

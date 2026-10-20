@@ -495,4 +495,12 @@ export const MARKET = {
     en: "No orders yet.", bn: "এখনো কোনো অর্ডার নেই।", zh: "暂无订单。", es: "Sin pedidos aún.", hi: "अभी तक कोई ऑर्डर नहीं।",
     ar: "لا توجد طلبات بعد.", fr: "Aucune commande pour l'instant.", ru: "Заказов пока нет.", pt: "Nenhum pedido ainda.", de: "Noch keine Bestellungen.",
   },
+  "mk.ageShop": {
+    en: "Shop by Account Age", bn: "অ্যাকাউন্টের বয়স অনুযায়ী কিনুন", zh: "按账户年龄选购", es: "Comprar por Edad de Cuenta", hi: "खाते की आयु के अनुसार खरीदें",
+    ar: "اشترِ حسب عمر الحساب", fr: "Acheter selon l'âge du compte", ru: "Покупка по возрасту аккаунта", pt: "Comprar pela Idade da Conta", de: "Nach Kontoalter kaufen",
+  },
+  "mk.ageNoStock": {
+    en: "No accounts in this age right now — check back soon.", bn: "এই বয়সের অ্যাকাউন্ট এখন নেই — শীঘ্রই আবার দেখুন।", zh: "该年龄段暂无账户——敬请期待。", es: "No hay cuentas de esta edad ahora mismo — vuelve pronto.", hi: "इस उम्र के खाते अभी नहीं हैं — जल्द फिर देखें।",
+    ar: "لا توجد حسابات بهذا العمر حاليًا — تفضل بزيارتنا قريبًا.", fr: "Aucun compte de cet âge pour le moment — revenez bientôt.", ru: "Аккаунтов этого возраста сейчас нет — заглядывайте позже.", pt: "Sem contas dessa idade agora — volte em breve.", de: "Derzeit keine Konten in diesem Alter — schau bald wieder vorbei.",
+  },
 };
