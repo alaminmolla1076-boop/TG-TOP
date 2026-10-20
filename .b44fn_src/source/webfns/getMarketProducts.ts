@@ -10,7 +10,15 @@ export default async function(req) {
     // Optional seller search (username or name, case-insensitive).
     const query = String(body.query || '').trim().replace(/^@+/, '').toLowerCase();
 
-    const [products, sellerRows, topSellerRows] = await Promise.all([
+    // Read-only report counts for the seller History section (buyer view).
+    // The table may not exist on a fresh project — absence means no reports.
+    const sellerReportsPromise = runSql(
+      `select seller_id, lower(seller_username) as seller_username, count(*) as reports
+       from seller_reports
+       group by seller_id, lower(seller_username)`
+    ).catch(() => []);
+
+    const [products, sellerRows, topSellerRows, sellerReportsRows] = await Promise.all([
       // Telegram Premium and Stars purchases are hidden from the market.
       runSql(
         `select id, name, description, price, category, icon, unit_label
@@ -74,6 +82,17 @@ export default async function(req) {
           ),
           ]);
 
+    // Reports are matched by seller id, falling back to the seller username.
+    const reportsById = new Map();
+    const reportsByUsername = new Map();
+    for (const row of sellerReportsRows || []) {
+      const n = Number(row.reports || 0);
+      if (row.seller_id) reportsById.set(String(row.seller_id), (reportsById.get(String(row.seller_id)) || 0) + n);
+      if (row.seller_username) reportsByUsername.set(row.seller_username, (reportsByUsername.get(row.seller_username) || 0) + n);
+    }
+    const reportsOf = (row) =>
+      Number(reportsById.get(String(row.seller_id)) ?? reportsByUsername.get((row.username || '').toLowerCase()) ?? 0);
+
     const sellersMap = new Map();
     for (const row of sellerRows) {
       if (!sellersMap.has(row.seller_id)) {
@@ -86,6 +105,7 @@ export default async function(req) {
           photo_url: row.photo_url,
           is_self: row.is_self === true,
           sold: Number(row.sold || 0),
+          reports: reportsOf(row),
           countries: [],
         });
       }

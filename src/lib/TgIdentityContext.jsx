@@ -28,12 +28,13 @@ export function TgIdentityProvider({ children }) {
       // Full-screen mode: request immediately, retry on first tap
       // (some Telegram clients only grant it from a user gesture).
       const goFullscreen = () => {
-        if (typeof tg.requestFullscreen === "function" && !tg.isFullscreen) {
-          try {
-            tg.requestFullscreen();
-          } catch {
-            /* older Telegram clients don't support fullscreen — ignore */
-          }
+        if (typeof tg.requestFullscreen !== "function") return;
+        try {
+          const result = tg.requestFullscreen();
+          // Unsupported clients reject via promise, not a throw — swallow it.
+          if (result && typeof result.catch === "function") result.catch(() => {});
+        } catch {
+          /* older Telegram clients don't support fullscreen — ignore */
         }
       };
       goFullscreen();

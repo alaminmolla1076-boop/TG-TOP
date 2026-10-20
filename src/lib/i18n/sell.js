@@ -36,11 +36,11 @@ export const SELL = {
     ar: "تم تحديث السعر", fr: "Prix mis à jour", ru: "Цена обновлена", pt: "Preço atualizado", de: "Preis aktualisiert",
   },
   "s1.updatedDesc": {
-    en: "{country} numbers now sell at {price}.", bn: "{country} নাম্বার এখন {price} মূল্যে বিক্রি হবে।",
-    zh: "{country} 号码现在以 {price} 出售。", es: "Los números de {country} ahora se venden a {price}.",
-    hi: "{country} नंबर अब {price} पर बिकते हैं।", ar: "أرقام {country} تُباع الآن بسعر {price}.",
-    fr: "Les numéros {country} se vendent désormais à {price}.", ru: "Номера {country} теперь продаются по цене {price}.",
-    pt: "Os números de {country} agora são vendidos por {price}.", de: "Nummern aus {country} werden jetzt für {price} verkauft.",
+    en: "{pool} numbers for {country} now sell at {price}.", bn: "{country} এর {pool} নাম্বার এখন {price} মূল্যে বিক্রি হবে।",
+    zh: "{country} 的{pool}号码现在以 {price} 出售。", es: "Los números {pool} de {country} ahora se venden a {price}.",
+    hi: "{country} के {pool} नंबर अब {price} पर बिकते हैं।", ar: "أرقام {pool} لـ {country} تُباع الآن بسعر {price}.",
+    fr: "Les numéros {pool} de {country} se vendent désormais à {price}.", ru: "Номера {pool} для {country} теперь продаются по цене {price}.",
+    pt: "Os números {pool} de {country} agora são vendidos por {price}.", de: "{pool}-Nummern aus {country} werden jetzt für {price} verkauft.",
   },
   "s1.updateFailed": {
     en: "Could not update the price", bn: "মূল্য আপডেট করা যায়নি", zh: "无法更新价格", es: "No se pudo actualizar el precio",
@@ -58,8 +58,12 @@ export const SELL = {
     en: "No price", bn: "মূল্য নেই", zh: "无价格", es: "Sin precio", hi: "मूल्य नहीं",
     ar: "بدون سعر", fr: "Pas de prix", ru: "Нет цены", pt: "Sem preço", de: "Kein Preis",
   },
+  "s1.poolStock": {
+    en: "{n} in stock", bn: "{n} স্টকে", zh: "库存 {n}", es: "{n} en stock", hi: "{n} स्टॉक में",
+    ar: "{n} في المخزون", fr: "{n} en stock", ru: "{n} в наличии", pt: "{n} em estoque", de: "{n} auf Lager",
+  },
   "s1.setPrice": {
-    en: "Set price", bn: "মূল্য সেট করুন", zh: "设置价格", es: "Fijar precio", hi: "मूल्य सेट करें",
+    en: "Set price", bn: "মূল্য সেট করুন", zh: "设置价格", es: "Fijar precio", hi: "मूল्य सेट करें",
     ar: "تحديد السعر", fr: "Définir le prix", ru: "Задать цену", pt: "Definir preço", de: "Preis festlegen",
   },
   "sw.section": {

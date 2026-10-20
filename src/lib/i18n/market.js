@@ -264,6 +264,44 @@ export const MARKET = {
     pt: "Vendedor não encontrado — o estoque pode ter acabado.",
     de: "Verkäufer nicht gefunden — das Lager ist vielleicht ausverkauft.",
   },
+  "sl.history": {
+    en: "Seller History", bn: "বিক্রেতার হিস্টোরি", zh: "卖家历史", es: "Historial del Vendedor", hi: "विक्रेता इतिहास",
+    ar: "سجل البائع", fr: "Historique du Vendeur", ru: "История продавца", pt: "Histórico do Vendedor", de: "Verkäuferhistorie",
+  },
+  "sl.soldStat": {
+    en: "Accounts Sold", bn: "বিক্রি হওয়া অ্যাকাউন্ট", zh: "已售账户", es: "Cuentas Vendidas", hi: "बिके खाते",
+    ar: "حسابات مباعة", fr: "Comptes vendus", ru: "Продано аккаунтов", pt: "Contas Vendidas", de: "Verkaufte Konten",
+  },
+  "sl.soldDesc": {
+    en: "Total sales completed on the market", bn: "মার্কেটে সম্পন্ন হওয়া মোট বিক্রি", zh: "在市场完成的销售总数",
+    es: "Ventas completadas en el mercado", hi: "मार्केट में पूर्ण हुई कुल बिक्री",
+    ar: "إجمالي المبيعات المكتملة في السوق", fr: "Ventes finalisées sur le marché",
+    ru: "Всего продаж на маркете", pt: "Vendas concluídas no mercado", de: "Abgeschlossene Verkäufe im Markt",
+  },
+  "sl.reportsStat": {
+    en: "Reports", bn: "রিপোর্ট", zh: "举报", es: "Reportes", hi: "रिपोर्ट",
+    ar: "بلاغات", fr: "Signalements", ru: "Жалобы", pt: "Denúncias", de: "Meldungen",
+  },
+  "sl.noReports": {
+    en: "No reports", bn: "কোনো রিপোর্ট নেই", zh: "无举报", es: "Sin reportes", hi: "कोई रिपोर्ट नहीं",
+    ar: "لا بلاغات", fr: "Aucun signalement", ru: "Жалоб нет", pt: "Sem denúncias", de: "Keine Meldungen",
+  },
+  "sl.reportsCount": {
+    en: "{n} reports", bn: "{n}টি রিপোর্ট", zh: "{n} 条举报", es: "{n} reportes", hi: "{n} रिपोर्ट",
+    ar: "{n} بلاغ", fr: "{n} signalements", ru: "жалоб: {n}", pt: "{n} denúncias", de: "{n} Meldungen",
+  },
+  "sl.reportsWarn": {
+    en: "Buyers have reported this seller — proceed with caution.",
+    bn: "ক্রেতারা এই বিক্রেতার বিরুদ্ধে রিপোর্ট করেছেন — সাবধানে এগিয়ে যান।",
+    zh: "有买家举报了此卖家——请谨慎购买。",
+    es: "Compradores reportaron a este vendedor — procede con cautela.",
+    hi: "खरीदारों ने इस विक्रेता की रिपोर्ट की है — सावधानी से आगे बढ़ें।",
+    ar: "أبلغ مشترون عن هذا البائع — تابع بحذر.",
+    fr: "Des acheteurs ont signalé ce vendeur — procédez avec prudence.",
+    ru: "Покупатели жаловались на этого продавца — будьте осторожны.",
+    pt: "Compradores denunciaram este vendedor — prossiga com cautela.",
+    de: "Käufer haben diesen Verkäufer gemeldet — geh mit Vorsicht vor.",
+  },
   "bp.fromLine": {
     en: "· from {name}", bn: "· বিক্রেতা {name}", zh: "· 来自 {name}", es: "· de {name}", hi: "· विक्रेता {name}",
     ar: "· من {name}", fr: "· de {name}", ru: "· продавец {name}", pt: "· de {name}", de: "· von {name}",

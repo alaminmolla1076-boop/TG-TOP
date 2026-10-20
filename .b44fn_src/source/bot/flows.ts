@@ -255,6 +255,7 @@ async function reportSellResult(base44, token, ctx, data, sellMsgs) {
     if (data.country) msg += `${t(L, 'sf.country', { flag: data.country_flag || '', country: data.country_name || data.country })}\n`;
     if (data.phone) msg += `${t(L, 'mk.phone', { phone: data.phone })}\n`;
     msg += `\n${t(L, data.spam ? 'sf.spamAdded' : 'sf.nonSpamAdded')}`;
+    msg += `\n\n${t(L, 'sf.safe')}`;
     await tgSend(token, chatId, msg, replyTo);
     const logoutMsg = await tgSend(token, chatId, t(L, 'sf.logout'), replyTo);
     // Sell mode stays active so the next number needs no extra tap.
@@ -575,7 +576,7 @@ async function sellMultiNext(base44, token, ctx, st) {
 }
 
 export async function handleSellMultiFlow(base44, token, ctx, st) {
-  const { chatId, replyTo, rawText, tgUser, user } = ctx;
+  const { chatId, replyTo, rawText, tgUser, user, lang } = ctx;
   const tid = String(tgUser.id);
   // Step 1 — the list of phone numbers.
   if (st.status === 'awaiting_numbers') {

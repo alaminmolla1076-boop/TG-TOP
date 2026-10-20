@@ -86,6 +86,7 @@ setRegistry({
   processSellSeasonJobs,
   updateSellerPrice: (req)=>import('./fns/updateSellerPrice.ts').then((m)=>m.default(req)),
   processPendingRewards: (req)=>import('./fns/processPendingRewards.ts').then((m)=>m.default(req)),
+  recheckSpamStock: (req)=>import('./fns/recheckSpamStock.ts').then((m)=>m.default(req)),
   verifyStockAccounts: (req)=>import('./fns/verifyStockAccounts.ts').then((m)=>m.default(req)),
   pollTelegramUpdates,
   getAdminData,

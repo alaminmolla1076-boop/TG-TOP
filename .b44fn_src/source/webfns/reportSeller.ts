@@ -1,7 +1,7 @@
 import { runSql, sqlString } from '../_shared/webApi.ts';
 import { resolveIdentity } from '../_shared/webIdentity.ts';
 
-const SCAM_TYPES = ["not_delivered", "invalid_account", "scam", "price_manipulation", "other"];
+const SCAM_TYPES = ["not_logged_out"];
 
 // Stores a seller report from the marketplace. The reporter must be a real
 // Telegram user — initData is verified against the bot token — and the report
