@@ -14,7 +14,8 @@ export default async function(req) {
     }, {
       status: 401
     });
-    const { country_iso, price } = body;
+    const { country_iso, price, spam } = body;
+    const poolSpam = !!spam;
     if (!country_iso) return Response.json({
       error: 'country_iso required'
     }, {
@@ -36,11 +37,12 @@ export default async function(req) {
     const accounts = await base44.asServiceRole.entities.TgAccount.filter({
       country_iso,
       status: 'available',
-      owner_email: ownerEmail
+      owner_email: ownerEmail,
+      spam: poolSpam
     });
     if (!accounts.length) {
       return Response.json({
-        error: 'No available accounts for this country'
+        error: `No available ${poolSpam ? 'spam' : 'non-spam'} accounts for this country`
       }, {
         status: 400
       });
@@ -48,18 +50,27 @@ export default async function(req) {
     // Snapshot taken BEFORE the update: the previous price and the stock pools
     // affected, so a price DROP can be announced to every user.
     const oldPrice = Math.max(...accounts.map((a) => Number(a.price) || 0));
-    const spamCount = accounts.filter((a) => a.spam).length;
-    const spamPool = spamCount === 0 ? 'nonspam' : spamCount === accounts.length ? 'spam' : 'mixed';
+    const spamPool = poolSpam ? 'spam' : 'nonspam';
     // Bulk-update all the seller's available accounts of this country.
     await base44.asServiceRole.entities.TgAccount.updateMany({
       country_iso,
       status: 'available',
-      owner_email: ownerEmail
+      owner_email: ownerEmail,
+      spam: poolSpam
     }, {
       $set: {
         price: Number(newPrice.toFixed(2))
       }
     });
+    // Remember the pool price: when the daily @SpamBot sweep moves one of this
+    // seller's numbers from the Spam pool into the Non-Spam pool, the account
+    // switches to this stored price.
+    await admin.from('stock_prices').upsert({
+      owner_email: ownerEmail,
+      country_iso,
+      spam: poolSpam,
+      price: Number(newPrice.toFixed(2))
+    }, { onConflict: 'owner_email,country_iso,spam' });
     // When the price went DOWN, tell everyone: who dropped it, country with
     // flag, Spam / Non-Spam pool, old and new price — in each user's language.
     if (oldPrice > 0 && newPrice < oldPrice) {
@@ -80,6 +91,7 @@ export default async function(req) {
     return Response.json({
       success: true,
       country_iso,
+      spam: poolSpam,
       price: Number(newPrice.toFixed(2)),
       updated: accounts.length
     });

@@ -1,9 +1,11 @@
-import { callB44 } from '../_shared/webApi.ts';
+import { callB44, runSql } from '../_shared/webApi.ts';
 
 // Lets a seller set the sale price for all of their available numbers of one
-// country. Delegated to the Supabase-side updateSellerPrice (b44fn) — the
-// single implementation for stock prices. When the new price is LOWER than the
-// old one, that handler also broadcasts a localized price-drop notice
+// country in ONE stock pool (spam: true / false). Delegated to the
+// Supabase-side updateSellerPrice (b44fn) — the single implementation for
+// stock prices. The pool price is remembered in stock_prices for the daily
+// spam sweep, and when the new price is LOWER than the old one,
+// updateSellerPrice also broadcasts a localized price-drop notice
 // (seller username, country + flag, Spam / Non-Spam pool, old → new price)
 // to every user's bot chat.
 export default async function(req) {
@@ -17,11 +19,26 @@ export default async function(req) {
     if (!Number.isFinite(price) || price <= 0 || price > 100000) {
       return Response.json({ error: "Enter a valid price greater than 0" }, { status: 400 });
     }
+    const spam = !!body.spam;
+
+    // Idempotent bootstrap — pool prices the daily @SpamBot sweep reads when an
+    // account moves from the Spam pool into the Non-Spam pool.
+    await runSql(
+      `create table if not exists stock_prices (
+        owner_email text not null,
+        country_iso text not null,
+        spam boolean not null default false,
+        price numeric not null,
+        updated_date timestamptz not null default now(),
+        primary key (owner_email, country_iso, spam)
+      )`
+    );
 
     const res = await callB44("updateSellerPrice", {
       init_data: body.initData,
       country_iso: iso,
-      price
+      price,
+      spam
     });
     return Response.json(res);
   } catch (error) {

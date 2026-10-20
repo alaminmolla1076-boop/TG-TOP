@@ -55,6 +55,7 @@ export default async function (req) {
         // price they set — edited from the Sell page (webSetStockPrice).
         runSql(
         `select a.country_iso,
+              coalesce(a.spam, false) as spam,
               coalesce(r.country_name, c.name, a.country_iso) as country_name,
               coalesce(r.flag, c.flag, '') as flag,
               count(*) as stock,
@@ -63,7 +64,7 @@ export default async function (req) {
         left join reward_prices r on r.country_iso = a.country_iso and r.active = true
         left join countries c on c.iso = a.country_iso
         where a.owner_email = ${email} and a.status = 'available'
-        group by a.country_iso, r.country_name, c.name, r.flag, c.flag
+        group by a.country_iso, coalesce(a.spam, false), r.country_name, c.name, r.flag, c.flag
         order by country_name asc limit 100`
         ),
         ]);
@@ -89,6 +90,7 @@ export default async function (req) {
       account_sales: accountSales,
       my_stock: myStock.map((s) => ({
         country_iso: s.country_iso,
+        spam: !!s.spam,
         country_name: s.country_name,
         flag: s.flag,
         stock: Number(s.stock),
