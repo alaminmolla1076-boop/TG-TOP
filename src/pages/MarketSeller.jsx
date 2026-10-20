@@ -5,6 +5,7 @@ import { useTgIdentity } from "@/lib/TgIdentityContext";
 import { useAppLang } from "@/lib/AppLanguageContext";
 import SectionHead from "@/components/market/SectionHead";
 import MarketBackdrop from "@/components/market/MarketBackdrop";
+import SellerHistory from "@/components/market/SellerHistory";
 import { formatMoney } from "@/lib/format";
 
 // Stock pools: accounts are filed as Spam or Non-Spam at login (SpamBot
@@ -90,6 +91,8 @@ export default function MarketSeller() {
             </span>
           </div>
         </div>
+
+        <SellerHistory seller={seller} />
 
         <section className="mk-sec flex flex-col gap-3">
           <SectionHead
