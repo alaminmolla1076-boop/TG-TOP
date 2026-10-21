@@ -1,6 +1,7 @@
 import { makeB44 } from '../_shared/b44.ts';
 import { admin } from '../_shared/entities.ts';
 import { resolveUser } from '../_shared/resolveUser.ts';
+import { getAgeStockRows, attachAgeStock } from '../_shared/ageStock.ts';
 
 // The bot's Market data: the same sellers/country stock the app's Market page
 // shows (getMarketProducts), served by one SQL function (get_market_sellers)
@@ -17,9 +18,10 @@ export default async function(req) {
     }, {
       status: 401
     });
-    const { data, error } = await admin.rpc('get_market_sellers', {
-      p_email: user.email
-    });
+    const [{ data, error }, ageRows] = await Promise.all([
+      admin.rpc('get_market_sellers', { p_email: user.email }),
+      getAgeStockRows(),
+    ]);
     if (error) throw new Error(error.message);
     const payload = typeof data === 'string' ? JSON.parse(data) : data || {
     };
@@ -46,7 +48,7 @@ export default async function(req) {
         nonspam_stock: Number(row.nonspam_stock)
       });
     }
-    let sellers = Array.from(sellersMap.values());
+    let sellers = attachAgeStock(Array.from(sellersMap.values()), ageRows);
     if (query) sellers = sellers.filter((s)=>(s.username || '').toLowerCase().includes(query) || (s.name || '').toLowerCase().includes(query));
     return Response.json({
       sellers,

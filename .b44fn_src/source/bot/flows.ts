@@ -8,6 +8,9 @@ import { getState, setState, clearState, getUserContext, findUserByTelegramId } 
 import { buildCountryKeyboard } from './keyboards.ts';
 import { showMarketConfirm } from './market.ts';
 import { topupMethodView } from './topup.ts';
+import { chooseSellAge } from './accountAge.ts';
+import { isValidAgeCategory } from '../_shared/accountAge.js';
+import { ageCopy, ageName } from '../_shared/botAgeLabels.js';
 import { WD_MIN, WD_FEE, withdrawNetworkView, checkWithdrawBalance } from './withdraw.ts';
 import { processSellSeasonBulk } from './delivery.ts';
 // Stateful conversation flows of the bot (file upload, top-up, withdraw, season
@@ -236,7 +239,8 @@ export async function handleNumericFlows(base44, token, ctx) {
       await showMarketConfirm(base44, token, user, chatId, mkState.seller_email, mkState.iso, parseInt(rawText), {
         replyTo,
         lang,
-        pool: mkState.pool
+        pool: mkState.pool,
+        age: mkState.age
       });
       return true;
     }
@@ -244,7 +248,7 @@ export async function handleNumericFlows(base44, token, ctx) {
   return false;
 }
 // Shared success/rejection reporting for the guided sell flow.
-async function reportSellResult(base44, token, ctx, data, sellMsgs) {
+async function reportSellResult(base44, token, ctx, data, sellMsgs, ageSelection) {
   const { chatId, replyTo, tgUser, lang } = ctx;
   const L = lang || 'en';
   if (data.status === 'completed' || data.success) {
@@ -252,6 +256,7 @@ async function reportSellResult(base44, token, ctx, data, sellMsgs) {
     let msg = `${t(L, 'sf.received')}\n\n`;
     msg += `${t(L, data.spam ? 'sf.spamFlagged' : 'sf.spamPassed')}\n`;
     msg += `${t(L, 'sf.twofaSet')}\n`;
+    msg += `${ageCopy(L, 0)}: <b>${ageName(data.age_category, L)}</b>\n`;
     if (data.country) msg += `${t(L, 'sf.country', { flag: data.country_flag || '', country: data.country_name || data.country })}\n`;
     if (data.phone) msg += `${t(L, 'mk.phone', { phone: data.phone })}\n`;
     msg += `\n${t(L, data.spam ? 'sf.spamAdded' : 'sf.nonSpamAdded')}`;
@@ -260,7 +265,8 @@ async function reportSellResult(base44, token, ctx, data, sellMsgs) {
     const logoutMsg = await tgSend(token, chatId, t(L, 'sf.logout'), replyTo);
     // Sell mode stays active so the next number needs no extra tap.
     await setState(base44, `sell:${String(tgUser.id)}`, JSON.stringify({
-      status: 'awaiting_phone'
+      status: 'awaiting_phone',
+      age_selection: ageSelection
     }));
     const nextNumMsg = await tgSend(token, chatId, t(L, 'sf.nextNumber'), replyTo);
     await new Promise((r)=>setTimeout(r, 1000));
@@ -273,7 +279,8 @@ async function reportSellResult(base44, token, ctx, data, sellMsgs) {
   if (data.status === 'rejected') {
     await tgSend(token, chatId, t(L, 'sf.rejected', { reason: REJECT_REASONS[data.reason] || data.reason || t(L, 'sf.unknownReason') }), replyTo);
     await setState(base44, `sell:${String(tgUser.id)}`, JSON.stringify({
-      status: 'awaiting_phone'
+      status: 'awaiting_phone',
+      age_selection: ageSelection
     }));
     const rejNextMsg = await tgSend(token, chatId, t(L, 'sf.nextNumber'), replyTo);
     await new Promise((r)=>setTimeout(r, 1000));
@@ -289,6 +296,10 @@ async function reportSellResult(base44, token, ctx, data, sellMsgs) {
 export async function handleSellFlow(base44, token, ctx, sellState) {
   const { chatId, replyTo, rawText, lang, tgUser, user } = ctx;
   const tid = String(tgUser.id);
+  if (!isValidAgeCategory(sellState.age_selection)) {
+    if (sellState.status !== 'awaiting_age') await chooseSellAge(base44, token, chatId, tid, 'single', lang);
+    return true;
+  }
   // 2FA password reply — the code was already accepted, finish the login.
   if (sellState.status === 'awaiting_2fa') {
     const password = rawText.trim();
@@ -301,11 +312,12 @@ export async function handleSellFlow(base44, token, ctx, sellState) {
       const result = await selfInvoke('verifyLoginCode', {
         request_id: sellState.request_id,
         password,
+        age_selection: sellState.age_selection,
         user_email: user.email
       });
       const data = result.data || result;
       if (data.error) throw new Error(data.error);
-      await reportSellResult(base44, token, ctx, data, sellMsgs);
+      await reportSellResult(base44, token, ctx, data, sellMsgs, sellState.age_selection);
     } catch (err) {
       const m = (err.message || '').toLowerCase();
       if (/password|2fa|flood|fresh/.test(m)) {
@@ -332,12 +344,14 @@ export async function handleSellFlow(base44, token, ctx, sellState) {
     try {
       const result = await selfInvoke('sendLoginCode', {
         phone_number: phone,
+        age_selection: sellState.age_selection,
         user_email: user.email
       });
       const data = result.data || result;
       if (data.error) throw new Error(data.error);
       await setState(base44, `sell:${tid}`, JSON.stringify({
         status: 'awaiting_code',
+        age_selection: sellState.age_selection,
         request_id: data.request_id,
         phone,
         msgs: [
@@ -353,7 +367,8 @@ export async function handleSellFlow(base44, token, ctx, sellState) {
       } else if (/Capacity is full|COUNTRY_CAPACITY_FULL/i.test(errMsg)) {
         // Country disabled by admin — stay in sell mode for the next number.
         await setState(base44, `sell:${tid}`, JSON.stringify({
-          status: 'awaiting_phone'
+          status: 'awaiting_phone',
+          age_selection: sellState.age_selection
         }));
         await tgSend(token, chatId, t(lang, 'sf.capacityFull'), replyTo);
       } else {
@@ -378,16 +393,21 @@ export async function handleSellFlow(base44, token, ctx, sellState) {
       const result = await selfInvoke('verifyLoginCode', {
         request_id: sellState.request_id,
         phone_code: code,
+        age_selection: sellState.age_selection,
         user_email: user.email
       });
       const data = result.data || result;
       if (data.error) throw new Error(data.error);
-      await reportSellResult(base44, token, ctx, data, sellMsgs);
+      await reportSellResult(base44, token, ctx, data, sellMsgs, sellState.age_selection);
     } catch (err) {
       const m = (err.message || '').toLowerCase();
-      if (/2fa_required/i.test(m)) {
+      if (m.startsWith('age_mismatch:')) {
+        await tgSend(token, chatId, ageCopy(lang, 6), replyTo);
+        await chooseSellAge(base44, token, chatId, tid, 'single', lang);
+      } else if (/2fa_required/i.test(m)) {
         await setState(base44, `sell:${tid}`, JSON.stringify({
           status: 'awaiting_2fa',
+          age_selection: sellState.age_selection,
           request_id: sellState.request_id,
           phone: sellState.phone,
           msgs: sellMsgs
@@ -562,6 +582,10 @@ const SCAN_STALE_MS = 120000;
 export async function handleSellMultiFlow(base44, token, ctx, st) {
   const { chatId, replyTo, rawText, tgUser, user, lang } = ctx;
   const tid = String(tgUser.id);
+  if (!isValidAgeCategory(st.age_selection)) {
+    if (st.status !== 'awaiting_age') await chooseSellAge(base44, token, chatId, tid, 'multi', lang);
+    return true;
+  }
   // Step 1 — the list of phone numbers.
   if (st.status === 'awaiting_numbers') {
     const numbers = extractPhoneNumbers(rawText);
@@ -577,6 +601,7 @@ export async function handleSellMultiFlow(base44, token, ctx, st) {
     }
     st = {
       status: 'processing',
+      age_selection: st.age_selection,
       numbers,
       idx: 0,
       done: 0,
@@ -614,6 +639,7 @@ export async function handleSellMultiFlow(base44, token, ctx, st) {
       const result = await selfInvoke('verifyLoginCode', {
         request_id: st.request_id,
         phone_code: code,
+        age_selection: st.age_selection,
         user_email: user.email
       });
       const data = result.data || result;
@@ -641,7 +667,7 @@ export async function handleSellMultiFlow(base44, token, ctx, st) {
         await tgSend(token, chatId, t(lang, 'sf.wrongOtpFor', { phone: st.phone }), replyTo);
         return true;
       }
-      await tgSend(token, chatId, t(lang, 'sf.phoneError', { phone: st.phone, error: m }), replyTo);
+      await tgSend(token, chatId, t(lang, 'sf.phoneError', { phone: st.phone, error: m.startsWith('AGE_MISMATCH:') ? ageCopy(lang, 6) : m }), replyTo);
       st.idx++;
       await sellMultiAdvance(base44, tid, st);
     }
@@ -655,6 +681,7 @@ export async function handleSellMultiFlow(base44, token, ctx, st) {
       const result = await selfInvoke('verifyLoginCode', {
         request_id: st.request_id,
         password,
+        age_selection: st.age_selection,
         user_email: user.email
       });
       const data = result.data || result;
@@ -675,7 +702,7 @@ export async function handleSellMultiFlow(base44, token, ctx, st) {
         await tgSend(token, chatId, t(lang, 'sf.wrong2faFor', { phone: st.phone }), replyTo);
         return true;
       }
-      await tgSend(token, chatId, t(lang, 'sf.phoneError', { phone: st.phone, error: m }), replyTo);
+      await tgSend(token, chatId, t(lang, 'sf.phoneError', { phone: st.phone, error: m.startsWith('AGE_MISMATCH:') ? ageCopy(lang, 6) : m }), replyTo);
       st.idx++;
       await sellMultiAdvance(base44, tid, st);
     }

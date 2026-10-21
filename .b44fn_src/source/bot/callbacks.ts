@@ -6,6 +6,7 @@ import { buySeasonInChunks } from '../_shared/seasonBuy.js';
 import { getState, setState, clearState, getUserContext, findUserByTelegramId } from './state.ts';
 import { mainMenuKeyboard, mainReplyKeyboard, buildCountryKeyboard, DEPOSIT_ADDRESSES } from './keyboards.ts';
 import { handleMarketCallback, marketMenu } from './market.ts';
+import { chooseSellAge, handleSellAgeCallback } from './accountAge.ts';
 import { handleTopupCallback, topupAmountView } from './topup.ts';
 import { handleWithdrawCallback, withdrawAmountView } from './withdraw.ts';
 import { formatOrders, formatStatus, formatProducts } from './views.ts';
@@ -567,16 +568,19 @@ export default async function handleCallback(base44, token, cq) {
     }
     return;
   }
+  if (cbData.startsWith('sa:')) {
+    if (!cbUserRec) { await send(cbChatId, t(cbLang, 'bind.required')); return; }
+    await handleSellAgeCallback(base44, token, cbData, String(cbUser.id), cbChatId, cbMsgId, cbLang);
+    return;
+  }
   if (cbData === 'sell_number') {
     if (!cbUserRec) {
       await send(cbChatId, t(cbLang, 'bind.required'));
       return;
     }
     await clearState(base44, `sellmulti:${String(cbUser.id)}`);
-    await setState(base44, `sell:${String(cbUser.id)}`, JSON.stringify({
-      status: 'awaiting_phone'
-    }));
-    await send(cbChatId, `${t(cbLang, 'sell.title')}\n\n${t(cbLang, 'sell.prompt')}`);
+    await clearState(base44, `sell:${String(cbUser.id)}`);
+    await chooseSellAge(base44, token, cbChatId, String(cbUser.id), 'single', cbLang);
     return;
   }
   if (cbData === 'sell_multi') {
@@ -585,10 +589,8 @@ export default async function handleCallback(base44, token, cq) {
       return;
     }
     await clearState(base44, `sell:${String(cbUser.id)}`);
-    await setState(base44, `sellmulti:${String(cbUser.id)}`, JSON.stringify({
-      status: 'awaiting_numbers'
-    }));
-    await send(cbChatId, t(cbLang, 'sell.multiPrompt'));
+    await clearState(base44, `sellmulti:${String(cbUser.id)}`);
+    await chooseSellAge(base44, token, cbChatId, String(cbUser.id), 'multi', cbLang);
     return;
   }
   switch(cbData){

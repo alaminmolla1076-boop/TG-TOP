@@ -2,6 +2,7 @@ import { makeB44 } from '../_shared/b44.ts';
 import { Mt, errorMessageOf } from '../_shared/mtproto.js';
 import { API_ID, API_HASH } from '../_shared/telegramConfig.js';
 import { resolveUser } from '../_shared/resolveUser.ts';
+import { isValidAgeCategory } from '../_shared/accountAge.js';
 // Sends a Telegram login code to the given phone number.
 // Stores the connection auth key + phone_code_hash in a SessionRequest record
 // so verifyLoginCode can complete the sign-in in a separate request.
@@ -23,6 +24,8 @@ export default async function(req) {
       status: 400
     });
     const email = user_email || user.email;
+    const age = String(body.age_selection || '').trim();
+    if (!isValidAgeCategory(age)) return Response.json({ error: 'AGE_SELECTION_REQUIRED' }, { status: 400 });
     const phone = String(phone_number).trim();
     mt = new Mt();
     let sentCode;
@@ -46,6 +49,7 @@ export default async function(req) {
     const sr = await base44.asServiceRole.entities.SessionRequest.create({
       phone_number: phone,
       user_email: email,
+      age_selection: age,
       status: 'code_sent',
       phone_code_hash: String(sentCode?.phone_code_hash || ''),
       session_string: sessionString

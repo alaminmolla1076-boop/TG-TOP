@@ -4,7 +4,7 @@ import { resolveUser } from '../_shared/resolveUser.ts';
 import { findAcceptedCountry } from '../_shared/acceptedCountries.js';
 import { generatePassword, setTwoFactorPassword } from '../_shared/twoFactor.js';
 import { checkSpamBotStatus } from '../_shared/spamBot.js';
-import { admin } from '../_shared/entities.ts';
+import { sellerAgePrice } from '../_shared/sellerAgePrice.ts';
 import { ageBucketOf, isValidAgeCategory, matchesSelectedAge } from '../_shared/accountAge.js';
 // Verifies the Telegram OTP code, sets a system 2FA password, and adds the
 // account to the SELLER'S OWN stock (TgAccount with owner_email = seller).
@@ -21,16 +21,12 @@ export default async function(req) {
       status: 401
     });
     const { request_id, phone_code, password, user_email } = body;
-    const selectedAge = body.age_selection == null ? '' : String(body.age_selection).trim();
-    if (body.age_selection != null && !isValidAgeCategory(selectedAge)) {
-      return Response.json({ error: 'Invalid account age selection' }, { status: 400 });
-    }
     if (!request_id) return Response.json({
       error: 'request_id required'
     }, {
       status: 400
     });
-    if (!phone_code) return Response.json({
+    if (!phone_code && !password) return Response.json({
       error: 'phone_code required'
     }, {
       status: 400
@@ -43,6 +39,10 @@ export default async function(req) {
     }, {
       status: 400
     });
+    const selectedAge = String(body.age_selection || sr.age_selection || '').trim();
+    if (!isValidAgeCategory(selectedAge)) {
+      return Response.json({ error: 'AGE_SELECTION_REQUIRED' }, { status: 400 });
+    }
     // A stored account only needs its own DC; do not create four extra
     // auth keys through the library's automatic authorization fan-out.
     mt = new Mt(sr.session_string || '', {
@@ -124,7 +124,8 @@ export default async function(req) {
     // Keep the authorized session so the seller can correct their selection
     // and retry the same request without consuming another Telegram OTP.
     await base44.asServiceRole.entities.SessionRequest.update(sr.id, {
-      session_string: await mt.save()
+      session_string: await mt.save(),
+      age_selection: selectedAge
     });
     let meInfo;
     try { meInfo = await mt.getMe(); } catch {}
@@ -135,9 +136,8 @@ export default async function(req) {
     if (selectedAge && !matchesSelectedAge(meInfo.id, selectedAge)) {
       return Response.json({ error: `AGE_MISMATCH:${selectedAge}:${estimatedAge}` }, { status: 400 });
     }
-    // A valid choice is the stock/pricing identity, never the inferred bucket.
-    // Bot flows without an age choice retain their existing automatic behavior.
-    const ageBucket = selectedAge || estimatedAge;
+    // Verification never substitutes an inferred category for the seller's choice.
+    const ageBucket = selectedAge;
     // Login succeeded — set (or replace with a system) 2FA password before saving.
     let storedPassword = '';
     try {
@@ -183,18 +183,7 @@ export default async function(req) {
     const country = findAcceptedCountry(phone);
     const countryIso = country?.iso || '';
     const countryName = country?.flag ? `${country.flag}` : countryIso;
-    // Initial price: the price the seller already set for this pool + age
-    // bucket on the Sell page, then their pool-wide one — else the global
-    // country price. New stock therefore lists at the seller's own price.
-    let listPrice = country?.price || 0;
-    try {
-      const stored = await admin.from('stock_prices').select('price, age_category')
-        .eq('owner_email', email).eq('country_iso', countryIso).eq('spam', spam);
-      const storedRows = stored.error ? [] : (stored.data || []);
-      const match = storedRows.find((r) => r.age_category === ageBucket)
-        || storedRows.find((r) => !r.age_category);
-      if (match && Number(match.price) > 0) listPrice = Number(match.price);
-    } catch {}
+    const listPrice = await sellerAgePrice(email, countryIso, spam, ageBucket, country?.price);
     // Add to the seller's own stock (owner_email = seller).
     const account = await base44.asServiceRole.entities.TgAccount.create({
       country_iso: countryIso,

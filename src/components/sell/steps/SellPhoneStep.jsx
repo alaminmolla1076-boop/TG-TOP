@@ -36,7 +36,7 @@ export default function SellPhoneStep({ phone, onPhone, age, onAge, onSubmit, bu
       </div>
       <SellAgeSelect value={age} onChange={onAge} disabled={busy} />
       <div className="mt-6 pt-4">
-        <button type="submit" disabled={busy} className={primaryBtn}>
+        <button type="submit" disabled={busy || !age} className={primaryBtn}>
           {busy ? t("sp.sending") : t("sp.send")}
         </button>
       </div>

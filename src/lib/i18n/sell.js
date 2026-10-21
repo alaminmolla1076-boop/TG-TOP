@@ -1,5 +1,9 @@
 // Sell page: stock prices panel, wizard steps, sales list, flow errors.
 export const SELL = {
+  "s1.allCountries": {
+    en: "All countries", bn: "সব দেশ", zh: "所有国家", es: "Todos los países", hi: "सभी देश",
+    ar: "جميع الدول", fr: "Tous les pays", ru: "Все страны", pt: "Todos os países", de: "Alle Länder",
+  },
   "s1.unitPrice": {
     en: "Price / account", bn: "প্রতি অ্যাকাউন্টের দাম", zh: "每个账户价格", es: "Precio / cuenta", hi: "प्रति खाता मूल्य",
     ar: "السعر لكل حساب", fr: "Prix / compte", ru: "Цена за аккаунт", pt: "Preço / conta", de: "Preis / Konto",

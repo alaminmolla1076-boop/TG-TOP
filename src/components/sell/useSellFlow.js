@@ -11,7 +11,7 @@ export default function useSellFlow(onDone) {
   const [phone, setPhone] = useState("");
   // Age bucket the seller picked for this sale — checked against the
   // account's real age (estimated from its Telegram user ID) at verify.
-  const [age, setAge] = useState("regular");
+  const [age, setAge] = useState("");
   const [code, setCode] = useState("");
   const [requestId, setRequestId] = useState("");
   const [result, setResult] = useState(null);
@@ -22,6 +22,7 @@ export default function useSellFlow(onDone) {
     event.preventDefault();
     if (pending.current) return;
     setError("");
+    if (!age) { setError(t("sp.ageLabel")); return; }
     if (!/^\+[0-9]{6,19}$/.test(phone.trim())) {
       setError(t("sf.invalidPhone"));
       return;
@@ -32,7 +33,7 @@ export default function useSellFlow(onDone) {
     setCode("");
     setResult(null);
     try {
-      const { data } = await invoke("sellSendCode", { phone_number: phone.trim() });
+      const { data } = await invoke("sellSendCode", { phone_number: phone.trim(), age_selection: age });
       if (data?.success !== true || !data.request_id) {
         throw new Error(data?.error || t("sf.noConfirmCode"));
       }
@@ -105,7 +106,7 @@ export default function useSellFlow(onDone) {
   function reset() {
     back();
     setPhone("");
-    setAge("regular");
+    setAge("");
   }
 
   return { step, phone, setPhone, age, setAge, code, setCode, requestId, result, busy, error, sendCode, verifyCode, back, reset };

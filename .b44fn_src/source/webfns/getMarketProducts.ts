@@ -1,5 +1,6 @@
 import { runSql, sqlString } from '../_shared/webApi.ts';
 import { resolveIdentity } from '../_shared/webIdentity.ts';
+import { getAgeStockRows, attachAgeStock } from '../_shared/ageStock.ts';
 
 export default async function(req) {
   try {
@@ -81,27 +82,7 @@ export default async function(req) {
              order by sold desc limit 1`
              ),
              sellerReportsPromise,
-             // Age buckets per seller + country: buyers pick an account age on
-             // the purchase page, each bucket with its own stock and price.
-             runSql(
-             `select a.owner_email, a.country_iso,
-                    coalesce(a.age_category, 'regular') as age_category,
-                    count(*) filter (where a.spam is true) as spam_stock,
-                    count(*) filter (where a.spam is false) as nonspam_stock,
-                    min(a.price) filter (where a.spam is true) as spam_price,
-                    min(a.price) filter (where a.spam is false) as nonspam_price,
-                    min(a.price) as price,
-                    sum(count(*) filter (where a.spam is true)) over (
-                      partition by a.owner_email, coalesce(a.age_category, 'regular')
-                    ) as age_spam_stock,
-                    sum(count(*) filter (where a.spam is false)) over (
-                      partition by a.owner_email, coalesce(a.age_category, 'regular')
-                    ) as age_nonspam_stock
-                    from tg_accounts a
-                    where a.status = 'available' and a.price is not null
-                    group by a.owner_email, a.country_iso, coalesce(a.age_category, 'regular')
-             order by a.owner_email asc, a.country_iso asc limit 2000`
-             ),
+             getAgeStockRows(),
              ]);
 
     // Reports are matched by seller id, falling back to the seller username.
@@ -114,21 +95,6 @@ export default async function(req) {
     }
     const reportsOf = (row) =>
       Number(reportsById.get(String(row.seller_id)) ?? reportsByUsername.get((row.username || '').toLowerCase()) ?? 0);
-
-    // Age buckets keyed by seller email + country, for the buyer's age picker.
-    const ageMap = new Map();
-    for (const row of ageRows || []) {
-      const k = `${row.owner_email}|${row.country_iso}`;
-      if (!ageMap.has(k)) ageMap.set(k, []);
-      ageMap.get(k).push({
-        category: row.age_category,
-        spam_stock: Number(row.spam_stock || 0),
-        nonspam_stock: Number(row.nonspam_stock || 0),
-        price: Number(row.price),
-        spam_price: row.spam_price == null ? null : Number(row.spam_price),
-        nonspam_price: row.nonspam_price == null ? null : Number(row.nonspam_price),
-      });
-    }
 
     const sellersMap = new Map();
     for (const row of sellerRows) {
@@ -155,36 +121,11 @@ export default async function(req) {
         stock: Number(row.stock),
         spam_stock: Number(row.spam_stock || 0),
         nonspam_stock: Number(row.nonspam_stock || 0),
-        ages: ageMap.get(`${row.owner_email}|${row.country_iso}`) || [],
+        ages: [],
       });
     }
 
-    // Explicit age listings: the same country appears once in EACH age group,
-    // with that age's own count and price. Totals come from the SQL windows.
-    for (const seller of sellersMap.values()) {
-      const groups = new Map();
-      for (const row of ageRows || []) {
-        if (row.owner_email !== seller.email) continue;
-        const country = seller.countries.find((c) => c.country_iso === row.country_iso);
-        if (!country) continue;
-        if (!groups.has(row.age_category)) {
-          groups.set(row.age_category, {
-            category: row.age_category,
-            spam_stock: Number(row.age_spam_stock || 0),
-            nonspam_stock: Number(row.age_nonspam_stock || 0),
-            countries: [],
-          });
-        }
-        groups.get(row.age_category).countries.push({
-          ...country,
-          spam_stock: Number(row.spam_stock || 0),
-          nonspam_stock: Number(row.nonspam_stock || 0),
-          price: Number(row.price),
-          ages: country.ages.filter((a) => a.category === row.age_category),
-        });
-      }
-      seller.age_groups = Array.from(groups.values());
-    }
+    attachAgeStock(Array.from(sellersMap.values()), ageRows);
 
     return Response.json({
       balance: profile ? Number(profile.balance) : 0,

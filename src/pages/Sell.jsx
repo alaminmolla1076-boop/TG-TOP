@@ -31,11 +31,13 @@ export default function Sell() {
   const { t } = useAppLang();
   const [sales, setSales] = useState(null);
   const [stock, setStock] = useState(null);
+  const [countries, setCountries] = useState([]);
 
   async function load(force = false) {
     const data = await fetchMyData(force);
     setSales(data.account_sales || []);
     setStock(data.my_stock || []);
+    setCountries(data.countries || []);
   }
 
   useEffect(() => {
@@ -48,7 +50,7 @@ export default function Sell() {
   return (
     <div className="mx-auto flex max-w-md flex-col gap-4">
       <div className="og-rise">
-        <StockPricesPanel stock={stock} onSaved={() => load(true)} />
+        <StockPricesPanel stock={stock} countries={countries} onSaved={() => load(true)} />
       </div>
 
       <div className="og-rise [animation-delay:.2s]">

@@ -19,10 +19,9 @@ export default async function(req) {
     });
     const { country_iso, price, spam } = body;
     const poolSpam = !!spam;
-    // Optional age bucket: when set, the price applies only to that age's
-    // accounts of this country+pool ('' = the whole pool, any age).
+    // An explicit age is required: never update other ages of this country.
     const ageCategory = body.age_category ? String(body.age_category).trim() : '';
-    if (ageCategory && !isValidAgeCategory(ageCategory)) return Response.json({
+    if (!isValidAgeCategory(ageCategory)) return Response.json({
       error: 'Invalid account age'
     }, {
       status: 400
@@ -56,13 +55,14 @@ export default async function(req) {
     // future stock — e.g. accounts the daily @SpamBot sweep promotes into the
     // Non-Spam pool — is listed at this price. No account update, no notice.
     if (!accounts.length) {
-      await admin.from('stock_prices').upsert({
+      const { error: priceError } = await admin.from('stock_prices').upsert({
         owner_email: ownerEmail,
         country_iso,
         spam: poolSpam,
         age_category: ageCategory,
         price: Number(newPrice.toFixed(2))
       }, { onConflict: 'owner_email,country_iso,spam,age_category' });
+      if (priceError) throw new Error(priceError.message);
       return Response.json({
         success: true,
         country_iso,
@@ -90,13 +90,14 @@ export default async function(req) {
     // Remember the pool price: when the daily @SpamBot sweep moves one of this
     // seller's numbers from the Spam pool into the Non-Spam pool, the account
     // switches to this stored price.
-    await admin.from('stock_prices').upsert({
+    const { error: priceError } = await admin.from('stock_prices').upsert({
       owner_email: ownerEmail,
       country_iso,
       spam: poolSpam,
       age_category: ageCategory,
       price: Number(newPrice.toFixed(2))
     }, { onConflict: 'owner_email,country_iso,spam,age_category' });
+      if (priceError) throw new Error(priceError.message);
     // When the price went DOWN, tell everyone: who dropped it, country with
     // flag, Spam / Non-Spam pool, old and new price — in each user's language.
     // Pool-wide drops are announced to everyone; an age-specific price change

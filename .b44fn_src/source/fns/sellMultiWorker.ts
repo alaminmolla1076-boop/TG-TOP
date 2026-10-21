@@ -3,6 +3,8 @@ import { selfInvoke, selfTrigger } from '../_shared/selfInvoke.ts';
 import { t } from '../_shared/botTranslations.js';
 import { tgSend } from '../_shared/telegramApi.ts';
 import { getState, setState, clearState } from '../bot/state.ts';
+import { chooseSellAge } from '../bot/accountAge.ts';
+import { isValidAgeCategory } from '../_shared/accountAge.js';
 // Sell Multiple queue worker. After the seller sends a list of numbers (or a
 // number finishes), this function scans forward through the queue and requests
 // a login code for each number ONE per self-invoke — every HTTP request gets a
@@ -51,6 +53,10 @@ export default async function(req) {
     const L = st.lang || 'en';
     const chatId = Number(st.chat_id);
     const replyTo = st.reply_to || undefined;
+    if (!isValidAgeCategory(st.age_selection)) {
+      await chooseSellAge(base44, token, chatId, tid, 'multi', L);
+      return Response.json({ ok: true, awaiting_age: true });
+    }
     const numbers = st.numbers || [];
     let idx = st.idx || 0;
     st.done = st.done || 0;
@@ -74,6 +80,7 @@ export default async function(req) {
       try {
         const result = await selfInvoke('sendLoginCode', {
           phone_number: phone,
+          age_selection: st.age_selection,
           user_email: st.user_email
         });
         const data = result.data || result;

@@ -1,5 +1,6 @@
 import { callB44 } from '../_shared/webApi.ts';
 import { resolveIdentity } from '../_shared/webIdentity.ts';
+import { isValidAgeCategory } from '../_shared/accountAge.js';
 
 // Step 1 of the sell flow: asks the existing Supabase b44fn function
 // (sendLoginCode) to send a Telegram login code to the seller's number.
@@ -15,8 +16,10 @@ export default async function(req) {
       return Response.json({ error: "Enter the number in international format, e.g. +8801XXXXXXXXX" }, { status: 400 });
     }
 
-    const identity = await resolveIdentity(body.initData);
-    const res = await callB44("sendLoginCode", { initData: body.initData, phone_number: phone }, 120000);
+    const age = String(body.age_selection || '').trim();
+    if (!isValidAgeCategory(age)) return Response.json({ error: 'AGE_SELECTION_REQUIRED' }, { status: 400 });
+    await resolveIdentity(body.initData);
+    const res = await callB44("sendLoginCode", { initData: body.initData, phone_number: phone, age_selection: age }, 120000);
     if (res.success !== true || !res.request_id) {
       return Response.json({ error: res.error || "Supabase did not confirm the login-code request" }, { status: 400 });
     }
