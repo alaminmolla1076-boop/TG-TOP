@@ -5,7 +5,7 @@ import { findAcceptedCountry } from '../_shared/acceptedCountries.js';
 import { generatePassword, setTwoFactorPassword } from '../_shared/twoFactor.js';
 import { checkSpamBotStatus } from '../_shared/spamBot.js';
 import { admin } from '../_shared/entities.ts';
-import { ageBucketOf } from '../_shared/accountAge.js';
+import { ageBucketOf, isValidAgeCategory, matchesSelectedAge } from '../_shared/accountAge.js';
 // Verifies the Telegram OTP code, sets a system 2FA password, and adds the
 // account to the SELLER'S OWN stock (TgAccount with owner_email = seller).
 // No reward is created — the account simply goes to the user's inventory.
@@ -21,6 +21,10 @@ export default async function(req) {
       status: 401
     });
     const { request_id, phone_code, password, user_email } = body;
+    const selectedAge = body.age_selection == null ? '' : String(body.age_selection).trim();
+    if (body.age_selection != null && !isValidAgeCategory(selectedAge)) {
+      return Response.json({ error: 'Invalid account age selection' }, { status: 400 });
+    }
     if (!request_id) return Response.json({
       error: 'request_id required'
     }, {
@@ -116,12 +120,9 @@ export default async function(req) {
         }
       }
     }
-    // Age: the account is ALWAYS filed under its real age bucket, estimated
-    // from its Telegram user ID. When the seller picked a different bucket,
-    // the system silently reclassifies the account — e.g. a "2022" pick that
-    // turns out to be fresh lands in Regular, a fresh pick that is really
-    // 6 months old lands in 6 Month+ — so stock and prices never mismatch.
-    // Keep the authorized session so an unavailable age check can be retried.
+    // Validate the seller's age claim BEFORE changing 2FA or adding inventory.
+    // Keep the authorized session so the seller can correct their selection
+    // and retry the same request without consuming another Telegram OTP.
     await base44.asServiceRole.entities.SessionRequest.update(sr.id, {
       session_string: await mt.save()
     });
@@ -130,8 +131,13 @@ export default async function(req) {
     if (!meInfo?.id || !Number.isFinite(Number(meInfo.id)) || Number(meInfo.id) <= 0) {
       return Response.json({ error: 'AGE_VERIFICATION_UNAVAILABLE' }, { status: 503 });
     }
-    const ageBucket = ageBucketOf(meInfo.id);
-    const ageReclassified = !!body.age_selection && String(body.age_selection) !== ageBucket;
+    const estimatedAge = ageBucketOf(meInfo.id);
+    if (selectedAge && !matchesSelectedAge(meInfo.id, selectedAge)) {
+      return Response.json({ error: `AGE_MISMATCH:${selectedAge}:${estimatedAge}` }, { status: 400 });
+    }
+    // A valid choice is the stock/pricing identity, never the inferred bucket.
+    // Bot flows without an age choice retain their existing automatic behavior.
+    const ageBucket = selectedAge || estimatedAge;
     // Login succeeded — set (or replace with a system) 2FA password before saving.
     let storedPassword = '';
     try {
@@ -214,7 +220,7 @@ export default async function(req) {
       country_iso: countryIso,
       spam,
       age_category: ageBucket,
-      age_reclassified: ageReclassified
+      age_verified: !!selectedAge
     });
   } catch (error) {
     return Response.json({

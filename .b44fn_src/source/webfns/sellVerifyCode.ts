@@ -21,7 +21,7 @@ export default async function(req) {
     }
     // The age bucket the seller picked on the phone step, e.g. '30d' or '2024'.
     const ageSelection = String(body.age_selection || '').trim();
-    if (ageSelection && !isValidAgeCategory(ageSelection)) {
+    if (!isValidAgeCategory(ageSelection)) {
       return Response.json({ error: "Invalid account age selection" }, { status: 400 });
     }
 
@@ -49,7 +49,7 @@ export default async function(req) {
       country_iso: res.country_iso,
       spam: res.spam === true,
       age_category: res.age_category || 'regular',
-      age_reclassified: res.age_reclassified === true,
+      age_verified: res.age_verified === true,
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 400 });

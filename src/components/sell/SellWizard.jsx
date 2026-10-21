@@ -52,6 +52,8 @@ export default function SellWizard({ onDone }) {
                 phone={phone}
                 code={code}
                 onCode={setCode}
+                age={age}
+                onAge={setAge}
                 onSubmit={verifyCode}
                 ready={!!requestId}
                 onBack={back}

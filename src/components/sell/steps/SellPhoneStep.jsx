@@ -1,7 +1,6 @@
 import React from "react";
 import { useAppLang } from "@/lib/AppLanguageContext";
-import { AGE_OPTIONS, ageLabel } from "@/lib/accountAge";
-import GlassSelect from "@/components/ui/GlassSelect";
+import SellAgeSelect from "@/components/sell/SellAgeSelect";
 
 const inputBase =
   "w-full rounded-2xl border border-ring/25 bg-secondary/80 px-4 text-base font-semibold text-foreground placeholder:text-muted-foreground transition-[border-color,box-shadow] duration-200 focus:border-ring focus:shadow-[0_0_0_3px_rgba(162,155,254,.22)] disabled:cursor-not-allowed disabled:opacity-50";
@@ -35,19 +34,7 @@ export default function SellPhoneStep({ phone, onPhone, age, onAge, onSubmit, bu
           className={`${inputBase} h-[52px]`}
         />
       </div>
-      <div className="mt-2 grid gap-2">
-        <label htmlFor="sell-age" className="text-[11px] font-semibold text-foreground">
-          {t("sp.ageLabel")}
-        </label>
-        <GlassSelect
-          id="sell-age"
-          value={age}
-          onChange={onAge}
-          disabled={busy}
-          options={AGE_OPTIONS.map((o) => ({ value: o.value, label: ageLabel(o.value, t) }))}
-        />
-        <p className="text-[11px] leading-relaxed text-muted-foreground">{t("sp.ageNotice")}</p>
-      </div>
+      <SellAgeSelect value={age} onChange={onAge} disabled={busy} />
       <div className="mt-6 pt-4">
         <button type="submit" disabled={busy} className={primaryBtn}>
           {busy ? t("sp.sending") : t("sp.send")}

@@ -70,7 +70,17 @@ export default async function (req) {
     if (balance === undefined || balance === null) {
       balance = (await callB44('getBalance', { initData: body.initData })).balance;
     }
-    return Response.json({ accounts, count: accounts.length, balance: Number(balance) || 0 });
+    // Refresh exactly the purchased age's stock, never another age's count.
+    const inventory = qty === 1 && sellerEmail && pool && ageCategory
+      ? (await runSql(`select count(*) as stock,
+          count(*) filter (where spam is true) as spam_stock,
+          count(*) filter (where spam is false) as nonspam_stock,
+          count(*) filter (where coalesce(age_category, 'regular') = ${sqlString(ageCategory)}
+            and coalesce(spam, false) = ${pool === 'spam' ? 'true' : 'false'}) as age_stock
+        from tg_accounts where owner_email = ${sqlString(sellerEmail)}
+          and country_iso = ${sqlString(countryIso)} and status = 'available'`))[0]
+      : null;
+    return Response.json({ accounts, count: accounts.length, balance: Number(balance) || 0, inventory });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 400 });
   }

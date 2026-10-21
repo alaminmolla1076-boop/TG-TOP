@@ -6,11 +6,10 @@
 // research datasets (gramjs/telethon session collectors); the 2017–2021 and
 // 2024+ gaps are interpolated with community estimates.
 //
-// Buckets a seller picks when selling:
-//   regular — created less than 30 days ago
-//   30d     — 30 days to 6 months
-//   6m      — 6 months to ~1 year (first half of the current year)
-//   <year>  — created in that calendar year, down to Telegram's first (2013)
+// Seller-selected listings: Regular has no minimum-age claim, 30d and 6m
+// claim a minimum age, and a year claims registration in that calendar year.
+// Verification checks the claim without changing the selected listing category.
+// ageBucketOf remains the automatic classification for legacy bot submissions.
 const FIRST_YEAR = 2013;
 const DAY_MS = 86400000;
 const ANCHORS = [
@@ -95,4 +94,15 @@ export function ageCategories(nowMs = Date.now()) {
 
 export function isValidAgeCategory(value) {
   return ageCategories().includes(String(value || '').trim());
+}
+
+export function matchesSelectedAge(userId, selection, nowMs = Date.now()) {
+  const id = Number(userId);
+  if (!Number.isSafeInteger(id) || id <= 0 || !isValidAgeCategory(selection)) return false;
+  if (selection === 'regular') return true;
+  const estimated = estimateAccountDate(id);
+  const days = (nowMs - estimated) / DAY_MS;
+  if (selection === '30d') return days >= 30;
+  if (selection === '6m') return days >= 183;
+  return String(new Date(estimated).getUTCFullYear()) === selection;
 }

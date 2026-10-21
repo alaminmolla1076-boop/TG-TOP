@@ -1,23 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { ChevronLeft, Globe } from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
+import { ChevronLeft } from "lucide-react";
 import { useTgIdentity } from "@/lib/TgIdentityContext";
 import { useAppLang } from "@/lib/AppLanguageContext";
-import SectionHead from "@/components/market/SectionHead";
 import MarketBackdrop from "@/components/market/MarketBackdrop";
 import SellerHistory from "@/components/market/SellerHistory";
-import SellerCountryCard from "@/components/market/SellerCountryCard";
-import AgeFilterBar from "@/components/market/AgeFilterBar";
-import { ageStockTotals } from "@/lib/marketAges";
+import SellerAgeStock from "@/components/market/SellerAgeStock";
 
-// Stock pools: accounts are filed as Spam or Non-Spam at login (SpamBot
-// verdict); the buyer picks which pool to browse.
-const poolStockOf = (c, pool) =>
-  pool === "spam" ? c.spam_stock ?? 0 : c.nonspam_stock ?? c.stock ?? 0;
-
-// Capsule List — seller page: a Spam / Non-Spam stock choice, then the
-// countries this seller has in that pool. Each country row opens the
-// standalone purchase page.
+// Each pool displays separate age listings, including repeated countries.
 export default function MarketSeller() {
   const { sellerId } = useParams();
   const navigate = useNavigate();
@@ -27,9 +17,6 @@ export default function MarketSeller() {
   const [pool, setPool] = useState(
     new URLSearchParams(window.location.search).get("pool") === "spam" ? "spam" : "nonspam"
   );
-  // Age bucket picked inside this pool (null = All ages) — filters the
-  // country list down to the countries holding stock of that age.
-  const [ageFilter, setAgeFilter] = useState(null);
 
   useEffect(() => {
     invoke("getMarketProducts", {})
@@ -41,7 +28,6 @@ export default function MarketSeller() {
 
   function choosePool(next) {
     setPool(next);
-    setAgeFilter(null);
     navigate(`/market/seller/${sellerId}?pool=${next}`, { replace: true });
   }
 
@@ -55,20 +41,6 @@ export default function MarketSeller() {
       </div>
     );
   }
-
-  const stockedAges = ageStockTotals([seller], pool);
-  const activeAge = stockedAges.some((bucket) => bucket.category === ageFilter)
-    ? ageFilter
-    : stockedAges[0]?.category || null;
-  const countries = (seller.countries || []).filter((c) => {
-    if (poolStockOf(c, pool) <= 0) return false;
-    if (!activeAge) return true;
-    return (c.ages || []).some(
-      (a) =>
-        String(a.category) === activeAge &&
-        Number(pool === "spam" ? a.spam_stock : a.nonspam_stock) > 0
-    );
-  });
 
   return (
     <div className="relative">
@@ -134,30 +106,7 @@ export default function MarketSeller() {
               </button>
             ))}
           </div>
-          <AgeFilterBar sellers={[seller]} pool={pool} active={activeAge} onChange={setAgeFilter} />
-          <SectionHead
-            icon={<Globe className="h-4 w-4" strokeWidth={1.5} />}
-            title={t("sl.countryStock")}
-            badge={`${countries.length} ${countries.length === 1 ? t("c.country") : t("c.countries")}`}
-          />
-          {countries.length === 0 ? (
-            <div className="rounded-[22px] border border-dashed border-[#A29BFE]/30 bg-[rgba(45,38,78,.3)] p-[18px] text-[13px] text-[#a8a3cf]">
-              {activeAge
-                ? t("mk.ageNoStock")
-                : pool === "spam"
-                  ? t("sl.noSpamStock")
-                  : t("sl.noNonSpamStock")}
-            </div>
-          ) : null}
-          {countries.map((c) => (
-            <SellerCountryCard
-              key={c.country_iso}
-              sellerId={seller.id}
-              country={c}
-              pool={pool}
-              age={activeAge}
-            />
-          ))}
+          <SellerAgeStock seller={seller} pool={pool} />
         </section>
       </div>
     </div>

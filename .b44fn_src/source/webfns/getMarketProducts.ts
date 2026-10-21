@@ -80,6 +80,7 @@ export default async function(req) {
                       p.telegram_photo_url, u.telegram_first_name, u.telegram_last_name, u.telegram_username, u.photo_url
              order by sold desc limit 1`
              ),
+             sellerReportsPromise,
              // Age buckets per seller + country: buyers pick an account age on
              // the purchase page, each bucket with its own stock and price.
              runSql(
@@ -89,10 +90,16 @@ export default async function(req) {
                     count(*) filter (where a.spam is false) as nonspam_stock,
                     min(a.price) filter (where a.spam is true) as spam_price,
                     min(a.price) filter (where a.spam is false) as nonspam_price,
-                    min(a.price) as price
+                    min(a.price) as price,
+                    sum(count(*) filter (where a.spam is true)) over (
+                      partition by a.owner_email, coalesce(a.age_category, 'regular')
+                    ) as age_spam_stock,
+                    sum(count(*) filter (where a.spam is false)) over (
+                      partition by a.owner_email, coalesce(a.age_category, 'regular')
+                    ) as age_nonspam_stock
                     from tg_accounts a
-             where a.status = 'available' and a.price is not null
-             group by a.owner_email, a.country_iso, coalesce(a.age_category, 'regular')
+                    where a.status = 'available' and a.price is not null
+                    group by a.owner_email, a.country_iso, coalesce(a.age_category, 'regular')
              order by a.owner_email asc, a.country_iso asc limit 2000`
              ),
              ]);
@@ -150,6 +157,33 @@ export default async function(req) {
         nonspam_stock: Number(row.nonspam_stock || 0),
         ages: ageMap.get(`${row.owner_email}|${row.country_iso}`) || [],
       });
+    }
+
+    // Explicit age listings: the same country appears once in EACH age group,
+    // with that age's own count and price. Totals come from the SQL windows.
+    for (const seller of sellersMap.values()) {
+      const groups = new Map();
+      for (const row of ageRows || []) {
+        if (row.owner_email !== seller.email) continue;
+        const country = seller.countries.find((c) => c.country_iso === row.country_iso);
+        if (!country) continue;
+        if (!groups.has(row.age_category)) {
+          groups.set(row.age_category, {
+            category: row.age_category,
+            spam_stock: Number(row.age_spam_stock || 0),
+            nonspam_stock: Number(row.age_nonspam_stock || 0),
+            countries: [],
+          });
+        }
+        groups.get(row.age_category).countries.push({
+          ...country,
+          spam_stock: Number(row.spam_stock || 0),
+          nonspam_stock: Number(row.nonspam_stock || 0),
+          price: Number(row.price),
+          ages: country.ages.filter((a) => a.category === row.age_category),
+        });
+      }
+      seller.age_groups = Array.from(groups.values());
     }
 
     return Response.json({

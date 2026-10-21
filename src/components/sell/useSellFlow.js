@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { useTgIdentity } from "@/lib/TgIdentityContext";
 import { useAppLang } from "@/lib/AppLanguageContext";
+import { ageLabel } from "@/lib/accountAge";
 
 export default function useSellFlow(onDone) {
   const { invoke } = useTgIdentity();
@@ -76,7 +77,9 @@ export default function useSellFlow(onDone) {
     } catch (err) {
       const raw = err.response?.data?.error || err.message || "";
       setError(
-        raw === "AGE_VERIFICATION_UNAVAILABLE"
+        raw.startsWith("AGE_MISMATCH:")
+          ? t("sf.ageMismatch", { selected: ageLabel(raw.split(":")[1], t), actual: ageLabel(raw.split(":")[2], t) })
+          : raw === "AGE_VERIFICATION_UNAVAILABLE"
           ? t("sf.ageUnavailable")
           : /compute resources/i.test(raw)
             ? t("sf.busyVerify")

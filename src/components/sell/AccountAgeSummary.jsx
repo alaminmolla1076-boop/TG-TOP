@@ -16,7 +16,7 @@ export default function AccountAgeSummary({ result }) {
         </div>
       </div>
       <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
-        {result.age_reclassified ? t("sd.ageReclassified", { age: ageLabel(result.age_category, t) }) : t("ag.estimated")}
+        {t("ag.estimated")}
       </p>
     </div>
   );

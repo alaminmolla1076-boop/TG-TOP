@@ -21,10 +21,10 @@ export default async function(req) {
       return Response.json({ error: "Enter a valid price greater than 0" }, { status: 400 });
     }
     const spam = !!body.spam;
-    // Optional age bucket ('' = the whole pool). One price per
-    // seller + country + pool + age.
+    // Web prices always target ONE age; a missing age must never overwrite
+    // differently aged accounts of the same country and pool.
     const ageCategory = String(body.age_category || '').trim();
-    if (ageCategory && !isValidAgeCategory(ageCategory)) {
+    if (!isValidAgeCategory(ageCategory)) {
       return Response.json({ error: "Invalid account age" }, { status: 400 });
     }
 

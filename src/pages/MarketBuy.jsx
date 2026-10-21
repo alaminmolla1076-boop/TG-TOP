@@ -49,7 +49,7 @@ export default function MarketBuy() {
         // Age preselected from the seller page (?age=), else Regular, else first.
         const wanted = new URLSearchParams(window.location.search).get("age");
         setAge(
-          ages.some((a) => a.category === wanted)
+          wanted
             ? wanted
             : ages.some((a) => a.category === "regular")
               ? "regular"
@@ -66,17 +66,17 @@ export default function MarketBuy() {
       stock: pool === "spam" ? a.spam_stock : a.nonspam_stock,
       price: pool === "spam" ? a.spam_price ?? a.price : a.nonspam_price ?? a.price,
     }))
-    .filter((a) => Number(a.stock) > 0);
+    .filter((a) => Number(a.stock) > 0 || a.category === age);
   const ageInfo = poolAges.find((a) => a.category === age) || null;
 
-  const stock = ageInfo
-    ? Number(ageInfo.stock)
+  const stock = age
+    ? Number(ageInfo?.stock || 0)
     : entry?.country == null
       ? 0
       : pool === "spam"
         ? entry.country.spam_stock ?? entry.country.stock ?? 0
         : entry.country.nonspam_stock ?? entry.country.stock ?? 0;
-  const unitPrice = ageInfo ? Number(ageInfo.price) : entry?.country?.price ?? 0;
+  const unitPrice = age ? Number(ageInfo?.price || 0) : entry?.country?.price ?? 0;
   const parsed = parseInt(custom, 10);
   const customValid = Number.isInteger(parsed) && parsed >= 1 && parsed <= stock;
 
@@ -94,9 +94,17 @@ export default function MarketBuy() {
       const bought = res.data.accounts || [];
       if (qty === 1 && bought[0]?.phone_number) {
         setPurchased(bought[0]);
-        setEntry((prev) =>
-          prev ? { ...prev, country: { ...prev.country, stock: Math.max(0, prev.country.stock - 1) } } : prev
-        );
+        setEntry((prev) => {
+          const inventory = res.data.inventory;
+          if (!prev || !inventory) return prev;
+          const field = pool === "spam" ? "spam_stock" : "nonspam_stock";
+          return { ...prev, country: { ...prev.country,
+            stock: Number(inventory.stock),
+            spam_stock: Number(inventory.spam_stock),
+            nonspam_stock: Number(inventory.nonspam_stock),
+            ages: prev.country.ages.map((row) => row.category === age ? { ...row, [field]: Number(inventory.age_stock) } : row),
+          } };
+        });
         toast({
           title: t("mk.accountPurchased"),
           description: t("mk.newBalance", { balance: formatMoney(res.data.balance) }),
@@ -159,7 +167,7 @@ export default function MarketBuy() {
               {t("bp.fromLine", { name: seller.name })}
               </div>
             <div className="mt-1 bg-gradient-to-r from-[#A29BFE] to-[#6C5CE7] bg-clip-text font-display text-[34px] font-bold leading-none text-transparent tabular-nums">
-              {formatMoney(unitPrice)}
+              {age && !ageInfo ? t("s1.noPrice") : formatMoney(unitPrice)}
             </div>
             <p className="mt-1 text-[13px] text-[#a8a3cf]">
               {pool === "spam" ? t("bp.spamStock") : t("bp.nonSpamStock")} · {stock} {t("c.inStock")}
@@ -169,7 +177,7 @@ export default function MarketBuy() {
                 <span className="shrink-0 text-[11px] font-semibold text-[#a8a3cf]">{t("sp.ageLabel")}</span>
                 <GlassSelect
                   value={age || ""}
-                  onChange={setAge}
+                  onChange={(value) => { setAge(value); setPendingQty(null); }}
                   options={poolAges.map((a) => ({
                     value: a.category,
                     label: `${ageLabel(a.category, t)} · ${formatMoney(a.price)}`,
