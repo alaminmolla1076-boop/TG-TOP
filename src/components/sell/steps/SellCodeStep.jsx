@@ -1,14 +1,13 @@
 import React from "react";
 import { ChevronLeft, KeyRound } from "lucide-react";
 import { useAppLang } from "@/lib/AppLanguageContext";
-import SellAgeSelect from "@/components/sell/SellAgeSelect";
 
 const inputBase =
   "w-full rounded-2xl border border-ring/25 bg-secondary/80 px-4 text-foreground placeholder:text-muted-foreground transition-[border-color,box-shadow] duration-200 focus:border-ring focus:shadow-[0_0_0_3px_rgba(162,155,254,.22)] disabled:cursor-not-allowed disabled:opacity-50";
 const primaryBtn =
   "h-12 w-full cursor-pointer rounded-full bg-gradient-to-br from-primary to-[#8E7DFF] text-sm font-semibold text-primary-foreground shadow-[0_6px_18px_rgba(108,92,231,.5)] transition-[opacity,box-shadow,transform] duration-200 hover:opacity-90 active:scale-[0.985] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:cursor-not-allowed disabled:opacity-50";
 
-export default function SellCodeStep({ phone, code, onCode, age, onAge, onSubmit, ready = false, onBack }) {
+export default function SellCodeStep({ phone, code, onCode, onSubmit, ready = false, onBack }) {
   const { t } = useAppLang();
   return (
     <form onSubmit={onSubmit} className="flex flex-col">
@@ -35,7 +34,6 @@ export default function SellCodeStep({ phone, code, onCode, age, onAge, onSubmit
           className={`${inputBase} h-[52px] text-center text-lg font-bold tracking-[0.34em]`}
         />
       </div>
-      <SellAgeSelect id="sell-code-age" value={age} onChange={onAge} disabled={!ready} />
       <div className="mt-6 pt-4">
         <button type="submit" disabled={!code.trim() || !ready} className={primaryBtn}>
           {t("sc.verify")}
