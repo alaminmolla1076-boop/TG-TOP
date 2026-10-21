@@ -49,7 +49,7 @@ export default function Sell() {
 
   return (
     <div className="mx-auto flex max-w-md flex-col gap-4">
-      <div className="og-rise">
+      <div className="og-rise relative z-10">
         <StockPricesPanel stock={stock} countries={countries} onSaved={() => load(true)} />
       </div>
 
