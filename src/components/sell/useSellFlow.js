@@ -87,7 +87,7 @@ export default function useSellFlow(onDone) {
           setError(markError.response?.data?.error || markError.message || "");
         }
       }
-      setResult(marked ? { ...data, number_kind: age } : data);
+      setResult(marked ? { ...data, age_category: age, number_kind: age } : data);
       setStep("stock");
       completed = true;
     } catch (err) {
