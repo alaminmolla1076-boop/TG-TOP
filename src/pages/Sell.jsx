@@ -52,11 +52,11 @@ export default function Sell() {
     <div className="mx-auto flex w-full max-w-md flex-col gap-4 lg:grid lg:max-w-none lg:grid-cols-2 lg:items-start lg:gap-6">
       <div className="og-rise relative z-10 flex flex-col gap-4">
         <StockPricesPanel stock={stock} countries={countries} onSaved={() => load(true)} />
-        <NumberPricePanel key={sales?.length ?? 0} />
       </div>
 
-      <div className="og-rise [animation-delay:.2s]">
+      <div className="og-rise flex flex-col gap-4 [animation-delay:.2s]">
         <SellWizard onDone={() => load(true)} />
+        <NumberPricePanel key={sales?.length ?? 0} />
       </div>
 
       <section className="og-rise flex flex-col gap-2.5 [animation-delay:.35s] lg:col-span-2">
