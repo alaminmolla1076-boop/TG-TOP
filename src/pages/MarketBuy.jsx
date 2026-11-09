@@ -9,6 +9,7 @@ import PurchaseResult from "@/components/market/PurchaseResult";
 import { formatMoney } from "@/lib/format";
 import { ageLabel } from "@/lib/accountAge";
 import GlassSelect from "@/components/ui/GlassSelect";
+import CountryFlag from "@/components/CountryFlag";
 
 const QUICK_QTY = [5, 10, 20, 50, 100, 500, 1000];
 
@@ -158,7 +159,7 @@ export default function MarketBuy() {
 
         <div className="mk-cap flex items-center gap-3.5 rounded-[30px] border border-[#A29BFE]/30 bg-gradient-to-br from-[rgba(45,38,78,.85)] to-[rgba(33,28,56,.9)] p-5">
           <div className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-full border border-[#A29BFE]/40 bg-[rgba(108,92,231,.14)] text-xl shadow-[0_0_0_2px_#13111C,0_0_0_4px_#6C5CE7,0_0_0_8px_rgba(108,92,231,.18)]">
-            {country.flag || country.country_iso}
+            <CountryFlag iso={country.country_iso} emoji={country.flag} label={country.country_name} className="h-6 w-9 shadow-none" />
           </div>
           <div className="min-w-0">
             <div className="truncate text-[10px] font-semibold uppercase tracking-[.14em] text-[#A29BFE]">
