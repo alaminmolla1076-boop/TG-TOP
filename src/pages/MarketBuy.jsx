@@ -7,7 +7,7 @@ import { useAppLang } from "@/lib/AppLanguageContext";
 import MarketBackdrop from "@/components/market/MarketBackdrop";
 import PurchaseResult from "@/components/market/PurchaseResult";
 import { formatMoney } from "@/lib/format";
-import { ageLabel } from "@/lib/accountAge";
+import { ageLabel, isNumberKind } from "@/lib/accountAge";
 import GlassSelect from "@/components/ui/GlassSelect";
 import CountryFlag from "@/components/CountryFlag";
 
