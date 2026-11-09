@@ -6,6 +6,7 @@ import { useAppLang } from "@/lib/AppLanguageContext";
 import MarketBackdrop from "@/components/market/MarketBackdrop";
 import SellerHistory from "@/components/market/SellerHistory";
 import SellerAgeStock from "@/components/market/SellerAgeStock";
+import SellerNumberList from "@/components/market/SellerNumberList";
 
 // Each pool displays separate age listings, including repeated countries.
 export default function MarketSeller() {
@@ -83,6 +84,8 @@ export default function MarketSeller() {
         </div>
 
         <SellerHistory seller={seller} />
+
+        <SellerNumberList sellerEmail={seller.email} isSelf={seller.is_self} />
 
         <section className="mk-sec flex flex-col gap-3 lg:col-span-2">
           <div className="grid grid-cols-2 gap-2.5" role="tablist">
