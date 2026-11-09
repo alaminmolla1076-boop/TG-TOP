@@ -45,11 +45,11 @@ export default function MarketSeller() {
   return (
     <div className="relative">
       <MarketBackdrop />
-      <div className="relative z-10 flex flex-col gap-[22px]">
+      <div className="relative z-10 flex flex-col gap-[22px] lg:grid lg:grid-cols-2 lg:items-start lg:gap-6">
         <button
           type="button"
           onClick={() => navigate(-1)}
-          className="mk-fade -ml-1 flex w-fit cursor-pointer items-center gap-1 rounded-full px-2 py-1 text-[13px] font-semibold text-[#a8a3cf] transition-colors duration-200 hover:text-[#A29BFE] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#A29BFE]"
+          className="mk-fade -ml-1 flex w-fit cursor-pointer lg:col-span-2 items-center gap-1 rounded-full px-2 py-1 text-[13px] font-semibold text-[#a8a3cf] transition-colors duration-200 hover:text-[#A29BFE] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#A29BFE]"
         >
           <ChevronLeft className="h-4 w-4" strokeWidth={1.5} /> {t("c.back")}
         </button>
@@ -84,7 +84,7 @@ export default function MarketSeller() {
 
         <SellerHistory seller={seller} />
 
-        <section className="mk-sec flex flex-col gap-3">
+        <section className="mk-sec flex flex-col gap-3 lg:col-span-2">
           <div className="grid grid-cols-2 gap-2.5" role="tablist">
             {[
               { key: "nonspam", label: t("sl.nonSpam") },
