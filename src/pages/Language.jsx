@@ -1,6 +1,7 @@
 import React from "react";
 import { Languages, Check } from "lucide-react";
 import { useAppLang } from "@/lib/AppLanguageContext";
+import CountryFlag from "@/components/CountryFlag";
 
 // Language page — the same 10 languages the Telegram bot offers. Picking one
 // instantly re-renders every page in the app in that language.
@@ -20,7 +21,7 @@ export default function Language() {
       </div>
 
       <div className="flex flex-col gap-2.5 lg:grid lg:grid-cols-2">
-        {langs.map(({ code, label, flag }) => {
+        {langs.map(({ code, label, flag, iso }) => {
           const active = lang === code;
           return (
             <button
@@ -34,7 +35,7 @@ export default function Language() {
               }`}
             >
               <span className="flex items-center gap-2.5 text-sm font-semibold text-foreground">
-                <span className="text-base">{flag}</span>
+                <CountryFlag iso={iso} emoji={flag} label={label} />
                 {label}
               </span>
               {active && <Check className="h-4 w-4 text-[#A29BFE]" strokeWidth={2} />}
