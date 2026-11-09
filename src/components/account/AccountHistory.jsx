@@ -2,6 +2,7 @@ import React from "react";
 import { formatDate, formatMoney } from "@/lib/format";
 import { useAppLang } from "@/lib/AppLanguageContext";
 import { cn } from "@/lib/utils";
+import CountryFlag from "@/components/CountryFlag";
 import WithdrawList from "./WithdrawList";
 
 const rowClass =
@@ -12,6 +13,7 @@ const statusTone = {
   completed: "text-emerald-400",
   success: "text-emerald-400",
   paid: "text-emerald-400",
+  code_sent: "text-ring",
   rejected: "text-red-400",
   failed: "text-red-400",
   pending: "text-ring",
@@ -25,9 +27,10 @@ function Empty({ children }) {
   );
 }
 
-function Row({ title, sub, extra, amount, note, noteTone }) {
+function Row({ flagIso, title, sub, extra, amount, note, noteTone }) {
   return (
     <div className={rowClass}>
+      {flagIso ? <CountryFlag iso={flagIso} className="mt-0.5" /> : null}
       <div className="min-w-0 flex-1">
         <p className="truncate text-[13.5px] font-semibold text-foreground">{title}</p>
         <p className="mt-0.5 truncate text-[11px] text-muted-foreground">{sub}</p>
@@ -58,30 +61,12 @@ function SubHead({ children }) {
 // Nordic Frost Glass — history panels switched from the stat buttons.
 export default function AccountHistory({ tab, data }) {
   const { t } = useAppLang();
-  const orders = data?.orders || [];
   const sales = data?.account_sales || [];
+  const stockRows = (data?.my_stock || []).filter((s) => Number(s.stock) > 0);
   const deposits = data?.deposits || [];
   const withdrawals = data?.withdrawals || [];
 
-  if (tab === "orders") {
-    if (!orders.length) return <Empty>{t("ah.none")}</Empty>;
-    return (
-      <div className="flex flex-col gap-2">
-        {orders.map((o) => (
-          <Row
-            key={o.id}
-            title={o.product_name}
-            sub={[o.category, formatDate(o.created_date)].filter(Boolean).join(" · ")}
-            amount={formatMoney(o.price)}
-            note={o.status}
-            noteTone={statusTone[o.status]}
-          />
-        ))}
-      </div>
-    );
-  }
-
-  if (tab === "sales") {
+  if (tab === "sold") {
     if (!sales.length) return <Empty>{t("ah.none")}</Empty>;
     return (
       <div className="flex flex-col gap-2">
@@ -90,11 +75,34 @@ export default function AccountHistory({ tab, data }) {
           return (
             <Row
               key={s.id}
+              flagIso={s.country_iso}
               title={s.phone_number || s.country_iso}
               sub={[s.country_iso, formatDate(s.created_date)].filter(Boolean).join(" · ")}
               amount={s.reward_amount != null ? formatMoney(s.reward_amount) : ""}
               note={state}
               noteTone={statusTone[state]}
+            />
+          );
+        })}
+      </div>
+    );
+  }
+
+  if (tab === "pending") {
+    if (!stockRows.length) return <Empty>{t("ah.none")}</Empty>;
+    return (
+      <div className="flex flex-col gap-2">
+        {stockRows.map((s) => {
+          const key = [s.country_iso, s.spam, s.age_category].join("|");
+          return (
+            <Row
+              key={key}
+              flagIso={s.country_iso}
+              title={s.country_name || s.country_iso}
+              sub={[s.age_category, s.spam ? "spam" : null].filter(Boolean).join(" · ")}
+              amount={"×" + s.stock}
+              note={s.price != null ? formatMoney(s.price) : ""}
+              noteTone="text-ring"
             />
           );
         })}
