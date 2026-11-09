@@ -7,7 +7,7 @@ const CHANNEL_URL = "https://t.me/tgtop_official";
 export default function Support() {
   const { t } = useAppLang();
   return (
-    <div className="mk-sec flex flex-col gap-4">
+    <div className="mk-sec mx-auto flex w-full flex-col gap-4 lg:max-w-3xl">
       <div className="flex items-center gap-3">
         <span className="flex h-11 w-11 items-center justify-center rounded-full border border-[#A29BFE]/40 bg-[rgba(108,92,231,.14)]">
           <LifeBuoy className="h-5 w-5 text-[#A29BFE]" strokeWidth={1.5} />
