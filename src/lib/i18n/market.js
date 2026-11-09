@@ -503,4 +503,13 @@ export const MARKET = {
     en: "No accounts in this age right now — check back soon.", bn: "এই বয়সের অ্যাকাউন্ট এখন নেই — শীঘ্রই আবার দেখুন।", zh: "该年龄段暂无账户——敬请期待。", es: "No hay cuentas de esta edad ahora mismo — vuelve pronto.", hi: "इस उम्र के खाते अभी नहीं हैं — जल्द फिर देखें।",
     ar: "لا توجد حسابات بهذا العمر حاليًا — تفضل بزيارتنا قريبًا.", fr: "Aucun compte de cet âge pour le moment — revenez bientôt.", ru: "Аккаунтов этого возраста сейчас нет — заглядывайте позже.", pt: "Sem contas dessa idade agora — volte em breve.", de: "Derzeit keine Konten in diesem Alter — schau bald wieder vorbei.",
   },
+  "mk.numberBought": {
+    en: "Number bought", bn: "নাম্বার কেনা হয়েছে",
+  },
+  "mk.numberBuyFailed": {
+    en: "Could not buy this number", bn: "এই নাম্বারটি কেনা যায়নি",
+  },
+  "pr.password": {
+    en: "Login password", bn: "লগইন পাসওয়ার্ড",
+  },
 };
