@@ -328,4 +328,27 @@ export const SELL = {
     pt: "A idade {selected} não corresponde à estimativa do ID Telegram ({actual}). Nada foi adicionado nem alterado. Corrija a seleção abaixo e tente novamente.",
     de: "Das Alter {selected} passt nicht zur Telegram-ID-Schätzung ({actual}). Kein Bestand hinzugefügt, kein Alter geändert. Auswahl unten korrigieren und erneut prüfen.",
   },
+  "ag.vip": {
+    en: "VIP Number", bn: "VIP নাম্বার", zh: "VIP 号码", es: "Número VIP", hi: "VIP नंबर",
+    ar: "رقم VIP", fr: "Numéro VIP", ru: "VIP-номер", pt: "Número VIP", de: "VIP-Nummer",
+  },
+  "ag.p888": {
+    en: "+888 Number", bn: "+888 নাম্বার", zh: "+888 号码", es: "Número +888", hi: "+888 नंबर",
+    ar: "رقم +888", fr: "Numéro +888", ru: "Номер +888", pt: "Número +888", de: "+888-Nummer",
+  },
+  "s1.numbers": {
+    en: "VIP / +888 numbers", bn: "VIP / +888 নাম্বার",
+  },
+  "s1.numberPriceHint": {
+    en: "Every VIP and +888 number keeps its own price — set a price for each number to list it on the market.",
+    bn: "প্রতিটি VIP ও +888 নাম্বারের দাম আলাদা — নাম্বারটি মার্কেটে তুলতে এখানে তার নিজের দাম দিন।",
+  },
+  "s1.noNumbers": {
+    en: "No VIP or +888 numbers yet. Sell one above, then set its own price here.",
+    bn: "এখনো কোনো VIP বা +888 নাম্বার নেই। উপরে একটি সেল করুন, তারপর এখানে তার নিজের দাম দিন।",
+  },
+  "sd.numberPrice": {
+    en: "This number is saved. Set its own price in the VIP / +888 panel to put it on the market.",
+    bn: "নাম্বারটি সেভ হয়েছে। মার্কেটে তুলতে VIP / +888 প্যানেলে এর নিজের দাম দিন।",
+  },
 };
