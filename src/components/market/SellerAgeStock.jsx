@@ -9,7 +9,8 @@ export default function SellerAgeStock({ seller, pool }) {
   const { t } = useAppLang();
   const field = pool === "spam" ? "spam_stock" : "nonspam_stock";
   const groups = (seller.age_groups || [])
-    .filter((group) => Number(group[field]) > 0)
+    // VIP / +888 numbers are single listings, shown in their own section.
+    .filter((group) => Number(group[field]) > 0 && !isNumberKind(group.category))
     .sort((a, b) => AGE_OPTIONS.findIndex((o) => o.value === a.category) - AGE_OPTIONS.findIndex((o) => o.value === b.category));
   if (!groups.length) return <p className="rounded-2xl border border-dashed border-ring/25 bg-card/60 p-4 text-sm text-muted-foreground">{t(pool === "spam" ? "sl.noSpamStock" : "sl.noNonSpamStock")}</p>;
   return (
