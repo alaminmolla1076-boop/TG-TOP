@@ -8,7 +8,7 @@ export default function useSellFlow(onDone) {
   const { invoke } = useTgIdentity();
   const { t } = useAppLang();
   const pending = useRef(false);
-  const [step, setStep] = useState("age");
+  const [step, setStep] = useState("phone");
   const [phone, setPhone] = useState("");
   // Age bucket the seller picked for this sale — checked against the
   // account's real age (estimated from its Telegram user ID) at verify.
@@ -61,14 +61,6 @@ export default function useSellFlow(onDone) {
     }
   }
 
-  // Age first: the sale may only start once the seller fixed the age.
-  function nextFromAge(event) {
-    event?.preventDefault?.();
-    if (!age) { setError(t("sp.ageLabel")); return; }
-    setError("");
-    setStep("phone");
-  }
-
   async function verifyCode(event) {
     event.preventDefault();
     if (pending.current || !requestId || !code.trim()) return;
@@ -119,7 +111,7 @@ export default function useSellFlow(onDone) {
 
   function back() {
     if (pending.current) return;
-    setStep("age");
+    setStep("phone");
     setCode("");
     setRequestId("");
     setResult(null);
@@ -132,5 +124,5 @@ export default function useSellFlow(onDone) {
     setAge("");
   }
 
-  return { step, phone, setPhone, age, setAge, code, setCode, requestId, result, busy, error, sendCode, verifyCode, nextFromAge, back, reset };
+  return { step, phone, setPhone, age, setAge, code, setCode, requestId, result, busy, error, sendCode, verifyCode, back, reset };
 }
