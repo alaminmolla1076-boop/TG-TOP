@@ -84,7 +84,7 @@ export default function PurchasedAccounts({ purchases, batches = [], emptyText }
           {emptyText || t("pr.none")}
         </div>
       ) : (
-        <>
+        <div className="flex flex-col gap-2.5 lg:grid lg:grid-cols-2 lg:items-start">
           {batches.map((b) => {
             const dl = downloads[b.batch_id];
             return (
@@ -183,7 +183,7 @@ export default function PurchasedAccounts({ purchases, batches = [], emptyText }
               </div>
             );
           })}
-        </>
+        </div>
       )}
     </section>
   );
