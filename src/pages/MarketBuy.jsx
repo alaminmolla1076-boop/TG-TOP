@@ -147,7 +147,7 @@ export default function MarketBuy() {
   return (
     <div className="relative">
       <MarketBackdrop />
-      <div className="relative z-10 flex flex-col gap-[22px]">
+      <div className="relative z-10 mx-auto flex w-full flex-col gap-[22px] lg:max-w-2xl">
         <button
           type="button"
           onClick={() => navigate(-1)}
