@@ -23,7 +23,7 @@ export default function Deposit() {
 
   if (wizardOpen) {
     return (
-      <div className="mx-auto max-w-md">
+      <div className="mx-auto w-full max-w-md lg:max-w-xl">
         <TopUpWizard onDone={() => { setWizardOpen(false); load(true); }} onClose={() => setWizardOpen(false)} />
       </div>
     );
@@ -32,7 +32,7 @@ export default function Deposit() {
   const deposits = data?.deposits || [];
 
   return (
-    <div className="mx-auto max-w-md space-y-6">
+    <div className="mx-auto w-full max-w-md space-y-6 lg:grid lg:max-w-5xl lg:grid-cols-2 lg:items-start lg:gap-6 lg:space-y-0">
       <button
         type="button"
         onClick={() => setWizardOpen(true)}
@@ -65,7 +65,7 @@ export default function Deposit() {
       </section>
 
       {data?.role === "admin" && (
-        <section className="space-y-3">
+        <section className="space-y-3 lg:col-span-2">
           <div className="flex items-center gap-2">
             <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/15 text-primary">
               <ShieldCheck className="h-4 w-4" />
