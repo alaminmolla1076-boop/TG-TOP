@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { Check, Copy, Download, KeyRound, Package } from "lucide-react";
 import { useTgIdentity } from "@/lib/TgIdentityContext";
 import { useAppLang } from "@/lib/AppLanguageContext";
 import SectionHead from "./SectionHead";
+import { getMyNumberPasswords } from "@/api/vipNumbers";
 import CountryFlag from "@/components/CountryFlag";
 
 // Capsule List — purchase history. Single purchases fetch their captured
@@ -16,6 +17,14 @@ export default function PurchasedAccounts({ purchases, batches = [], emptyText }
   const [codes, setCodes] = useState({}); // { [accountId]: { loading, code, error } }
   const [downloads, setDownloads] = useState({}); // { [batchId]: { loading } }
   const [copied, setCopied] = useState(null);
+  // Bought VIP / +888 numbers keep their Telegram 2FA password.
+  const [passwords, setPasswords] = useState({});
+
+  useEffect(() => {
+    getMyNumberPasswords()
+      .then((rows) => setPasswords(Object.fromEntries(rows.map((r) => [r.account_id, r.password]))))
+      .catch(() => {});
+  }, []);
 
   const loading = purchases === null;
   const empty = !loading && purchases.length === 0 && batches.length === 0;
@@ -151,6 +160,13 @@ export default function PurchasedAccounts({ purchases, batches = [], emptyText }
                     <p className="truncate text-[13px] text-[#a8a3cf]">{p.country_name}</p>
                   </div>
                 </div>
+
+                {passwords[p.id] && (
+                  <p className="rounded-full border border-[#A29BFE]/30 bg-[rgba(45,38,78,.7)] px-4 py-2 text-center font-mono text-[12px] text-[#a8a3cf]">
+                    <span className="mr-1.5 font-body text-[10px] font-semibold uppercase tracking-[.08em] text-[#A29BFE]">{t("pr.password")}</span>
+                    {passwords[p.id]}
+                  </p>
+                )}
 
                 {state?.code ? (
                   <div className="flex gap-2">
