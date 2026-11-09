@@ -5,6 +5,7 @@ import SellWizard from "@/components/sell/SellWizard";
 import StockPricesPanel from "@/components/sell/StockPricesPanel";
 import { formatMoney } from "@/lib/format";
 import { useAppLang } from "@/lib/AppLanguageContext";
+import NumberPricePanel from "@/components/sell/NumberPricePanel";
 
 // Nordic Frost Glass — frosted status badges for account sales.
 const saleStatusStyle = {
@@ -49,8 +50,9 @@ export default function Sell() {
 
   return (
     <div className="mx-auto flex w-full max-w-md flex-col gap-4 lg:grid lg:max-w-none lg:grid-cols-2 lg:items-start lg:gap-6">
-      <div className="og-rise relative z-10">
+      <div className="og-rise relative z-10 flex flex-col gap-4">
         <StockPricesPanel stock={stock} countries={countries} onSaved={() => load(true)} />
+        <NumberPricePanel />
       </div>
 
       <div className="og-rise [animation-delay:.2s]">
