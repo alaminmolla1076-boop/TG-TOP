@@ -27,6 +27,11 @@ export default function SellDoneStep({ result, onReset }) {
         {descB}
       </p>
       <AccountAgeSummary result={result} />
+      {result?.number_kind && (
+        <p className="mt-3 rounded-2xl border border-ring/30 bg-ring/[.10] p-3 text-[11px] leading-[1.55] text-[#C9C4FF]">
+          {t("sd.numberPrice")}
+        </p>
+      )}
       <div className="mt-6 pt-4">
         <button
           type="button"
