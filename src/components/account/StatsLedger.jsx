@@ -1,14 +1,14 @@
 import React from "react";
-import { ShoppingBag, TrendingUp, ReceiptText } from "lucide-react";
+import { TrendingUp, Clock3, ReceiptText } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAppLang } from "@/lib/AppLanguageContext";
 
-// Nordic Frost Glass — compact switcher: Orders / Sales / Record.
-export default function StatsLedger({ orders, sales, records, value, onChange }) {
+// Nordic Frost Glass — compact switcher: Sold / Pending / Record.
+export default function StatsLedger({ sold, pending, records, value, onChange }) {
   const { t } = useAppLang();
   const items = [
-    { key: "orders", label: t("a.orders"), count: orders, icon: ShoppingBag },
-    { key: "sales", label: t("a.sales"), count: sales, icon: TrendingUp },
+    { key: "sold", label: t("a.sold"), count: sold, icon: TrendingUp },
+    { key: "pending", label: t("a.pending"), count: pending, icon: Clock3 },
     { key: "record", label: t("a.record"), count: records, icon: ReceiptText },
   ];
 
