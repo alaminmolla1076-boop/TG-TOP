@@ -3,6 +3,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Check, Copy, KeyRound } from "lucide-react";
 import { useTgIdentity } from "@/lib/TgIdentityContext";
 import { useAppLang } from "@/lib/AppLanguageContext";
+import CountryFlag from "@/components/CountryFlag";
 
 // Purchase success card shown right on the buy page: the bought number with a
 // copy button and Get Code, so the buyer can log in without leaving the page.
@@ -45,7 +46,7 @@ export default function PurchaseResult({ account, flag, countryName }) {
       <div className="flex flex-col gap-2.5 rounded-[26px] border border-[#A29BFE]/[.22] bg-[rgba(45,38,78,.5)] p-3.5">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#A29BFE]/40 bg-[rgba(108,92,231,.14)] text-base font-bold text-[#A29BFE]">
-            {flag || account.country_iso}
+            <CountryFlag iso={account.country_iso} emoji={flag} label={countryName} />
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
