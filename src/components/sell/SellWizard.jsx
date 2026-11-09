@@ -1,16 +1,18 @@
 import React from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Smartphone, KeyRound, ShieldCheck, PackageCheck } from "lucide-react";
+import { Smartphone, KeyRound, ShieldCheck, PackageCheck, CalendarDays } from "lucide-react";
 import useSellFlow from "@/components/sell/useSellFlow";
 import { useAppLang } from "@/lib/AppLanguageContext";
 import SellPhoneStep from "./steps/SellPhoneStep";
 import SellCodeStep from "./steps/SellCodeStep";
 import SellProcessStep from "./steps/SellProcessStep";
 import SellDoneStep from "./steps/SellDoneStep";
+import SellAgeStep from "./steps/SellAgeStep";
 import DesignStepWrap from "./DesignStepWrap";
 
 // Watermark identity per page — a huge faint outlined glyph behind the heading.
 const WATERMARKS = {
+  age: CalendarDays,
   phone: Smartphone,
   code: KeyRound,
   secure: ShieldCheck,
@@ -20,7 +22,7 @@ const WATERMARKS = {
 // Step-by-step sell flow: the number → login code → system login + 2FA →
 // stock steps appear one at a time, like the Top Up and Withdraw wizards.
 export default function SellWizard({ onDone }) {
-  const { step, phone, setPhone, age, setAge, code, setCode, requestId, result, busy, error, sendCode, verifyCode, back, reset } = useSellFlow(onDone);
+  const { step, phone, setPhone, age, setAge, code, setCode, requestId, result, busy, error, sendCode, verifyCode, nextFromAge, back, reset } = useSellFlow(onDone);
   const { t } = useAppLang();
   const WatermarkIcon = WATERMARKS[step] || Smartphone;
 
@@ -44,8 +46,11 @@ export default function SellWizard({ onDone }) {
             exit={{ opacity: 0, x: -24 }}
             transition={{ duration: 0.22 }}
           >
+            {step === "age" && (
+              <SellAgeStep age={age} onAge={setAge} onNext={nextFromAge} />
+            )}
             {step === "phone" && (
-              <SellPhoneStep phone={phone} onPhone={setPhone} age={age} onAge={setAge} onSubmit={sendCode} busy={busy} />
+              <SellPhoneStep phone={phone} onPhone={setPhone} age={age} onSubmit={sendCode} busy={busy} onBack={back} />
             )}
             {step === "code" && (
               <SellCodeStep
