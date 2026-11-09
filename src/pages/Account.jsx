@@ -37,7 +37,7 @@ export default function Account() {
 
   if (wizardOpen) {
     return (
-      <div className="mx-auto max-w-md">
+      <div className="mx-auto w-full max-w-md lg:max-w-xl">
         <WithdrawWizard
           balance={Number(data?.balance) || 0}
           onDone={() => { setWizardOpen(false); load(true); }}
@@ -52,33 +52,37 @@ export default function Account() {
         aria-hidden
         src={BACKDROP_URL}
         alt=""
-        className="fixed inset-x-0 top-0 z-0 h-[520px] w-full object-cover opacity-55"
+        className="fixed inset-x-0 top-0 z-0 h-[520px] w-full object-cover opacity-55 lg:left-[264px] lg:h-[420px]"
       />
       <div
         aria-hidden
-        className="fixed inset-x-0 top-0 z-0 h-[520px] bg-gradient-to-b from-background/20 to-background"
+        className="fixed inset-x-0 top-0 z-0 h-[520px] bg-gradient-to-b from-background/20 to-background lg:left-[264px] lg:h-[420px]"
       />
-      <div className="relative z-10 flex flex-col gap-4">
-        <AccountHero identity={identity} data={data} onWithdraw={() => setWizardOpen(true)} />
-        <StatsLedger orders={data?.orders?.length ?? 0} sales={data?.account_sales?.length ?? 0} />
+      <div className="relative z-10 flex flex-col gap-4 lg:grid lg:grid-cols-2 lg:items-start lg:gap-6">
+        <div className="flex flex-col gap-4">
+          <AccountHero identity={identity} data={data} onWithdraw={() => setWizardOpen(true)} />
+          <StatsLedger orders={data?.orders?.length ?? 0} sales={data?.account_sales?.length ?? 0} />
 
-        <section className="og-rise flex flex-col gap-2.5 [animation-delay:.55s]">
-          <SectionHeader icon={<Wallet className="h-3.5 w-3.5 text-ring" strokeWidth={1.5} />}>
-            {t("wl.mine")}
-          </SectionHeader>
-          <WithdrawList withdrawals={data?.withdrawals || []} />
-        </section>
-
-        <ServiceBand referralLink={referralLink} />
-
-        {data?.role === "admin" && (
-          <section className="og-rise flex flex-col gap-2.5 [animation-delay:.8s]">
-            <SectionHeader icon={<ShieldCheck className="h-3.5 w-3.5 text-ring" strokeWidth={1.5} />}>
-              {t("wd.all")}
+          <section className="og-rise flex flex-col gap-2.5 [animation-delay:.55s]">
+            <SectionHeader icon={<Wallet className="h-3.5 w-3.5 text-ring" strokeWidth={1.5} />}>
+              {t("wl.mine")}
             </SectionHeader>
-            <AdminWithdrawals pending={data?.pending_withdrawals || []} onChanged={() => load(true)} />
+            <WithdrawList withdrawals={data?.withdrawals || []} />
           </section>
-        )}
+        </div>
+
+        <div className="flex flex-col gap-4">
+          <ServiceBand referralLink={referralLink} />
+
+          {data?.role === "admin" && (
+            <section className="og-rise flex flex-col gap-2.5 [animation-delay:.8s]">
+              <SectionHeader icon={<ShieldCheck className="h-3.5 w-3.5 text-ring" strokeWidth={1.5} />}>
+                {t("wd.all")}
+              </SectionHeader>
+              <AdminWithdrawals pending={data?.pending_withdrawals || []} onChanged={() => load(true)} />
+            </section>
+          )}
+        </div>
       </div>
     </div>
   );
