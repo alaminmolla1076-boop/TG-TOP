@@ -14,6 +14,7 @@ import Market from '@/pages/Market';
 import MarketSeller from '@/pages/MarketSeller';
 import MarketBuy from '@/pages/MarketBuy';
 import Sell from '@/pages/Sell';
+import Inventory from '@/pages/Inventory';
 import Account from '@/pages/Account';
 import Deposit from '@/pages/Deposit';
 import Withdraw from '@/pages/Withdraw';
@@ -66,6 +67,7 @@ const AuthenticatedApp = () => {
           <Route path="/market" element={<Navigate to="/" replace />} />
           <Route path="/market/seller/:sellerId" element={<MarketSeller />} />
           <Route path="/market/buy/:sellerId/:countryIso" element={<MarketBuy />} />
+          <Route path="/inventory" element={<Inventory />} />
           <Route path="/sell" element={<Sell />} />
           <Route path="/account" element={<Account />} />
           <Route path="/deposit" element={<Deposit />} />
