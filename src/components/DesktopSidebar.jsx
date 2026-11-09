@@ -10,7 +10,7 @@ import {
   LifeBuoy,
   ShieldCheck,
   Store,
-  Upload,
+  Package,
   User,
   Wallet,
 } from "lucide-react";
@@ -37,7 +37,7 @@ export default function DesktopSidebar({ balance }) {
   const primary = [
     { to: "/home", label: t("nav.dashboard"), icon: LayoutDashboard },
     { to: "/", label: t("nav.market"), icon: Store, end: true },
-    { to: "/sell", label: t("nav.sell"), icon: Upload },
+    { to: "/inventory", label: t("nav.inventory"), icon: Package },
     { to: "/account", label: t("nav.account"), icon: User },
   ];
 
