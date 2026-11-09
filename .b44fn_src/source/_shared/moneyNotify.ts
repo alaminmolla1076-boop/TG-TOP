@@ -8,7 +8,7 @@ import { notifyAdmins, notifyUser, resolveUserChatId, supportKeyboard } from './
 // User-facing lines are localized in the user's own bot language
 // (BotState key "lang:<telegramId>"); admin alerts stay in English.
 
-const ADMIN_URL = 'https://tg-tops.base44.app/admin';
+const ADMIN_URL = `${(Deno.env.get('APP_URL') || 'https://tgtop-merkat.vercel.app').replace(/\/+$/, '')}/admin`;
 const FEE = 0.1;
 
 // Localized strings — 10 bot languages, English fallback.
