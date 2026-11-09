@@ -23,7 +23,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-[22px]">
+    <div className="flex flex-col gap-[22px] lg:mx-auto lg:w-full lg:max-w-5xl">
       <PurchasedAccounts
         purchases={purchases}
         batches={batches === null ? [] : batches}
