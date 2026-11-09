@@ -5,6 +5,7 @@ import SectionHead from "./SectionHead";
 import { useAppLang } from "@/lib/AppLanguageContext";
 import { formatMoney } from "@/lib/format";
 import { ageCountryCatalog } from "@/lib/marketAges";
+import CountryFlag from "@/components/CountryFlag";
 
 const poolTagClass = (spam) =>
   `shrink-0 rounded-full px-2 py-px text-[10px] font-bold ${
@@ -39,7 +40,7 @@ export default function AgeCountryList({ sellers, category }) {
           >
             <div className="flex items-center gap-3 rounded-full border border-[#A29BFE]/25 bg-[rgba(20,16,43,.45)] py-2.5 pl-2.5 pr-4">
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#A29BFE]/40 bg-[rgba(108,92,231,.14)] text-base font-bold text-[#A29BFE]">
-                {c.flag || c.country_iso}
+                <CountryFlag iso={c.country_iso} emoji={c.flag} label={c.country_name} />
               </div>
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-[15px] font-medium text-foreground">
