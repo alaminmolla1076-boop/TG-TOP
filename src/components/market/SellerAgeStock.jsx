@@ -1,7 +1,7 @@
 import React from "react";
 import { Hourglass } from "lucide-react";
 import { useAppLang } from "@/lib/AppLanguageContext";
-import { AGE_OPTIONS, ageLabel } from "@/lib/accountAge";
+import { AGE_OPTIONS, ageLabel, isNumberKind } from "@/lib/accountAge";
 import SectionHead from "@/components/market/SectionHead";
 import SellerCountryCard from "@/components/market/SellerCountryCard";
 
