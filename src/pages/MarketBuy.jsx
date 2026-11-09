@@ -46,7 +46,7 @@ export default function MarketBuy() {
         setEntry(seller && country ? { seller, country } : null);
         const ages = (country?.ages || [])
           .map((a) => ({ ...a, stock: pool === "spam" ? a.spam_stock : a.nonspam_stock }))
-          .filter((a) => Number(a.stock) > 0);
+          .filter((a) => Number(a.stock) > 0 && !isNumberKind(a.category));
         // Age preselected from the seller page (?age=), else Regular, else first.
         const wanted = new URLSearchParams(window.location.search).get("age");
         setAge(
@@ -67,7 +67,7 @@ export default function MarketBuy() {
       stock: pool === "spam" ? a.spam_stock : a.nonspam_stock,
       price: pool === "spam" ? a.spam_price ?? a.price : a.nonspam_price ?? a.price,
     }))
-    .filter((a) => Number(a.stock) > 0 || a.category === age);
+    .filter((a) => (Number(a.stock) > 0 || a.category === age) && !isNumberKind(a.category));
   const ageInfo = poolAges.find((a) => a.category === age) || null;
 
   const stock = age
