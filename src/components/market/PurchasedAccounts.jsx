@@ -94,22 +94,22 @@ export default function PurchasedAccounts({ purchases, batches = [], emptyText }
           {emptyText || t("pr.none")}
         </div>
       ) : (
-        <div className="flex flex-col gap-2.5 lg:grid lg:grid-cols-2 lg:items-start">
+        <div className="flex flex-col gap-2 lg:grid lg:grid-cols-2 lg:items-start">
           {batches.map((b) => {
             const dl = downloads[b.batch_id];
             return (
               <div
                 key={b.batch_id}
-                className="flex items-center gap-3 rounded-[26px] border border-[#A29BFE]/[.22] bg-[rgba(45,38,78,.5)] p-3.5"
+                className="flex items-center gap-2.5 rounded-[18px] border border-[#A29BFE]/[.22] bg-[rgba(45,38,78,.5)] px-3 py-2"
               >
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#A29BFE]/40 bg-[rgba(108,92,231,.14)] text-base font-bold text-[#A29BFE]">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#A29BFE]/40 bg-[rgba(108,92,231,.14)] text-[13px] font-bold text-[#A29BFE]">
                   <CountryFlag iso={b.country_iso} emoji={b.flag} label={b.country_name} />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="min-w-0 truncate text-[15px] font-medium text-foreground">
+                  <p className="min-w-0 truncate text-[13px] font-medium text-foreground">
                     {t("pr.sessions", { n: b.account_count })}
                   </p>
-                  <p className="truncate text-[13px] text-[#a8a3cf]">
+                  <p className="truncate text-[11px] text-[#a8a3cf]">
                     {t("pr.zipLine", { country: b.country_name })}
                   </p>
                 </div>
@@ -117,7 +117,7 @@ export default function PurchasedAccounts({ purchases, batches = [], emptyText }
                   type="button"
                   onClick={() => handleDownload(b)}
                   disabled={dl?.loading}
-                  className="flex shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-full border-0 bg-gradient-to-br from-[#6C5CE7] to-[#8E7DFF] px-[16px] py-2.5 text-xs font-semibold text-white shadow-[0_6px_18px_rgba(108,92,231,.5)] transition-opacity duration-200 hover:opacity-90 active:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A29BFE] disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-full border-0 bg-gradient-to-br from-[#6C5CE7] to-[#8E7DFF] px-3.5 py-[7px] text-[11px] font-semibold text-white shadow-[0_6px_18px_rgba(108,92,231,.5)] transition-opacity duration-200 hover:opacity-90 active:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A29BFE] disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <Download className="h-4 w-4" strokeWidth={1.5} />
                   {dl?.loading ? t("c.sending") : t("pr.download")}
@@ -131,22 +131,22 @@ export default function PurchasedAccounts({ purchases, batches = [], emptyText }
             return (
               <div
                 key={p.id}
-                className="flex flex-col gap-2.5 rounded-[26px] border border-[#A29BFE]/[.22] bg-[rgba(45,38,78,.5)] p-3.5"
+                className="flex flex-col gap-2 rounded-[18px] border border-[#A29BFE]/[.22] bg-[rgba(45,38,78,.5)] px-3 py-2"
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#A29BFE]/40 bg-[rgba(108,92,231,.14)] text-base font-bold text-[#A29BFE]">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#A29BFE]/40 bg-[rgba(108,92,231,.14)] text-[13px] font-bold text-[#A29BFE]">
                     <CountryFlag iso={p.country_iso} emoji={p.flag} label={p.country_name} />
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <p className="min-w-0 truncate text-[15px] font-medium text-foreground">
+                      <p className="min-w-0 truncate text-[13px] font-medium text-foreground">
                         {p.phone_number || p.country_name}
                       </p>
                       {p.phone_number && (
                         <button
                           type="button"
                           onClick={() => handleCopy(p.phone_number)}
-                          className="flex shrink-0 cursor-pointer items-center justify-center rounded-full border border-[#A29BFE]/30 bg-[rgba(45,38,78,.7)] p-1.5 text-[#A29BFE] transition-[border-color] duration-200 hover:border-[#A29BFE]/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#A29BFE]"
+                          className="flex shrink-0 cursor-pointer items-center justify-center rounded-full border border-[#A29BFE]/30 bg-[rgba(45,38,78,.7)] p-1 text-[#A29BFE] transition-[border-color] duration-200 hover:border-[#A29BFE]/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#A29BFE]"
                           aria-label="Copy number"
                         >
                           {copied === p.phone_number ? (
@@ -157,12 +157,12 @@ export default function PurchasedAccounts({ purchases, batches = [], emptyText }
                         </button>
                       )}
                     </div>
-                    <p className="truncate text-[13px] text-[#a8a3cf]">{p.country_name}</p>
+                    <p className="truncate text-[11px] text-[#a8a3cf]">{p.country_name}</p>
                   </div>
                 </div>
 
                 {passwords[p.id] && (
-                  <p className="rounded-full border border-[#A29BFE]/30 bg-[rgba(45,38,78,.7)] px-4 py-2 text-center font-mono text-[12px] text-[#a8a3cf]">
+                  <p className="rounded-full border border-[#A29BFE]/30 bg-[rgba(45,38,78,.7)] px-3 py-1 text-center font-mono text-[11px] text-[#a8a3cf]">
                     <span className="mr-1.5 font-body text-[10px] font-semibold uppercase tracking-[.08em] text-[#A29BFE]">{t("pr.password")}</span>
                     {passwords[p.id]}
                   </p>
@@ -170,7 +170,7 @@ export default function PurchasedAccounts({ purchases, batches = [], emptyText }
 
                 {state?.code ? (
                   <div className="flex gap-2">
-                    <p className="min-w-0 flex-1 rounded-full border border-[#A29BFE]/30 bg-[rgba(45,38,78,.7)] px-4 py-2.5 text-center font-mono text-base font-bold tracking-[.3em] text-[#A29BFE]">
+                    <p className="min-w-0 flex-1 rounded-full border border-[#A29BFE]/30 bg-[rgba(45,38,78,.7)] px-3 py-1.5 text-center font-mono text-[13px] font-bold tracking-[.25em] text-[#A29BFE]">
                       {state.code}
                     </p>
                     <button
@@ -188,7 +188,7 @@ export default function PurchasedAccounts({ purchases, batches = [], emptyText }
                     type="button"
                     onClick={() => handleGetCode(p)}
                     disabled={state?.loading}
-                    className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-full border-0 bg-gradient-to-br from-[#6C5CE7] to-[#8E7DFF] px-[18px] py-3 text-[13px] font-semibold text-white shadow-[0_6px_18px_rgba(108,92,231,.5)] transition-opacity duration-200 hover:opacity-90 active:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A29BFE] disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-full border-0 bg-gradient-to-br from-[#6C5CE7] to-[#8E7DFF] px-3.5 py-[7px] text-[11px] font-semibold text-white shadow-[0_6px_18px_rgba(108,92,231,.5)] transition-opacity duration-200 hover:opacity-90 active:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A29BFE] disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <KeyRound className="h-4 w-4" strokeWidth={1.5} />
                     {state?.loading ? t("c.fetchingCode") : t("c.getCode")}
