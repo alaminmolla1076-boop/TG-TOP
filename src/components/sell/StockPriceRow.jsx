@@ -4,6 +4,7 @@ import { AGE_OPTIONS, ageLabel } from "@/lib/accountAge";
 import StockPoolPrice from "./StockPoolPrice";
 import GlassSelect from "@/components/ui/GlassSelect";
 import StockAgeList from "@/components/sell/StockAgeList";
+import CountryFlag from "@/components/CountryFlag";
 
 const tabClass = (active, spam) =>
   `flex-1 cursor-pointer rounded-full border px-3 py-2 text-[10px] font-bold uppercase tracking-[.08em] transition-colors duration-200 ${
@@ -76,7 +77,7 @@ export default function StockPriceRow({ country, pools, getValue, isBusy, onValu
     <div className="rounded-3xl border border-ring/[.22] bg-card/75 px-[18px] py-4 shadow-[inset_0_1px_0_rgba(255,255,255,.06),0_6px_16px_rgba(0,0,0,.28)]">
       <div className="flex items-center gap-3">
         <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-ring/25 bg-secondary/80 text-lg">
-          {country.flag || country.country_iso}
+          <CountryFlag iso={country.country_iso} emoji={country.flag} label={country.country_name} />
         </div>
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold text-foreground">{country.country_name}</p>
