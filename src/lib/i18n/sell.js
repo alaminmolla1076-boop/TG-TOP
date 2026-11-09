@@ -1,5 +1,49 @@
 // Sell page: stock prices panel, wizard steps, sales list, flow errors.
 export const SELL = {
+  "inv.kicker": {
+    en: "Seller stock", bn: "সেলার স্টক", zh: "卖家库存", es: "Stock del vendedor", hi: "विक्रेता स्टॉक",
+    ar: "مخزون البائع", fr: "Stock vendeur", ru: "Товар продавца", pt: "Estoque do vendedor", de: "Verkäuferbestand",
+  },
+  "inv.title": {
+    en: "Inventory", bn: "ইনভেন্টরি", zh: "库存", es: "Inventario", hi: "इन्वेंटरी",
+    ar: "المخزون", fr: "Inventaire", ru: "Инвентарь", pt: "Inventário", de: "Bestand",
+  },
+  "inv.sell": {
+    en: "Sell account", bn: "অ্যাকাউন্ট সেল করুন", zh: "出售账号", es: "Vender cuenta", hi: "अकाउंट बेचें",
+    ar: "بيع حساب", fr: "Vendre un compte", ru: "Продать аккаунт", pt: "Vender conta", de: "Konto verkaufen",
+  },
+  "inv.sellDesc": {
+    en: "Choose the account age, log in the number and confirm the code.",
+    bn: "অ্যাকাউন্টের বয়স বেছে নিন, নাম্বারে লগইন করুন এবং কোড কনফার্ম করুন।",
+    zh: "选择账号年龄，登录号码并确认验证码。",
+    es: "Elige la edad de la cuenta, inicia sesión con el número y confirma el código.",
+    hi: "अकाउंट की उम्र चुनें, नंबर में लॉगिन करें और कोड कन्फर्म करें।",
+    ar: "اختر عمر الحساب، سجّل الدخول بالرقم وأكّد الرمز.",
+    fr: "Choisissez l'âge du compte, connectez le numéro et confirmez le code.",
+    ru: "Выберите возраст аккаунта, войдите в номер и подтвердите код.",
+    pt: "Escolha a idade da conta, faça login no número e confirme o código.",
+    de: "Wähle das Kontogeburtsjahr, melde die Nummer an und bestätige den Code.",
+  },
+  "sw.ageTitle": {
+    en: "Select account age", bn: "অ্যাকাউন্টের বয়স নির্বাচন করুন", zh: "选择账号年龄", es: "Elige la edad de la cuenta", hi: "अकाउंट की उम्र चुनें",
+    ar: "اختر عمر الحساب", fr: "Choisir l'âge du compte", ru: "Выберите возраст аккаунта", pt: "Escolha a idade da conta", de: "Kontogeburtsjahr wählen",
+  },
+  "sw.ageDesc": {
+    en: "Pick the age of the account you want to sell.",
+    bn: "যে অ্যাকাউন্টটি সেল করবেন তার বয়স বেছে নিন।",
+    zh: "选择你要出售的账号年龄。",
+    es: "Elige la edad de la cuenta que quieres vender.",
+    hi: "जो अकाउंट बेचना है उसकी उम्र चुनें।",
+    ar: "اختر عمر الحساب الذي تريد بيعه.",
+    fr: "Choisissez l'âge du compte à vendre.",
+    ru: "Выберите возраст продаваемого аккаунта.",
+    pt: "Escolha a idade da conta que deseja vender.",
+    de: "Wähle das Geburtsjahr des Kontos, das du verkaufen willst.",
+  },
+  "sw.ageContinue": {
+    en: "Continue", bn: "চালিয়ে যান", zh: "继续", es: "Continuar", hi: "जारी रखें",
+    ar: "متابعة", fr: "Continuer", ru: "Продолжить", pt: "Continuar", de: "Weiter",
+  },
   "s1.allCountries": {
     en: "All countries", bn: "সব দেশ", zh: "所有国家", es: "Todos los países", hi: "सभी देश",
     ar: "جميع الدول", fr: "Tous les pays", ru: "Все страны", pt: "Todos os países", de: "Alle Länder",
