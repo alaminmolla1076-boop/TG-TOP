@@ -52,7 +52,7 @@ export default function Sell() {
     <div className="mx-auto flex w-full max-w-md flex-col gap-4 lg:grid lg:max-w-none lg:grid-cols-2 lg:items-start lg:gap-6">
       <div className="og-rise relative z-10 flex flex-col gap-4">
         <StockPricesPanel stock={stock} countries={countries} onSaved={() => load(true)} />
-        <NumberPricePanel />
+        <NumberPricePanel key={sales?.length ?? 0} />
       </div>
 
       <div className="og-rise [animation-delay:.2s]">
