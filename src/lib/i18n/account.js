@@ -152,4 +152,12 @@ export const ACCOUNT = {
     en: "Nothing here yet", bn: "এখনো কিছু নেই", zh: "暂无记录", es: "Aún no hay nada", hi: "अभी कुछ नहीं",
     ar: "لا يوجد شيء بعد", fr: "Rien pour le moment", ru: "Пока ничего нет", pt: "Nada por aqui ainda", de: "Noch nichts hier",
   },
+  "a.sold": {
+    en: "Sold", bn: "বিক্রি হওয়া", zh: "已售", es: "Vendidos", hi: "बिके हुए",
+    ar: "المباعة", fr: "Vendus", ru: "Продано", pt: "Vendidos", de: "Verkauft",
+  },
+  "a.pending": {
+    en: "Pending", bn: "বিক্রি হয়নি", zh: "待售", es: "Pendientes", hi: "बिकने बाकी",
+    ar: "قيد الانتظار", fr: "En attente", ru: "Не продано", pt: "Pendentes", de: "Ausstehend",
+  },
 };
