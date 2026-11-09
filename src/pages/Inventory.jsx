@@ -64,9 +64,12 @@ export default function Inventory() {
           </div>
           <Link
             to="/sell"
-            className="hidden shrink-0 items-center gap-2 rounded-full border border-white/15 bg-gradient-to-br from-[#6C5CE7] to-[#8E7DFF] px-4 py-2.5 text-[12px] font-semibold tracking-[.01em] no-underline text-white shadow-[0_8px_20px_-6px_rgba(108,92,231,.8)] transition-[filter,transform] duration-200 hover:brightness-110 active:scale-[.97] lg:flex"
+            className="hidden shrink-0 items-center gap-2 rounded-full border border-white/20 bg-[#2487e4] px-4 py-2.5 text-[12px] font-semibold tracking-[.01em] no-underline text-white shadow-[0_8px_20px_-6px_rgba(36,135,228,.8)] transition-[filter,transform] duration-200 hover:brightness-110 active:scale-[.97] lg:flex"
           >
-            <Plus className="h-4 w-4" strokeWidth={2.4} /> {t("inv.sell")}
+            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-white/45 bg-white/15">
+              <Plus className="h-3 w-3" strokeWidth={2.6} />
+            </span>
+            {t("inv.sell")}
           </Link>
         </div>
         <p className="text-[11px] text-muted-foreground">{t("inv.sellDesc")}</p>
@@ -117,9 +120,12 @@ export default function Inventory() {
       </section>
       <Link
         to="/sell"
-        className="fixed inset-x-0 bottom-[104px] z-40 mx-auto flex w-[66%] max-w-[260px] items-center justify-center gap-2 rounded-full border border-white/15 bg-gradient-to-br from-[#6C5CE7] to-[#8E7DFF] px-5 py-3 text-[12.5px] font-semibold tracking-[.01em] no-underline text-white shadow-[0_10px_24px_-6px_rgba(108,92,231,.8)] backdrop-blur-sm transition-[transform,filter] duration-200 hover:brightness-110 active:scale-[.97] lg:hidden"
+        className="fixed inset-x-0 bottom-[104px] z-40 mx-auto flex w-[68%] max-w-[272px] items-center justify-center gap-2.5 rounded-full border border-white/20 bg-[#2487e4] px-5 py-3 text-[13px] font-semibold tracking-[.01em] no-underline text-white shadow-[0_10px_24px_-6px_rgba(36,135,228,.8)] transition-[transform,filter] duration-200 hover:brightness-110 active:scale-[.97] lg:hidden"
       >
-        <Plus className="h-4 w-4" strokeWidth={2.4} /> {t("inv.sell")}
+        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-white/45 bg-white/15">
+          <Plus className="h-3.5 w-3.5" strokeWidth={2.6} />
+        </span>
+        {t("inv.sell")}
       </Link>
     </div>
   );
