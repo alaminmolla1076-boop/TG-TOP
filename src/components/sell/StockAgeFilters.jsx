@@ -10,7 +10,7 @@ export default function StockAgeFilters({ countries, country, age, onCountry, on
       <GlassSelect id="price-country" value={country} onChange={onCountry}
         placeholder={t("sl.countryStock")}
         options={[{ value: "", label: t("s1.allCountries") }, ...countries.map((item) => ({
-          value: item.country_iso, label: `${item.flag || ""} ${item.country_name || item.country_iso}`,
+          value: item.country_iso, label: item.country_name || item.country_iso,
         }))]} triggerClass="h-11 text-xs" />
       <GlassSelect id="price-age" value={age} onChange={onAge} disabled={!country}
         placeholder={t("sp.ageLabel")}
