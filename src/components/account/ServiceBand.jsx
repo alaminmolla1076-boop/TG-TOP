@@ -1,9 +1,10 @@
 import React from "react";
-import { Send, Gift, ChevronRight } from "lucide-react";
+import { Send, Gift, ChevronRight, MessageCircle } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useAppLang } from "@/lib/AppLanguageContext";
 
 const CHANNEL_URL = "https://t.me/tgtop_official";
+const GROUP_URL = "https://t.me/+ed7Log0sWJ01Nzk9";
 
 const rowClass =
   "flex w-full cursor-pointer items-center gap-3 rounded-full border border-ring/[.28] bg-secondary/80 px-[18px] py-[13px] text-left no-underline text-foreground " +
@@ -29,6 +30,14 @@ export default function ServiceBand({ referralLink }) {
         <span className="min-w-0 flex-1">
           <span className="block text-sm font-semibold text-foreground">{t("sb.channel")}</span>
           <span className="mt-0.5 block text-[11px] text-muted-foreground">{t("sb.channelDesc")}</span>
+        </span>
+        <ChevronRight className="h-4 w-4 shrink-0 text-[#8d88b4]" strokeWidth={2} />
+      </a>
+      <a href={GROUP_URL} target="_blank" rel="noreferrer" className={rowClass}>
+        <MessageCircle className="h-5 w-5 shrink-0 text-ring" strokeWidth={1.5} />
+        <span className="min-w-0 flex-1">
+          <span className="block text-sm font-semibold text-foreground">{t("sb.group")}</span>
+          <span className="mt-0.5 block text-[11px] text-muted-foreground">{t("sb.groupDesc")}</span>
         </span>
         <ChevronRight className="h-4 w-4 shrink-0 text-[#8d88b4]" strokeWidth={2} />
       </a>
