@@ -4,6 +4,7 @@ import { ChevronRight, ShoppingCart } from "lucide-react";
 import { useAppLang } from "@/lib/AppLanguageContext";
 import { ageLabel } from "@/lib/accountAge";
 import { formatMoney } from "@/lib/format";
+import CountryFlag from "@/components/CountryFlag";
 
 // One country card on the seller's page: the capsule opens the purchase page
 // with the chosen pool, and under it the per-age price chips for that pool —
@@ -30,7 +31,7 @@ export default function SellerCountryCard({ sellerId, country, pool, age }) {
         className="flex w-full items-center gap-3 rounded-full border border-[#A29BFE]/25 bg-[rgba(20,16,43,.45)] py-2.5 pl-2.5 pr-4 text-left text-foreground no-underline transition-[border-color,background-color] duration-200 hover:border-[#A29BFE]/60 hover:bg-[rgba(45,38,78,.8)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A29BFE] active:opacity-85"
       >
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#A29BFE]/40 bg-[rgba(108,92,231,.14)] text-base font-bold text-[#A29BFE]">
-          {country.flag || country.country_iso}
+          <CountryFlag iso={country.country_iso} emoji={country.flag} label={country.country_name} />
         </div>
         <span className="min-w-0 flex-1">
           <span className="block truncate text-[15px] font-medium text-foreground">
