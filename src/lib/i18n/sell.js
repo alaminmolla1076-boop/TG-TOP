@@ -1,5 +1,9 @@
 // Sell page: stock prices panel, wizard steps, sales list, flow errors.
 export const SELL = {
+  "sp.agePlaceholder": {
+    en: "Select account age", bn: "অ্যাকাউন্টের বয়স নির্বাচন করুন", zh: "选择账号年龄", es: "Elige la edad de la cuenta", hi: "अकाउंट की उम्र चुनें",
+    ar: "اختر عمر الحساب", fr: "Choisir l'âge du compte", ru: "Выберите возраст аккаунта", pt: "Escolha a idade da conta", de: "Kontogeburtsjahr wählen",
+  },
   "inv.kicker": {
     en: "Seller stock", bn: "সেলার স্টক", zh: "卖家库存", es: "Stock del vendedor", hi: "विक्रेता स्टॉक",
     ar: "مخزون البائع", fr: "Stock vendeur", ru: "Товар продавца", pt: "Estoque do vendedor", de: "Verkäuferbestand",
