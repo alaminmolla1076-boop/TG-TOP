@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Wallet, ShieldCheck, ShoppingBag, TrendingUp } from "lucide-react";
+import { Wallet, ShieldCheck, TrendingUp, Clock3 } from "lucide-react";
 import AccountHero from "@/components/account/AccountHero";
 import StatsLedger from "@/components/account/StatsLedger";
 import ChannelLinks from "@/components/account/ChannelLinks";
@@ -15,8 +15,8 @@ const BACKDROP_URL =
   "https://media.base44.com/images/public/6ad1ec4d9f3d182acc871a46/53007f17e_generated_64743059.jpg";
 
 const TAB_META = {
-  orders: { key: "ah.orders", icon: ShoppingBag },
-  sales: { key: "ah.sales", icon: TrendingUp },
+  sold: { key: "a.sold", icon: TrendingUp },
+  pending: { key: "a.pending", icon: Clock3 },
   record: { key: "a.record", icon: Wallet },
 };
 
@@ -31,7 +31,7 @@ export default function Account() {
     try {
       setData(await fetchMyData(force));
     } catch {
-      setData({ balance: 0, orders: [], account_sales: [], deposits: [], withdrawals: [] });
+      setData({ balance: 0, account_sales: [], my_stock: [], deposits: [], withdrawals: [] });
     }
   }
 
@@ -59,6 +59,8 @@ export default function Account() {
 
   const meta = TAB_META[tab] || TAB_META.record;
   const TabIcon = meta.icon;
+  const soldCount = data?.account_sales?.length || 0;
+  const pendingCount = (data?.my_stock || []).reduce((sum, s) => sum + (Number(s.stock) || 0), 0);
   const recordsCount = (data?.deposits?.length || 0) + (data?.withdrawals?.length || 0);
 
   return (
@@ -77,8 +79,8 @@ export default function Account() {
         <div className="flex flex-col gap-4">
           <AccountHero identity={identity} data={data} onWithdraw={() => setWizardOpen(true)} />
           <StatsLedger
-            orders={data?.orders?.length ?? 0}
-            sales={data?.account_sales?.length ?? 0}
+            sold={soldCount}
+            pending={pendingCount}
             records={recordsCount}
             value={tab}
             onChange={setTab}
