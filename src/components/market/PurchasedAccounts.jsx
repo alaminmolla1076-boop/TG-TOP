@@ -4,6 +4,7 @@ import { Check, Copy, Download, KeyRound, Package } from "lucide-react";
 import { useTgIdentity } from "@/lib/TgIdentityContext";
 import { useAppLang } from "@/lib/AppLanguageContext";
 import SectionHead from "./SectionHead";
+import CountryFlag from "@/components/CountryFlag";
 
 // Capsule List — purchase history. Single purchases fetch their captured
 // login code (Get Code); batch (session-format) purchases show one row per
@@ -93,7 +94,7 @@ export default function PurchasedAccounts({ purchases, batches = [], emptyText }
                 className="flex items-center gap-3 rounded-[26px] border border-[#A29BFE]/[.22] bg-[rgba(45,38,78,.5)] p-3.5"
               >
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#A29BFE]/40 bg-[rgba(108,92,231,.14)] text-base font-bold text-[#A29BFE]">
-                  {b.flag || b.country_iso}
+                  <CountryFlag iso={b.country_iso} emoji={b.flag} label={b.country_name} />
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="min-w-0 truncate text-[15px] font-medium text-foreground">
@@ -125,7 +126,7 @@ export default function PurchasedAccounts({ purchases, batches = [], emptyText }
               >
                 <div className="flex items-center gap-3">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#A29BFE]/40 bg-[rgba(108,92,231,.14)] text-base font-bold text-[#A29BFE]">
-                    {p.flag || p.country_iso}
+                    <CountryFlag iso={p.country_iso} emoji={p.flag} label={p.country_name} />
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
