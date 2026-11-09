@@ -14,7 +14,7 @@ export default function BottomNav() {
   ];
 
   return (
-    <nav className="fixed inset-x-0 bottom-4 z-40 px-4">
+    <nav className="fixed inset-x-0 bottom-4 z-40 px-4 lg:hidden">
       <div className="mx-auto grid max-w-md grid-cols-4 rounded-[28px] border border-ring/[.28] bg-obsidian/[.92] p-2 shadow-[0_10px_26px_rgba(0,0,0,.5),inset_0_1px_0_rgba(255,255,255,.07)] backdrop-blur-md">
         {tabs.map(({ to, label, icon: Icon, end }) => (
           <NavLink
