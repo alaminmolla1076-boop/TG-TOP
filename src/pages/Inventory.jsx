@@ -53,18 +53,22 @@ export default function Inventory() {
   }, []);
 
   return (
-    <div className="mx-auto flex w-full max-w-md flex-col gap-4 lg:grid lg:max-w-none lg:grid-cols-2 lg:items-start lg:gap-6">
+    <div className="mx-auto flex w-full max-w-md flex-col gap-4 pb-28 lg:grid lg:max-w-none lg:grid-cols-2 lg:items-start lg:gap-6">
       <div className="og-rise flex flex-col gap-2 lg:col-span-2">
-        <p className="text-[10px] font-bold uppercase tracking-[.08em] text-ring">{t("inv.kicker")}</p>
-        <h1 className="font-display text-[26px] font-bold leading-[1.1] tracking-[-0.02em] text-foreground">
-          {t("inv.title")}
-        </h1>
-        <Link
-          to="/sell"
-          className="mt-1 flex items-center justify-center gap-2 rounded-full bg-gradient-to-br from-primary to-[#8E7DFF] px-4 py-3.5 text-[13px] font-semibold uppercase tracking-[.08em] no-underline text-primary-foreground shadow-[0_6px_18px_rgba(108,92,231,.5)] transition-opacity duration-200 hover:opacity-90"
-        >
-          <Plus className="h-4 w-4" strokeWidth={2.4} /> {t("inv.sell")}
-        </Link>
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-[10px] font-bold uppercase tracking-[.08em] text-ring">{t("inv.kicker")}</p>
+            <h1 className="font-display text-[26px] font-bold leading-[1.1] tracking-[-0.02em] text-foreground">
+              {t("inv.title")}
+            </h1>
+          </div>
+          <Link
+            to="/sell"
+            className="hidden shrink-0 items-center gap-2 rounded-full bg-gradient-to-br from-primary to-[#8E7DFF] px-4 py-2.5 text-[12px] font-semibold uppercase tracking-[.08em] no-underline text-primary-foreground shadow-[0_6px_18px_rgba(108,92,231,.5)] transition-opacity duration-200 hover:opacity-90 lg:flex"
+          >
+            <Plus className="h-4 w-4" strokeWidth={2.4} /> {t("inv.sell")}
+          </Link>
+        </div>
         <p className="text-[11px] text-muted-foreground">{t("inv.sellDesc")}</p>
       </div>
 
@@ -111,6 +115,12 @@ export default function Inventory() {
           </div>
         )}
       </section>
+      <Link
+        to="/sell"
+        className="fixed inset-x-4 bottom-[104px] z-40 mx-auto flex max-w-md items-center justify-center gap-2 rounded-full bg-gradient-to-br from-primary to-[#8E7DFF] px-4 py-3.5 text-[13px] font-semibold uppercase tracking-[.08em] no-underline text-primary-foreground shadow-[0_12px_28px_rgba(108,92,231,.55)] transition-opacity duration-200 hover:opacity-90 lg:hidden"
+      >
+        <Plus className="h-4 w-4" strokeWidth={2.4} /> {t("inv.sell")}
+      </Link>
     </div>
   );
 }
