@@ -2,6 +2,7 @@ import React from "react";
 import { useAppLang } from "@/lib/AppLanguageContext";
 import { ageLabel } from "@/lib/accountAge";
 import StockPoolPrice from "@/components/sell/StockPoolPrice";
+import CountryFlag from "@/components/CountryFlag";
 
 // Compact country card: slim flag + name row, then one tight price row per pool.
 export default function StockAgePriceCard({ group, getValue, isBusy, onValue, onSave }) {
@@ -9,7 +10,7 @@ export default function StockAgePriceCard({ group, getValue, isBusy, onValue, on
   return (
     <div className="rounded-2xl border border-ring/25 bg-card/75 px-3 py-2.5">
       <div className="flex items-center gap-2">
-        <span className="grid h-6 w-6 shrink-0 place-items-center rounded-md border border-ring/25 bg-secondary/80 text-[11px] leading-none">{group.flag || group.country_iso}</span>
+        <span className="grid h-6 w-6 shrink-0 place-items-center overflow-hidden rounded-md border border-ring/25 bg-secondary/80"><CountryFlag iso={group.country_iso} emoji={group.flag} label={group.country_name} className="h-6 w-6 rounded-none shadow-none" /></span>
         <p className="min-w-0 truncate text-xs font-semibold text-foreground">{group.country_name}</p>
         <span className="ml-auto shrink-0 rounded-full bg-ring/[.12] px-2 py-[2px] text-[9px] font-bold uppercase tracking-[.08em] text-ring">
           {ageLabel(group.age_category, t)}
