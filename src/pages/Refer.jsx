@@ -27,7 +27,7 @@ export default function Refer() {
   }
 
   return (
-    <div className="mk-sec flex flex-col gap-4">
+    <div className="mk-sec mx-auto flex w-full flex-col gap-4 lg:max-w-3xl">
       <div className="flex items-center gap-3">
         <span className="flex h-11 w-11 items-center justify-center rounded-full border border-[#A29BFE]/40 bg-[rgba(108,92,231,.14)]">
           <Gift className="h-5 w-5 text-[#A29BFE]" strokeWidth={1.5} />
