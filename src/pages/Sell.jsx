@@ -48,7 +48,7 @@ export default function Sell() {
   }, []);
 
   return (
-    <div className="mx-auto flex max-w-md flex-col gap-4">
+    <div className="mx-auto flex w-full max-w-md flex-col gap-4 lg:grid lg:max-w-none lg:grid-cols-2 lg:items-start lg:gap-6">
       <div className="og-rise relative z-10">
         <StockPricesPanel stock={stock} countries={countries} onSaved={() => load(true)} />
       </div>
@@ -57,7 +57,7 @@ export default function Sell() {
         <SellWizard onDone={() => load(true)} />
       </div>
 
-      <section className="og-rise flex flex-col gap-2.5 [animation-delay:.35s]">
+      <section className="og-rise flex flex-col gap-2.5 [animation-delay:.35s] lg:col-span-2">
         <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[.08em] text-ring">
           <h2 className="leading-[1.3]">{t("ss.title")}</h2>
         </div>
@@ -72,7 +72,7 @@ export default function Sell() {
             {t("ss.none")}
           </div>
         ) : (
-          <div className="flex flex-col gap-2.5">
+          <div className="flex flex-col gap-2.5 lg:grid lg:grid-cols-2">
             {sales.map((s) => (
               <div key={s.id} className={panelClass}>
                 <span className={`mt-1.5 h-[7px] w-[7px] shrink-0 rounded-full ${statusDot[s.status] || statusDot.pending}`} />
