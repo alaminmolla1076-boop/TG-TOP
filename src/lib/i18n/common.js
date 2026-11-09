@@ -140,6 +140,10 @@ export const COMMON = {
     en: "Sell", bn: "বিক্রি", zh: "出售", es: "Vender", hi: "बेचें",
     ar: "بيع", fr: "Vendre", ru: "Продать", pt: "Vender", de: "Verkaufen",
   },
+  "nav.inventory": {
+    en: "Inventory", bn: "ইনভেন্টরি", zh: "库存", es: "Inventario", hi: "इन्वेंटरी",
+    ar: "المخزون", fr: "Inventaire", ru: "Инвентарь", pt: "Inventário", de: "Bestand",
+  },
   "nav.account": {
     en: "Account", bn: "অ্যাকাউন্ট", zh: "账户", es: "Cuenta", hi: "खाता",
     ar: "الحساب", fr: "Compte", ru: "Аккаунт", pt: "Conta", de: "Konto",
