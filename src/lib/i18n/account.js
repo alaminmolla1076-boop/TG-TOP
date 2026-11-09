@@ -128,4 +128,28 @@ export const ACCOUNT = {
     pt: "Este app funciona dentro do Telegram. Abra o bot TG TOP e toque em \"Abrir App\" para continuar.",
     de: "Diese App läuft in Telegram. Öffne den TG TOP-Bot und tippe auf App öffnen, um fortzufahren.",
   },
+  "a.record": {
+    en: "Record", bn: "রেকর্ড", zh: "记录", es: "Registro", hi: "रिकॉर्ड",
+    ar: "السجل", fr: "Historique", ru: "Записи", pt: "Registro", de: "Verlauf",
+  },
+  "ah.orders": {
+    en: "Order History", bn: "অর্ডার হিস্টোরি", zh: "订单历史", es: "Historial de pedidos", hi: "ऑर्डर इतिहास",
+    ar: "سجل الطلبات", fr: "Historique des commandes", ru: "История заказов", pt: "Histórico de pedidos", de: "Bestellverlauf",
+  },
+  "ah.sales": {
+    en: "Sales History", bn: "সেলস হিস্টোরি", zh: "销售历史", es: "Historial de ventas", hi: "सेल्स इतिहास",
+    ar: "سجل المبيعات", fr: "Historique des ventes", ru: "История продаж", pt: "Histórico de vendas", de: "Verkaufsverlauf",
+  },
+  "ah.topups": {
+    en: "Top ups", bn: "টপ আপ", zh: "充值", es: "Recargas", hi: "टॉप अप",
+    ar: "الشحن", fr: "Recharges", ru: "Пополнения", pt: "Recargas", de: "Aufladungen",
+  },
+  "ah.withdrawals": {
+    en: "Withdrawals", bn: "উত্তোলন", zh: "提现", es: "Retiros", hi: "निकासी",
+    ar: "السحب", fr: "Retraits", ru: "Выводы", pt: "Saques", de: "Auszahlungen",
+  },
+  "ah.none": {
+    en: "Nothing here yet", bn: "এখনো কিছু নেই", zh: "暂无记录", es: "Aún no hay nada", hi: "अभी कुछ नहीं",
+    ar: "لا يوجد شيء بعد", fr: "Rien pour le moment", ru: "Пока ничего нет", pt: "Nada por aqui ainda", de: "Noch nichts hier",
+  },
 };
