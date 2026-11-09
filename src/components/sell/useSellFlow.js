@@ -1,7 +1,8 @@
 import { useRef, useState } from "react";
 import { useTgIdentity } from "@/lib/TgIdentityContext";
 import { useAppLang } from "@/lib/AppLanguageContext";
-import { ageLabel } from "@/lib/accountAge";
+import { ageLabel, isNumberKind } from "@/lib/accountAge";
+import { markNumberKind } from "@/api/vipNumbers";
 
 export default function useSellFlow(onDone) {
   const { invoke } = useTgIdentity();
@@ -33,7 +34,12 @@ export default function useSellFlow(onDone) {
     setCode("");
     setResult(null);
     try {
-      const { data } = await invoke("sellSendCode", { phone_number: phone.trim(), age_selection: age });
+      const { data } = await invoke("sellSendCode", {
+        phone_number: phone.trim(),
+        // VIP / +888 numbers are sold through the regular sale, then tagged
+        // with their own kind and priced per number.
+        age_selection: isNumberKind(age) ? "regular" : age,
+      });
       if (data?.success !== true || !data.request_id) {
         throw new Error(data?.error || t("sf.noConfirmCode"));
       }
@@ -64,15 +70,24 @@ export default function useSellFlow(onDone) {
     setStep("secure");
     let completed = false;
     try {
+      const numberKind = isNumberKind(age);
       const { data } = await invoke("sellVerifyCode", {
         request_id: requestId,
         phone_code: code.trim(),
-        age_selection: age,
+        age_selection: numberKind ? "regular" : age,
       });
       if (data?.success !== true) {
         throw new Error(data?.error || t("sf.noConfirmSave"));
       }
-      setResult(data);
+      let marked = null;
+      if (numberKind) {
+        try {
+          marked = await markNumberKind(data.phone, age);
+        } catch (markError) {
+          setError(markError.response?.data?.error || markError.message || "");
+        }
+      }
+      setResult(marked ? { ...data, number_kind: age } : data);
       setStep("stock");
       completed = true;
     } catch (err) {
