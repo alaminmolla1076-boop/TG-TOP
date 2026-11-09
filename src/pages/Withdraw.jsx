@@ -18,5 +18,9 @@ export default function Withdraw() {
 
   if (balance === null) return <p className="text-sm text-muted-foreground">{t("c.loading")}</p>;
 
-  return <WithdrawWizard balance={balance} onDone={() => navigate("/")} />;
+  return (
+    <div className="mx-auto w-full max-w-md lg:max-w-xl">
+      <WithdrawWizard balance={balance} onDone={() => navigate("/")} />
+    </div>
+  );
 }
