@@ -27,7 +27,7 @@ export default async function(req) {
       )`
     );
 
-    const [reports, pendingWithdrawals, purchases, sales, topups, withdrawals, userCount] = await Promise.all([
+    const [userCount, reports, pendingWithdrawals, purchases, sales, topups, withdrawals] = await Promise.all([
       runSql(
         `select count(*)::int as count from tg_web_users`
       ),
