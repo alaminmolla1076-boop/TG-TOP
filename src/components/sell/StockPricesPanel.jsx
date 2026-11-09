@@ -74,6 +74,8 @@ export default function StockPricesPanel({ stock, countries = [], onSaved }) {
   for (const row of stock || []) {
     // A legacy pool-wide price is not an age listing and cannot overwrite one.
     if (!row.age_category) continue;
+    // VIP / +888 numbers keep one price per number in their own panel.
+    if (row.age_category === "vip" || row.age_category === "p888") continue;
     const key = `${row.country_iso}|${row.age_category}`;
     if (!byListing.has(key)) byListing.set(key, { ...row, pools: new Map() });
     byListing.get(key).pools.set(!!row.spam, row);
