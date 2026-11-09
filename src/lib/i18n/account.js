@@ -30,6 +30,14 @@ export const ACCOUNT = {
     en: "Updates & offers", bn: "আপডেট ও অফার", zh: "动态与优惠", es: "Novedades y ofertas", hi: "अपडेट और ऑफ़र",
     ar: "تحديثات وعروض", fr: "Actus et offres", ru: "Обновления и акции", pt: "Novidades e ofertas", de: "Updates & Angebote",
   },
+  "sb.group": {
+    en: "Group Chat", bn: "\u0997\u09cd\u09b0\u09c1\u09aa \u099a\u09cd\u09af\u09be\u099f", zh: "\u7fa4\u804a", es: "Chat del Grupo", hi: "\u0917\u094d\u0930\u0941\u092a \u091a\u0948\u091f",
+    ar: "\u062f\u0631\u062f\u0634\u0629 \u0627\u0644\u0645\u062c\u0645\u0648\u0639\u0629", fr: "Chat de groupe", ru: "\u0427\u0430\u0442 \u0433\u0440\u0443\u043f\u043f\u044b", pt: "Chat do Grupo", de: "Gruppenchat",
+  },
+  "sb.groupDesc": {
+    en: "Chat with the community", bn: "\u0995\u09ae\u09bf\u0989\u09a8\u09bf\u099f\u09bf\u09b0 \u09b8\u09be\u09a5\u09c7 \u0995\u09a5\u09be \u09ac\u09b2\u09c1\u09a8", zh: "\u4e0e\u793e\u533a\u4ea4\u6d41", es: "Habla con la comunidad", hi: "\u0915\u092e\u094d\u092f\u0941\u0928\u093f\u091f\u0940 \u0938\u0947 \u092c\u093e\u0924 \u0915\u0930\u0947\u0902",
+    ar: "\u062a\u062d\u062f\u062b \u0645\u0639 \u0627\u0644\u0645\u062c\u062a\u0645\u0639", fr: "Discutez avec la communaut\u00e9", ru: "\u041e\u0431\u0449\u0430\u0439\u0442\u0435\u0441\u044c \u0441 \u0441\u043e\u043e\u0431\u0449\u0435\u0441\u0442\u0432\u043e\u043c", pt: "Converse com a comunidade", de: "Mit der Community chatten",
+  },
   "sb.refer": {
     en: "Refer & Earn", bn: "রেফার ও আয়", zh: "推荐赚钱", es: "Refiere y Gana", hi: "रेफर करें और कमाएँ",
     ar: "أحِل واكسب", fr: "Parrainez et gagnez", ru: "Приглашай и зарабатывай", pt: "Indique e Ganhe", de: "Werben & verdienen",
