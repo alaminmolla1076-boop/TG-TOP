@@ -14,6 +14,7 @@ import { formatMoney } from "@/lib/format";
 // Capsule List — Market: Top Seller capsule + seller name directory; each
 // seller name opens their own country-stock page, countries open the
 // purchase page. Purchases, orders and products stay on this page.
+// On desktop the seller directory and the products sit side by side.
 export default function Market() {
   const { toast } = useToast();
   const { invoke } = useTgIdentity();
@@ -88,19 +89,23 @@ export default function Market() {
   return (
     <div className="relative">
       <MarketBackdrop />
-      <div className="relative z-10 flex flex-col gap-[22px]">
-        <span className="mk-fade self-center rounded-full border border-[#A29BFE]/35 bg-[rgba(108,92,231,.14)] px-4 py-1.5 text-[11px] font-semibold tracking-[.14em] text-[#A29BFE]">
+      <div className="relative z-10 flex flex-col gap-[22px] lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-6 lg:gap-y-7">
+        <span className="mk-fade self-center rounded-full border border-[#A29BFE]/35 bg-[rgba(108,92,231,.14)] px-4 py-1.5 text-[11px] font-semibold tracking-[.14em] text-[#A29BFE] lg:col-span-2">
           {t("mk.badge")}
         </span>
-        <TopSellerCapsule topSeller={topSeller} />
-        <SellerSearchBar
-          onSearch={searchSellers}
-          onClear={clearSearch}
-          searching={searching}
-          activeQuery={searchQuery}
-        />
+        <div className="lg:col-span-2">
+          <TopSellerCapsule topSeller={topSeller} />
+        </div>
+        <div className="lg:col-span-2">
+          <SellerSearchBar
+            onSearch={searchSellers}
+            onClear={clearSearch}
+            searching={searching}
+            activeQuery={searchQuery}
+          />
+        </div>
         {loadError ? (
-          <div className="mk-sec flex flex-col items-center gap-3 rounded-[22px] border border-[#A29BFE]/30 bg-[rgba(45,38,78,.5)] p-[18px] text-center">
+          <div className="mk-sec flex flex-col items-center gap-3 rounded-[22px] border border-[#A29BFE]/30 bg-[rgba(45,38,78,.5)] p-[18px] text-center lg:col-span-2">
             <p className="text-[13px] text-[#a8a3cf]">{t("mk.loadError")}</p>
             <button
               type="button"
@@ -114,8 +119,12 @@ export default function Market() {
           <SellerList sellers={sellers} query={searchQuery} />
         )}
         <ProductsList products={products} buyingId={buyingId} onBuy={handleBuy} />
-        <HowItWorksBand />
-        <LegalFooter />
+        <div className="lg:col-span-2">
+          <HowItWorksBand />
+        </div>
+        <div className="lg:col-span-2">
+          <LegalFooter />
+        </div>
       </div>
     </div>
   );
