@@ -70,6 +70,22 @@ export default function PurchaseResult({ account, flag, countryName }) {
           </div>
         </div>
 
+        {account.password && (
+          <div className="flex gap-2">
+            <p className="min-w-0 flex-1 rounded-full border border-[#A29BFE]/30 bg-[rgba(45,38,78,.7)] px-4 py-2.5 font-mono text-[12px] text-[#a8a3cf]">
+              <span className="mr-1.5 font-body text-[10px] font-semibold uppercase tracking-[.08em] text-[#A29BFE]">{t("pr.password")}</span>
+              {account.password}
+            </p>
+            <button
+              type="button"
+              onClick={() => handleCopy(account.password, t("pr.password"))}
+              className="flex shrink-0 cursor-pointer items-center justify-center rounded-full border border-[#A29BFE]/30 bg-[rgba(45,38,78,.7)] px-4 text-[#A29BFE] transition-[border-color] duration-200 hover:border-[#A29BFE]/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#A29BFE]"
+              aria-label={t("c.copy")}
+            >
+              {copied === account.password ? <Check className="h-4 w-4" strokeWidth={1.5} /> : <Copy className="h-4 w-4" strokeWidth={1.5} />}
+            </button>
+          </div>
+        )}
         {code ? (
           <div className="flex gap-2">
             <p className="min-w-0 flex-1 rounded-full border border-[#A29BFE]/30 bg-[rgba(45,38,78,.7)] px-4 py-2.5 text-center font-mono text-base font-bold tracking-[.3em] text-[#A29BFE]">
