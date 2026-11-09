@@ -64,7 +64,7 @@ export default function Inventory() {
           </div>
           <Link
             to="/sell"
-            className="hidden shrink-0 items-center gap-2 rounded-full bg-gradient-to-br from-primary to-[#8E7DFF] px-4 py-2.5 text-[12px] font-semibold uppercase tracking-[.08em] no-underline text-primary-foreground shadow-[0_6px_18px_rgba(108,92,231,.5)] transition-opacity duration-200 hover:opacity-90 lg:flex"
+            className="hidden shrink-0 items-center gap-2 rounded-full border border-white/15 bg-gradient-to-br from-[#6C5CE7] to-[#8E7DFF] px-4 py-2.5 text-[12px] font-semibold tracking-[.01em] no-underline text-white shadow-[0_8px_20px_-6px_rgba(108,92,231,.8)] transition-[filter,transform] duration-200 hover:brightness-110 active:scale-[.97] lg:flex"
           >
             <Plus className="h-4 w-4" strokeWidth={2.4} /> {t("inv.sell")}
           </Link>
@@ -117,7 +117,7 @@ export default function Inventory() {
       </section>
       <Link
         to="/sell"
-        className="fixed inset-x-4 bottom-[104px] z-40 mx-auto flex max-w-md items-center justify-center gap-2 rounded-full bg-gradient-to-br from-primary to-[#8E7DFF] px-4 py-3.5 text-[13px] font-semibold uppercase tracking-[.08em] no-underline text-primary-foreground shadow-[0_12px_28px_rgba(108,92,231,.55)] transition-opacity duration-200 hover:opacity-90 lg:hidden"
+        className="fixed inset-x-0 bottom-[104px] z-40 mx-auto flex w-[66%] max-w-[260px] items-center justify-center gap-2 rounded-full border border-white/15 bg-gradient-to-br from-[#6C5CE7] to-[#8E7DFF] px-5 py-3 text-[12.5px] font-semibold tracking-[.01em] no-underline text-white shadow-[0_10px_24px_-6px_rgba(108,92,231,.8)] backdrop-blur-sm transition-[transform,filter] duration-200 hover:brightness-110 active:scale-[.97] lg:hidden"
       >
         <Plus className="h-4 w-4" strokeWidth={2.4} /> {t("inv.sell")}
       </Link>
