@@ -60,7 +60,7 @@ export default function Admin() {
     <div className="relative">
       <img aria-hidden src={BACKDROP_URL} alt="" className="adm-bg" />
       <div aria-hidden className="adm-scrim" />
-      <div className="relative z-[1] flex flex-col gap-4">
+      <div className="relative z-[1] mx-auto flex w-full flex-col gap-4 lg:max-w-5xl lg:gap-6">
         <div className="adm-hd">
           <span className="adm-ic">
             <ShieldCheck className="h-5 w-5 text-[#A29BFE]" strokeWidth={1.6} />
