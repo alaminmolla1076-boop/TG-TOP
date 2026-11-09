@@ -1,6 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, Store, Upload, User } from "lucide-react";
+import { LayoutDashboard, Package, Store, User } from "lucide-react";
 import { useAppLang } from "@/lib/AppLanguageContext";
 
 // Nordic Frost Glass — floating frosted pill navigation.
@@ -9,7 +9,7 @@ export default function BottomNav() {
   const tabs = [
     { to: "/home", label: t("nav.dashboard"), icon: LayoutDashboard },
     { to: "/", label: t("nav.market"), icon: Store, end: true },
-    { to: "/sell", label: t("nav.sell"), icon: Upload },
+    { to: "/inventory", label: t("nav.inventory"), icon: Package },
     { to: "/account", label: t("nav.account"), icon: User },
   ];
 
