@@ -1,7 +1,7 @@
 import React from "react";
 import { useAppLang } from "@/lib/AppLanguageContext";
 
-// Capsule List — full-bleed dark band closing the page with the process steps.
+// Market — the simple-process band closing the page.
 export default function HowItWorksBand() {
   const { t } = useAppLang();
   const steps = [
@@ -17,20 +17,24 @@ export default function HowItWorksBand() {
         <div className="text-[10px] font-semibold uppercase tracking-[.14em] text-[#A29BFE]">
           {t("hi.badge")}
         </div>
-        <h2 className="mt-1 font-heading text-2xl font-bold">{t("hi.title")}</h2>
+        <h2 className="mt-1 font-heading text-2xl font-bold text-white">{t("hi.title")}</h2>
       </div>
-      {steps.map((s) => (
-        <div
-          key={s.no}
-          className="flex items-center gap-3.5 rounded-[20px] border border-[#A29BFE]/[.22] bg-[rgba(45,38,78,.5)] px-4 py-3.5"
-        >
-          <span className="text-[30px] font-bold leading-none text-[#A29BFE] tabular-nums">{s.no}</span>
-          <div>
-            <h3 className="text-[15px] font-medium text-foreground">{s.title}</h3>
-            <p className="mt-1 text-[13px] leading-snug text-[#a8a3cf]">{s.desc}</p>
+      <div className="grid gap-2.5 lg:grid-cols-2">
+        {steps.map((s) => (
+          <div
+            key={s.no}
+            className="flex items-center gap-3.5 rounded-[22px] border border-[#A29BFE]/25 bg-[linear-gradient(140deg,rgba(60,48,110,.6),rgba(28,24,46,.85))] px-4 py-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,.06)]"
+          >
+            <span className="bg-[linear-gradient(150deg,#A29BFE,#6C5CE7)] bg-clip-text font-display text-[30px] font-bold leading-none tabular-nums text-transparent">
+              {s.no}
+            </span>
+            <div className="min-w-0">
+              <h3 className="text-[14.5px] font-semibold text-white">{s.title}</h3>
+              <p className="mt-1 text-[12px] leading-snug text-[#a8a3cf]">{s.desc}</p>
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </section>
   );
 }
