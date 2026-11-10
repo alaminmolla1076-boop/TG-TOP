@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { Search, X } from "lucide-react";
 import { useAppLang } from "@/lib/AppLanguageContext";
 
-// Capsule List Market — seller search bar. Search filters the seller
-// directory by username (or name) on the server; Clear restores the full list.
+// Market — seller search bar. Search filters the seller directory by username
+// (or name) on the server; Clear restores the full list.
 export default function SellerSearchBar({ onSearch, onClear, searching, activeQuery }) {
   const [value, setValue] = useState("");
   const { t } = useAppLang();
@@ -23,9 +23,9 @@ export default function SellerSearchBar({ onSearch, onClear, searching, activeQu
   return (
     <form
       onSubmit={submit}
-      className="mk-fade flex items-center gap-2 rounded-full border border-[#A29BFE]/30 bg-[rgba(45,38,78,.5)] p-1.5 pl-4 shadow-[inset_0_1px_0_rgba(255,255,255,.07)]"
+      className="mk-fade flex items-center gap-2 rounded-full border border-[#6C5CE7]/50 bg-[rgba(45,38,78,.55)] p-1.5 pl-4 shadow-[inset_0_1px_0_rgba(255,255,255,.08),0_12px_28px_-20px_rgba(108,92,231,.9)]"
     >
-      <Search className="h-4 w-4 shrink-0 text-[#a8a3cf]" strokeWidth={1.5} />
+      <Search className="h-4 w-4 shrink-0 text-[#a8a3cf]" strokeWidth={1.6} />
       <input
         value={value}
         onChange={(e) => setValue(e.target.value)}
@@ -45,7 +45,7 @@ export default function SellerSearchBar({ onSearch, onClear, searching, activeQu
       <button
         type="submit"
         disabled={!q || searching}
-        className="shrink-0 cursor-pointer rounded-full border border-[#A29BFE]/40 bg-[rgba(108,92,231,.25)] px-4 py-1.5 text-[13px] font-semibold text-[#A29BFE] transition-colors duration-200 hover:bg-[rgba(108,92,231,.45)] disabled:cursor-not-allowed disabled:opacity-50"
+        className="shrink-0 cursor-pointer rounded-full bg-[linear-gradient(135deg,#8E7DFF,#6C5CE7)] px-4 py-1.5 text-[13px] font-semibold text-white shadow-[0_8px_18px_-8px_rgba(108,92,231,.95)] transition-[filter] duration-200 hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {searching ? "…" : t("c.search")}
       </button>
