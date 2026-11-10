@@ -48,8 +48,13 @@ export default function SellerEscrowOrders({ refreshKey = 0 }) {
     if (!hash || busyId) return;
     setBusyId(order.id);
     try {
-      await submitNumberTransferTx(order.id, hash);
+      const res = await submitNumberTransferTx(order.id, hash);
       setHashes((prev) => ({ ...prev, [order.id]: "" }));
+      const done = res?.status === "completed";
+      toast({
+        title: done ? t("autoDone") : t("autoPending"),
+        description: done ? undefined : t("verifying"),
+      });
       await load();
     } catch (err) {
       toast({
