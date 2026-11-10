@@ -33,6 +33,149 @@ async function rest(path, init = {}) {
 }
 const rpc = (fn, args) => rest("rpc/" + fn, { method: "POST", body: JSON.stringify(args || {}) });
 
+// ── Telegram notifications (same bot chat the app already uses) ────────────
+const TG_TOKEN = Deno.env.get("TELEGRAM_BOT_TOKEN") || "";
+
+async function tgSend(chatId, text) {
+  if (!TG_TOKEN || !chatId) return;
+  try {
+    await fetch("https://api.telegram.org/bot" + TG_TOKEN + "/sendMessage", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: String(chatId), text, parse_mode: "HTML", disable_web_page_preview: true }),
+    });
+  } catch (e) {
+    console.error("telegram notify failed:", e?.message);
+  }
+}
+
+async function sellerChatId(email) {
+  if (!email) return null;
+  const m = /^tg(\d+)@telegram\.local$/i.exec(String(email).trim());
+  if (m) return m[1];
+  const rows = await rest("profiles?select=telegram_id&email=eq." + encodeURIComponent(email));
+  return (rows || [])[0]?.telegram_id ? String(rows[0].telegram_id) : null;
+}
+
+async function sellerLang(chatId) {
+  if (!chatId) return "en";
+  try {
+    const rows = await rest("bot_state?select=value&key=eq." + encodeURIComponent("lang:" + chatId));
+    return (rows || [])[0]?.value || "en";
+  } catch {
+    return "en";
+  }
+}
+
+function sellerMessage(lang, kind, order) {
+  const bn = String(lang || "").startsWith("bn");
+  const num = order.phone_number || "";
+  const amount = money(order.price).toFixed(2);
+  if (kind === "new") {
+    return bn
+      ? [
+          "🎉 <b>নতুন অর্ডার!</b>",
+          "",
+          "📱 নাম্বার: <b>" + num + "</b>",
+          "💵 পরিমাণ: <b>$" + amount + "</b>",
+          "🏦 বায়ারের TON অ্যাড্রেস:",
+          "<code>" + (order.ton_address || "") + "</code>",
+          "",
+          "⏳ ৩০ মিনিটের মধ্যে Fragment থেকে নাম্বারটি এই অ্যাড্রেসে ট্রান্সফার করে Inventory → Number sales থেকে Tx হ্যাশ জমা দিন।",
+        ].join("\n")
+      : [
+          "🎉 <b>New order!</b>",
+          "",
+          "📱 Number: <b>" + num + "</b>",
+          "💵 Amount: <b>$" + amount + "</b>",
+          "🏦 Buyer TON address:",
+          "<code>" + (order.ton_address || "") + "</code>",
+          "",
+          "⏳ Transfer the number from Fragment to this address within 30 minutes, then submit the Tx hash in Inventory → Number sales.",
+        ].join("\n");
+  }
+  return bn
+    ? [
+        "✅ <b>বিক্রয় সম্পন্ন!</b>",
+        "",
+        "📱 নাম্বার: <b>" + num + "</b>",
+        "💵 <b>$" + amount + "</b> আপনার ব্যালেন্সে যোগ হয়েছে।",
+      ].join("\n")
+    : [
+        "✅ <b>Sale completed!</b>",
+        "",
+        "📱 Number: <b>" + num + "</b>",
+        "💵 <b>$" + amount + "</b> has been credited to your balance.",
+      ].join("\n");
+}
+
+async function notifySeller(order, kind) {
+  try {
+    const chatId = await sellerChatId(order?.seller_email);
+    if (!chatId) return;
+    const lang = await sellerLang(chatId);
+    await tgSend(chatId, sellerMessage(lang, kind, order));
+  } catch (e) {
+    console.error("seller notify failed:", e?.message);
+  }
+}
+
+// ── On-chain verification of the seller's transfer ─────────────────────────
+const TONAPI = "https://tonapi.io/v2";
+
+async function tonGet(path) {
+  try {
+    const key = Deno.env.get("TONAPI_KEY") || "";
+    const r = await fetch(TONAPI + path, { headers: key ? { Authorization: "Bearer " + key } : {} });
+    if (!r.ok) return { ok: false, status: r.status };
+    return { ok: true, data: await r.json() };
+  } catch {
+    return { ok: false, status: 0 };
+  }
+}
+
+function hexToB64url(hex) {
+  const bytes = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < bytes.length; i++) bytes[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16);
+  let bin = "";
+  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+  return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+const digitsOf = (v) => String(v || "").replace(/\D/g, "");
+const stripCountry = (v) => v.replace(/^1/, "");
+
+function sameNumber(nftName, phone) {
+  const a = digitsOf(nftName);
+  const p = stripCountry(digitsOf(phone));
+  if (!a || !p || p.length < 5) return false;
+  return a === p || a === "1" + p || stripCountry(a) === p;
+}
+
+// Returns { ok: true } only when the hash is a successful TON transaction AND
+// the buyer's own wallet now holds the +888 NFT for this number.
+async function verifyOnChain(order) {
+  const hash = String(order?.tx_hash || "").trim();
+  if (!hash) return { ok: false, reason: "No transaction hash" };
+  let tx = await tonGet("/transactions/" + encodeURIComponent(hash));
+  if (!tx.ok && /^[0-9a-f]{64}$/i.test(hash)) tx = await tonGet("/transactions/" + encodeURIComponent(hexToB64url(hash)));
+  if (!tx.ok) return { ok: false, reason: "Transaction not found on the TON blockchain yet" };
+  if (tx.data && tx.data.success === false) return { ok: false, reason: "The transaction failed on-chain" };
+  const owner = String(order?.ton_address || "").trim();
+  if (!owner) return { ok: false, reason: "Buyer TON address missing" };
+  const nfts = await tonGet("/accounts/" + encodeURIComponent(owner) + "/nfts?limit=200");
+  if (!nfts.ok) return { ok: false, reason: "TON API is busy — admin will review" };
+  const items = Array.isArray(nfts.data?.nft_items) ? nfts.data.nft_items : [];
+  const hit = items.find((it) => {
+    const name = it?.metadata?.name || "";
+    const coll = String(it?.collection?.name || "") + " " + String(it?.collection?.address || "");
+    return /anonymous|888/i.test(coll) && sameNumber(name, order.phone_number);
+  });
+  if (!hit) return { ok: false, reason: "The number NFT is not in the buyer's wallet yet" };
+  return { ok: true, name: hit?.metadata?.name || order.phone_number };
+}
+
+
 async function identity(initData) {
   if (!initData) throw new Error("Open the app from Telegram");
   const r = await fetch(SUPABASE_URL + "/functions/v1/b44fn/webTelegramAuth", {
@@ -123,6 +266,7 @@ async function setAddress(initData, orderId, address) {
       method: "PATCH",
       body: JSON.stringify({ ton_address: clean, status: "awaiting_transfer", expires_at: minutes(30), updated_date: nowIso() }),
     });
+    await notifySeller({ ...order, ton_address: clean }, "new");
   } else {
     throw new Error("This order can no longer take an address");
   }
@@ -176,15 +320,42 @@ async function submitTx(initData, orderId, txHash) {
     method: "PATCH",
     body: JSON.stringify({ tx_hash: clean, status: "verifying", updated_date: nowIso() }),
   });
-  return json({ ok: true });
+  const proof = await verifyOnChain({ ...order, tx_hash: clean });
+  if (proof.ok) {
+    const settled = await rpc("settle_number_escrow", { p_order_id: order.id, p_reviewer: "auto:onchain" });
+    await notifySeller(order, "paid");
+    return json({ ok: true, status: "completed", auto: true, settlement: settled });
+  }
+  await rest("number_escrow_orders?id=eq." + order.id, {
+    method: "PATCH",
+    body: JSON.stringify({ note: proof.reason, updated_date: nowIso() }),
+  });
+  return json({ ok: true, status: "verifying", message: proof.reason });
 }
 
 async function adminQueue(initData) {
   const me = await identity(initData);
   if (me.role !== "admin") throw new Error("Admins only");
   await rpc("expire_number_escrows", {});
-  const rows = await rest("number_escrow_orders?select=*&status=eq.verifying&order=updated_date.asc&limit=50");
-  return json({ orders: rows || [] });
+  let rows = await rest("number_escrow_orders?select=*&status=eq.verifying&order=updated_date.asc&limit=50");
+  rows = rows || [];
+  let retried = false;
+  for (const o of rows.slice(0, 5)) {
+    if (Date.now() - new Date(o.updated_date || o.created_date).getTime() < 20000) continue;
+    const proof = await verifyOnChain(o);
+    if (proof.ok) {
+      await rpc("settle_number_escrow", { p_order_id: o.id, p_reviewer: "auto:onchain" });
+      await notifySeller(o, "paid");
+      retried = true;
+    } else {
+      await rest("number_escrow_orders?id=eq." + o.id, {
+        method: "PATCH",
+        body: JSON.stringify({ note: proof.reason, updated_date: nowIso() }),
+      });
+    }
+  }
+  if (retried) rows = (await rest("number_escrow_orders?select=*&status=eq.verifying&order=updated_date.asc&limit=50")) || [];
+  return json({ orders: rows });
 }
 
 async function adminReview(initData, orderId, approve, note) {
@@ -201,6 +372,7 @@ async function adminReview(initData, orderId, approve, note) {
     return json({ ok: true, status: "rejected" });
   }
   const settled = await rpc("settle_number_escrow", { p_order_id: order.id, p_reviewer: me.email });
+  await notifySeller(order, "paid");
   return json({ ok: true, status: "completed", settlement: settled });
 }
 
