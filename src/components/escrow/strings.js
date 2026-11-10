@@ -36,6 +36,8 @@ const STRINGS = {
     st_cancelled: "Cancelled",
     st_expired: "Hold expired",
     st_rejected: "Rejected",
+    autoDone: "Transfer verified on-chain — sale completed",
+    autoPending: "Transaction submitted — checking the blockchain",
   },
   bn: {
     note: "+888 \u09a8\u09be\u09ae\u09cd\u09ac\u09be\u09b0 Fragment \u098f\u09b0 NFT\u0964 \u09b8\u09c7\u09b2\u09be\u09b0 \u0986\u09aa\u09a8\u09be\u09b0 TON \u0993\u09af\u09bc\u09be\u09b2\u09c7\u099f\u09c7 \u09a8\u09be\u09ae\u09cd\u09ac\u09be\u09b0\u099f\u09bf \u099f\u09cd\u09b0\u09be\u09a8\u09cd\u09b8\u09ab\u09be\u09b0 \u0995\u09b0\u09be \u09aa\u09b0\u09cd\u09af\u09a8\u09cd\u09a4 \u0986\u09aa\u09a8\u09be\u09b0 \u09ac\u09cd\u09af\u09be\u09b2\u09c7\u09a8\u09cd\u09b8 \u09b9\u09cb\u09b2\u09cd\u09a1 \u09a5\u09be\u0995\u09ac\u09c7\u0964",
@@ -72,6 +74,8 @@ const STRINGS = {
     st_cancelled: "\u09ac\u09be\u09a4\u09bf\u09b2",
     st_expired: "\u09b9\u09cb\u09b2\u09cd\u09a1 \u09b6\u09c7\u09b7",
     st_rejected: "\u09b0\u09bf\u099c\u09c7\u0995\u09cd\u099f\u09c7\u09a1",
+    autoDone: "ট্রান্সফার অনচেইনে যাচাই হয়েছে — বিক্রয় সম্পন্ন",
+    autoPending: "লেনদেন জমা হয়েছে — ব্লকচেইনে যাচাই চলছে",
   },
 };
 
