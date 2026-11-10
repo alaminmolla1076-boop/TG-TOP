@@ -67,46 +67,79 @@ async function sellerLang(chatId) {
   }
 }
 
-function sellerMessage(lang, kind, order) {
-  const bn = String(lang || "").startsWith("bn");
-  const num = order.phone_number || "";
-  const amount = money(order.price).toFixed(2);
-  if (kind === "new") {
-    return bn
-      ? [
-          "🎉 <b>নতুন অর্ডার!</b>",
-          "",
-          "📱 নাম্বার: <b>" + num + "</b>",
-          "💵 পরিমাণ: <b>$" + amount + "</b>",
-          "🏦 বায়ারের TON অ্যাড্রেস:",
-          "<code>" + (order.ton_address || "") + "</code>",
-          "",
-          "⏳ ৩০ মিনিটের মধ্যে Fragment থেকে নাম্বারটি এই অ্যাড্রেসে ট্রান্সফার করে Inventory → Number sales থেকে Tx হ্যাশ জমা দিন।",
-        ].join("\n")
-      : [
-          "🎉 <b>New order!</b>",
-          "",
-          "📱 Number: <b>" + num + "</b>",
-          "💵 Amount: <b>$" + amount + "</b>",
-          "🏦 Buyer TON address:",
-          "<code>" + (order.ton_address || "") + "</code>",
-          "",
-          "⏳ Transfer the number from Fragment to this address within 30 minutes, then submit the Tx hash in Inventory → Number sales.",
-        ].join("\n");
+const SELLER_COPY: Record<string, any> = {
+  "en": {
+    "newTitle": "🎉 <b>New order!</b>",
+    "newBody": "📱 Number: <b>{num}</b>\n💵 Amount: <b>{amount}</b>\n🏦 Buyer TON address:\n<code>{address}</code>\n\n⏳ Transfer the number from Fragment to this address within 30 minutes, then submit the Tx hash in Inventory → Number sales.",
+    "paidTitle": "✅ <b>Sale completed!</b>",
+    "paidBody": "📱 Number: <b>{num}</b>\n💵 <b>{amount}</b> has been credited to your balance."
+  },
+  "bn": {
+    "newTitle": "🎉 <b>নতুন অর্ডার!</b>",
+    "newBody": "📱 নাম্বার: <b>{num}</b>\n💵 পরিমাণ: <b>{amount}</b>\n🏦 বায়ারের TON অ্যাড্রেস:\n<code>{address}</code>\n\n⏳ ৩০ মিনিটের মধ্যে Fragment থেকে নাম্বারটি এই অ্যাড্রেসে ট্রান্সফার করে Inventory → Number sales থেকে Tx হ্যাশ জমা দিন।",
+    "paidTitle": "✅ <b>বিক্রয় সম্পন্ন!</b>",
+    "paidBody": "📱 নাম্বার: <b>{num}</b>\n💵 <b>{amount}</b> আপনার ব্যালেন্সে যোগ হয়েছে।"
+  },
+  "zh": {
+    "newTitle": "🎉 <b>新订单！</b>",
+    "newBody": "📱 号码：<b>{num}</b>\n💵 金额：<b>{amount}</b>\n🏦 买家 TON 地址：\n<code>{address}</code>\n\n⏳ 请在 30 分钟内于 Fragment 将此号码转入该地址，然后在 Inventory → Number sales 提交交易哈希。",
+    "paidTitle": "✅ <b>出售完成！</b>",
+    "paidBody": "📱 号码：<b>{num}</b>\n💵 <b>{amount}</b> 已存入你的余额。"
+  },
+  "es": {
+    "newTitle": "🎉 <b>¡Nuevo pedido!</b>",
+    "newBody": "📱 Número: <b>{num}</b>\n💵 Importe: <b>{amount}</b>\n🏦 Dirección TON del comprador:\n<code>{address}</code>\n\n⏳ Transfiere el número desde Fragment a esta dirección en 30 minutos y luego envía el hash de la Tx en Inventory → Number sales.",
+    "paidTitle": "✅ <b>¡Venta completada!</b>",
+    "paidBody": "📱 Número: <b>{num}</b>\n💵 <b>{amount}</b> se ha abonado a tu saldo."
+  },
+  "hi": {
+    "newTitle": "🎉 <b>नया ऑर्डर!</b>",
+    "newBody": "📱 नंबर: <b>{num}</b>\n💵 राशि: <b>{amount}</b>\n🏦 खरीदार का TON पता:\n<code>{address}</code>\n\n⏳ 30 मिनट के भीतर Fragment से नंबर इस पते पर ट्रांसफर करें, फिर Inventory → Number sales में Tx हैश जमा करें।",
+    "paidTitle": "✅ <b>बिक्री पूर्ण!</b>",
+    "paidBody": "📱 नंबर: <b>{num}</b>\n💵 <b>{amount}</b> आपके बैलेंस में जोड़ दिया गया है।"
+  },
+  "ar": {
+    "newTitle": "🎉 <b>طلب جديد!</b>",
+    "newBody": "📱 الرقم: <b>{num}</b>\n💵 المبلغ: <b>{amount}</b>\n🏦 عنوان TON الخاص بالمشتري:\n<code>{address}</code>\n\n⏳ حوّل الرقم من Fragment إلى هذا العنوان خلال 30 دقيقة، ثم أرسل هاش المعاملة من Inventory → Number sales.",
+    "paidTitle": "✅ <b>اكتمل البيع!</b>",
+    "paidBody": "📱 الرقم: <b>{num}</b>\n💵 تمت إضافة <b>{amount}</b> إلى رصيدك."
+  },
+  "fr": {
+    "newTitle": "🎉 <b>Nouvelle commande !</b>",
+    "newBody": "📱 Numéro : <b>{num}</b>\n💵 Montant : <b>{amount}</b>\n🏦 Adresse TON de l'acheteur :\n<code>{address}</code>\n\n⏳ Transférez le numéro depuis Fragment vers cette adresse sous 30 minutes, puis envoyez le hash de la transaction dans Inventory → Number sales.",
+    "paidTitle": "✅ <b>Vente terminée !</b>",
+    "paidBody": "📱 Numéro : <b>{num}</b>\n💵 <b>{amount}</b> a été crédité sur votre solde."
+  },
+  "ru": {
+    "newTitle": "🎉 <b>Новый заказ!</b>",
+    "newBody": "📱 Номер: <b>{num}</b>\n💵 Сумма: <b>{amount}</b>\n🏦 TON-адрес покупателя:\n<code>{address}</code>\n\n⏳ Переведите номер из Fragment на этот адрес в течение 30 минут, затем отправьте хеш транзакции в Inventory → Number sales.",
+    "paidTitle": "✅ <b>Продажа завершена!</b>",
+    "paidBody": "📱 Номер: <b>{num}</b>\n💵 <b>{amount}</b> зачислено на ваш баланс."
+  },
+  "pt": {
+    "newTitle": "🎉 <b>Novo pedido!</b>",
+    "newBody": "📱 Número: <b>{num}</b>\n💵 Valor: <b>{amount}</b>\n🏦 Endereço TON do comprador:\n<code>{address}</code>\n\n⏳ Transfira o número do Fragment para este endereço em 30 minutos e depois envie o hash da transação em Inventory → Number sales.",
+    "paidTitle": "✅ <b>Venda concluída!</b>",
+    "paidBody": "📱 Número: <b>{num}</b>\n💵 <b>{amount}</b> foi creditado no seu saldo."
+  },
+  "de": {
+    "newTitle": "🎉 <b>Neue Bestellung!</b>",
+    "newBody": "📱 Nummer: <b>{num}</b>\n💵 Betrag: <b>{amount}</b>\n🏦 TON-Adresse des Käufers:\n<code>{address}</code>\n\n⏳ Übertrage die Nummer innerhalb von 30 Minuten von Fragment an diese Adresse und sende dann den Tx-Hash unter Inventory → Number sales.",
+    "paidTitle": "✅ <b>Verkauf abgeschlossen!</b>",
+    "paidBody": "📱 Nummer: <b>{num}</b>\n💵 <b>{amount}</b> wurde deinem Guthaben gutgeschrieben."
   }
-  return bn
-    ? [
-        "✅ <b>বিক্রয় সম্পন্ন!</b>",
-        "",
-        "📱 নাম্বার: <b>" + num + "</b>",
-        "💵 <b>$" + amount + "</b> আপনার ব্যালেন্সে যোগ হয়েছে।",
-      ].join("\n")
-    : [
-        "✅ <b>Sale completed!</b>",
-        "",
-        "📱 Number: <b>" + num + "</b>",
-        "💵 <b>$" + amount + "</b> has been credited to your balance.",
-      ].join("\n");
+};
+
+function sellerMessage(lang, kind, order) {
+  const code = String(lang || "en").toLowerCase().split(/[-_]/)[0];
+  const copy = SELLER_COPY[code] || SELLER_COPY.en;
+  const num = order?.phone_number || "";
+  const amount = "$" + money(order?.price).toFixed(2);
+  const body = String(kind === "new" ? copy.newBody : copy.paidBody)
+    .split("{num}").join(num)
+    .split("{amount}").join(amount)
+    .split("{address}").join(order?.ton_address || "");
+  return (kind === "new" ? copy.newTitle : copy.paidTitle) + "\n\n" + body;
 }
 
 async function notifySeller(order, kind) {
