@@ -72,6 +72,7 @@ export default function AccountHistory({ tab, data }) {
       <div className="flex flex-col gap-2">
         {sales.map((s) => {
           const state = s.reward_status || s.status;
+          const failed = state === "rejected" || state === "failed";
           return (
             <Row
               key={s.id}
@@ -79,8 +80,8 @@ export default function AccountHistory({ tab, data }) {
               title={s.phone_number || s.country_iso}
               sub={[s.country_iso, formatDate(s.created_date)].filter(Boolean).join(" · ")}
               amount={s.reward_amount != null ? formatMoney(s.reward_amount) : ""}
-              note={state}
-              noteTone={statusTone[state]}
+              note={failed ? state : t("a.sold")}
+              noteTone={failed ? statusTone[state] : "text-emerald-400"}
             />
           );
         })}
