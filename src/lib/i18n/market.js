@@ -520,4 +520,12 @@ export const MARKET = {
     en: "View Profile", bn: "প্রোফাইল দেখুন", zh: "查看资料", es: "Ver perfil", hi: "प्रोफ़ाइल देखें",
     ar: "عرض الملف", fr: "Voir le profil", ru: "Профиль", pt: "Ver perfil", de: "Profil ansehen",
   },
+  "mk.totalSell": {
+    en: "Total Sell", bn: "মোট বিক্রি", zh: "总销量", es: "Ventas", hi: "कुल बिक्री",
+    ar: "إجمالي البيع", fr: "Ventes", ru: "Продажи", pt: "Vendas", de: "Verkäufe",
+  },
+  "mk.stockLabel": {
+    en: "Stock", bn: "স্টক", zh: "库存", es: "Stock", hi: "स्टॉक",
+    ar: "المخزون", fr: "Stock", ru: "Склад", pt: "Estoque", de: "Bestand",
+  },
 };
