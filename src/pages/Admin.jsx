@@ -8,6 +8,7 @@ import AdminUsersTab from "@/components/admin/AdminUsersTab";
 import AdminReportsTab from "@/components/admin/AdminReportsTab";
 import AdminWithdrawalsTab from "@/components/admin/AdminWithdrawalsTab";
 import AdminHistoryTab from "@/components/admin/AdminHistoryTab";
+import AdminEscrowTab from "@/components/admin/AdminEscrowTab";
 
 const BACKDROP_URL =
   "https://media.base44.com/images/public/6ad1ec4d9f3d182acc871a46/7a1e5277e_generated_a945c853.jpg";
@@ -53,6 +54,7 @@ export default function Admin() {
     { key: "users", label: t("adm.tabUsers"), icon: Users },
     { key: "withdrawals", label: t("adm.tabWithdrawals"), icon: Banknote, badge: pending.length },
     { key: "reports", label: t("adm.tabReports"), icon: FileWarning },
+    { key: "escrow", label: t("adm.tabEscrow"), icon: ShieldCheck },
     { key: "history", label: t("adm.tabHistory"), icon: HistoryIcon },
   ];
 
@@ -106,6 +108,7 @@ export default function Admin() {
           <AdminWithdrawalsTab pending={pending} loading={!data} onChanged={load} />
         )}
         {tab === "reports" && <AdminReportsTab reports={data?.reports || []} loading={!data} />}
+        {tab === "escrow" && <AdminEscrowTab />}
         {tab === "history" && <AdminHistoryTab data={data} loading={!data} />}
       </div>
     </div>
