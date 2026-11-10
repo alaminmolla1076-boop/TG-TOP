@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { BadgeCheck, ChevronRight, Star, ShoppingCart } from "lucide-react";
+import { BadgeCheck, ChevronRight, ShoppingCart, Package } from "lucide-react";
 import { useAppLang } from "@/lib/AppLanguageContext";
 
 // Market — one seller card: avatar, handle, real sale + stock counts and a
@@ -35,15 +35,25 @@ export default function SellerCard({ seller }) {
         ) : null}
       </div>
 
-      <div className="flex w-full items-center justify-center gap-3 text-[10.5px] text-[#a8a3cf]">
-        <span className="inline-flex items-center gap-1">
-          <Star className="h-3 w-3 text-[#F5C451]" strokeWidth={2} />
-          <span className="tabular-nums text-[#e6e2ff]">{seller.sold ?? 0}</span>
-        </span>
-        <span className="inline-flex items-center gap-1">
-          <ShoppingCart className="h-3 w-3 text-[#A29BFE]" strokeWidth={2} />
-          <span className="tabular-nums text-[#e6e2ff]">{stock}</span>
-        </span>
+      <div className="grid w-full grid-cols-2 gap-1.5">
+        <div className="flex flex-col items-center gap-1 rounded-xl border border-[#A29BFE]/25 bg-[rgba(19,17,28,.5)] px-1 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,.05)]">
+          <span className="flex items-center gap-1 text-[8px] font-semibold uppercase tracking-[.07em] text-[#9a94c4]">
+            <ShoppingCart className="h-2.5 w-2.5 shrink-0 text-[#A29BFE]" strokeWidth={2.2} />
+            {t("mk.totalSell")}
+          </span>
+          <span className="font-display text-[13px] font-bold leading-none tabular-nums text-white">
+            {seller.sold ?? 0}
+          </span>
+        </div>
+        <div className="flex flex-col items-center gap-1 rounded-xl border border-[#F5C451]/25 bg-[rgba(19,17,28,.5)] px-1 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,.05)]">
+          <span className="flex items-center gap-1 text-[8px] font-semibold uppercase tracking-[.07em] text-[#9a94c4]">
+            <Package className="h-2.5 w-2.5 shrink-0 text-[#F5C451]" strokeWidth={2.2} />
+            {t("mk.stockLabel")}
+          </span>
+          <span className="font-display text-[13px] font-bold leading-none tabular-nums text-[#F5C451]">
+            {stock}
+          </span>
+        </div>
       </div>
 
       <Link
