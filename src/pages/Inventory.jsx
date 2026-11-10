@@ -4,6 +4,7 @@ import { Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import StockPricesPanel from "@/components/sell/StockPricesPanel";
 import NumberPricePanel from "@/components/sell/NumberPricePanel";
+import SellerEscrowOrders from "@/components/escrow/SellerEscrowOrders";
 import { formatMoney } from "@/lib/format";
 import { useAppLang } from "@/lib/AppLanguageContext";
 import { useTgIdentity } from "@/lib/TgIdentityContext";
@@ -81,6 +82,10 @@ export default function Inventory() {
 
       <div className="og-rise flex flex-col gap-4 [animation-delay:.2s]">
         <NumberPricePanel key={sales ? sales.length : 0} />
+      </div>
+
+      <div className="og-rise flex flex-col gap-4 [animation-delay:.28s]">
+        <SellerEscrowOrders />
       </div>
 
       <section className="og-rise flex flex-col gap-2.5 [animation-delay:.35s] lg:col-span-2">
