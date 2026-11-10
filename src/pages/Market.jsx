@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Gem } from "lucide-react";
 import { useTgIdentity } from "@/lib/TgIdentityContext";
 import { useToast } from "@/components/ui/use-toast";
 import { useAppLang } from "@/lib/AppLanguageContext";
@@ -90,7 +91,8 @@ export default function Market() {
     <div className="relative">
       <MarketBackdrop />
       <div className="relative z-10 flex flex-col gap-[22px] lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-6 lg:gap-y-7">
-        <span className="mk-fade self-center rounded-full border border-[#A29BFE]/35 bg-[rgba(108,92,231,.14)] px-4 py-1.5 text-[11px] font-semibold tracking-[.14em] text-[#A29BFE] lg:col-span-2">
+        <span className="mk-fade inline-flex self-center items-center gap-1.5 rounded-full border border-[#6C5CE7]/55 bg-[linear-gradient(120deg,rgba(108,92,231,.28),rgba(245,196,81,.1))] px-4 py-1.5 text-[10.5px] font-semibold uppercase tracking-[.14em] text-[#C9C4FF] shadow-[inset_0_1px_0_rgba(255,255,255,.1),0_10px_24px_-16px_rgba(108,92,231,.9)] lg:col-span-2">
+          <Gem className="h-3 w-3 shrink-0 text-[#A29BFE]" strokeWidth={2} />
           {t("mk.badge")}
         </span>
         <div className="lg:col-span-2">
