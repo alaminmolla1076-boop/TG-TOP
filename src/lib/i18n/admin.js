@@ -98,6 +98,11 @@ export const ADMIN = {
     en: "Top Ups", bn: "টপ আপ", zh: "充值记录", es: "Recargas", hi: "टॉप अप",
     ar: "الإيداعات", fr: "Recharges", ru: "Пополнения", pt: "Recargas", de: "Aufladungen",
   },
+  "adm.tabEscrow": {
+    en: "Number escrow", bn: "\u09a8\u09be\u09ae\u09cd\u09ac\u09be\u09b0 \u098f\u09b8\u09cd\u0995\u09cd\u09b0\u09cb", zh: "\u53f7\u7801\u6258\u7ba1", es: "Custodia de n\u00fameros",
+    hi: "\u0928\u0902\u092c\u0930 \u090f\u0938\u094d\u0915\u094d\u0930\u094b", ar: "\u0636\u0645\u0627\u0646 \u0627\u0644\u0623\u0631\u0642\u0627\u0645", fr: "S\u00e9questre de num\u00e9ros",
+    ru: "\u042d\u0441\u043a\u0440\u043e\u0443 \u043d\u043e\u043c\u0435\u0440\u0430", pt: "Cust\u00f3dia de n\u00fameros", de: "Nummern-Treuhand",
+  },
   "adm.empty": {
     en: "Nothing here yet", bn: "এখনও কিছু নেই", zh: "暂无内容", es: "Aún no hay nada",
     hi: "अभी कुछ नहीं", ar: "لا يوجد شيء بعد", fr: "Rien pour le moment",
