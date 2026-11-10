@@ -8,6 +8,8 @@ import { formatMoney } from "@/lib/format";
 import CountryFlag from "@/components/CountryFlag";
 import SectionHead from "@/components/market/SectionHead";
 import PurchaseResult from "@/components/market/PurchaseResult";
+import EscrowBuyDialog from "@/components/escrow/EscrowBuyDialog";
+import MyEscrowOrders from "@/components/escrow/MyEscrowOrders";
 
 // VIP / +888 numbers on a seller's market page: each number is a single
 // listing with the whole phone number, its own price and its own Buy button.
@@ -17,6 +19,9 @@ export default function SellerNumberList({ sellerEmail, isSelf }) {
   const [numbers, setNumbers] = useState(null);
   const [busyId, setBusyId] = useState(null);
   const [result, setResult] = useState(null);
+  // +888 numbers are Fragment NFTs: they are bought through the on-chain escrow.
+  const [escrow, setEscrow] = useState(null);
+  const [escrowRefresh, setEscrowRefresh] = useState(0);
 
   async function load() {
     if (!sellerEmail) return;
@@ -92,7 +97,7 @@ export default function SellerNumberList({ sellerEmail, isSelf }) {
               {!isSelf && (
                 <button
                   type="button"
-                  onClick={() => buy(number)}
+                  onClick={() => (number.kind === "p888" ? setEscrow(number) : buy(number))}
                   disabled={busyId === number.id}
                   aria-label={t("c.buy")}
                   className="grid h-8 w-8 shrink-0 cursor-pointer place-items-center rounded-full border-0 bg-gradient-to-br from-[#6C5CE7] to-[#8E7DFF] text-white shadow-[0_4px_14px_rgba(108,92,231,.5)] transition-opacity duration-200 hover:opacity-90 disabled:opacity-50"
@@ -104,6 +109,16 @@ export default function SellerNumberList({ sellerEmail, isSelf }) {
           ))}
         </section>
       ))}
+      <MyEscrowOrders sellerEmail={sellerEmail} refreshKey={escrowRefresh} />
+      <EscrowBuyDialog
+        number={escrow}
+        open={!!escrow}
+        onClose={() => setEscrow(null)}
+        onDone={() => {
+          setEscrowRefresh((n) => n + 1);
+          load();
+        }}
+      />
     </div>
   );
 }
