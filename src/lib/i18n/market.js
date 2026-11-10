@@ -512,4 +512,12 @@ export const MARKET = {
   "pr.password": {
     en: "Login password", bn: "লগইন পাসওয়ার্ড",
   },
+  "mk.totalSales": {
+    en: "Total Sales", bn: "মোট বিক্রি", zh: "总销量", es: "Ventas totales", hi: "कुल बिक्री",
+    ar: "إجمالي المبيعات", fr: "Ventes totales", ru: "Всего продаж", pt: "Vendas totais", de: "Verkäufe gesamt",
+  },
+  "mk.viewProfile": {
+    en: "View Profile", bn: "প্রোফাইল দেখুন", zh: "查看资料", es: "Ver perfil", hi: "प्रोफ़ाइल देखें",
+    ar: "عرض الملف", fr: "Voir le profil", ru: "Профиль", pt: "Ver perfil", de: "Profil ansehen",
+  },
 };
