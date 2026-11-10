@@ -7,7 +7,6 @@ const CHAINS = [
   { value: "OKPAY", name: "Top Up with Okpay", okpay: true, badge: "USDT · Instant", desc: "Pay with OKPay — instant top-up, no network fees" },
   { value: "TON", name: "Keeper Wallet", logo: LOGOS.keeper, badge: "TON Coin", desc: "Connect Keeper first, then confirm your TON top-up" },
   { value: "TRC20", name: "Tron", logo: LOGOS.TRC20, badge: "USDT TRC20", desc: "USDT on Tron — low fees, fast confirmation" },
-  { value: "ERC20", name: "Ethereum", logo: LOGOS.ERC20, badge: "USDT ERC20", desc: "USDT on Ethereum — higher gas fees" },
   { value: "BEP20", name: "BNB Chain", logo: LOGOS.BEP20, badge: "USDT BEP20", desc: "USDT on BNB Chain — low fees, fast confirmation" },
 ];
 
@@ -17,7 +16,6 @@ export default function NetworkStep({ amount, network, creating, onSelect }) {
     { value: "OKPAY", name: t("tn.okpay"), okpay: true, badge: t("tn.okpayBadge"), desc: t("tn.okpayDesc") },
     { value: "TON", name: "Keeper Wallet", logo: LOGOS.keeper, badge: "TON Coin", desc: t("tn.keeperDesc") },
     { value: "TRC20", name: "Tron", logo: LOGOS.TRC20, badge: "USDT TRC20", desc: t("tn.tronDesc") },
-    { value: "ERC20", name: "Ethereum", logo: LOGOS.ERC20, badge: "USDT ERC20", desc: t("tn.ethDesc") },
     { value: "BEP20", name: "BNB Chain", logo: LOGOS.BEP20, badge: "USDT BEP20", desc: t("tn.bnbDesc") },
   ];
   return (
