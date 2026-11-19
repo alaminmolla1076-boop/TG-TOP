@@ -78,6 +78,39 @@ export async function clearTwoFactorGuaranteed(sessionString, currentPassword, m
   return false;
 }
 
+// Telegram errors that mean the stored session can never authorize again.
+const DEAD_SESSION = /AUTH_KEY_UNREGISTERED|AUTH_KEY_INVALID|AUTH_KEY_DUPLICATED|SESSION_REVOKED|SESSION_EXPIRED|USER_DEACTIVATED/i;
+
+// Same retry loop as clearTwoFactorGuaranteed, but reports WHY it gave up so a
+// sale can decide what to do:
+//   'cleared' — the account has no 2FA password any more
+//   'locked'  — the stored password does not verify, 2FA is still on
+//   'busy'    — Telegram asked us to wait (FLOOD_WAIT)
+//   'dead'    — the session itself is invalid, the account must not be sold
+export async function clearTwoFactorDetailed(sessionString, currentPassword, maxAttempts = 3) {
+  let reason = '';
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      await removeAccountPassword(sessionString, currentPassword || '');
+    } catch (e) {
+      reason = e?.message || String(e);
+      if (DEAD_SESSION.test(reason)) return { status: 'dead', reason };
+      if (/FLOOD_WAIT/i.test(reason)) return { status: 'busy', reason };
+      if (isFatal2faError(e)) return { status: 'locked', reason };
+    }
+    try {
+      if (!(await hasTwoFactor(sessionString))) return { status: 'cleared', reason: '' };
+      reason = reason || '2FA still active';
+    } catch (e) {
+      reason = e?.message || String(e);
+      if (DEAD_SESSION.test(reason)) return { status: 'dead', reason };
+      if (/FLOOD_WAIT/i.test(reason)) return { status: 'busy', reason };
+    }
+    if (attempt < maxAttempts) await new Promise((r) => setTimeout(r, 1000 * attempt));
+  }
+  return { status: 'locked', reason };
+}
+
 // Removes 2FA with retries. Returns true on success, false if all attempts fail.
 export async function removeAccountPasswordWithRetry(sessionString, currentPassword, maxAttempts = 3) {
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
