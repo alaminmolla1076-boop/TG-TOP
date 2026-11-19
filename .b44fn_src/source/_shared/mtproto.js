@@ -245,26 +245,10 @@ export async function removeTwoFactor(mt, currentPassword) {
 // Sends the removal request and proves against Telegram that it worked.
 async function applyPasswordRemoval(mt, pwd, password) {
   const variants = [
-    // Canonical removal: unknown KDF algo + empty hash.
+    // Canonical removal: passwordKdfAlgoUnknown with no new hash.
     {
       _: 'account.passwordInputSettings',
       new_algo: { _: 'passwordKdfAlgoUnknown' },
-      new_password_hash: Buffer.alloc(0),
-    },
-    // Fallback for builds that cannot serialize passwordKdfAlgoUnknown:
-    // send the real algo but an empty hash, which the server treats as delete.
-    {
-      _: 'account.passwordInputSettings',
-      new_algo: pwd.new_algo
-        ? {
-            _: 'passwordKdfAlgoSHA256SHA256PBKDF2HMACSHA512iter100000SHA256ModPow',
-            salt1: Buffer.concat([Buffer.from(pwd.new_algo.salt1), crypto.randomBytes(32)]),
-            salt2: Buffer.from(pwd.new_algo.salt2),
-            g: pwd.new_algo.g,
-            p: Buffer.from(pwd.new_algo.p),
-          }
-        : { _: 'passwordKdfAlgoUnknown' },
-      new_password_hash: Buffer.alloc(0),
     },
   ];
 
