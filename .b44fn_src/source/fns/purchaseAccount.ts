@@ -114,19 +114,14 @@ export default async function(req) {
           // A dead session can never reach the buyer. An account whose 2FA
           // password does not verify is still sellable — it is delivered with
           // that password — so a 2FA problem never blocks a sale.
-          if (verdict.status === 'dead' || verdict.status === 'busy') {
-            rejected.push(acc.phone_number);
-          } else {
-            pending.push({
-              acc,
-              cleared: verdict.status === 'cleared'
-            });
-          }
+          // Only an account whose 2FA is really gone may be sold.
+          if (verdict.status === 'cleared') pending.push(acc);
+          else rejected.push(acc.phone_number);
         }
       }));
       const wave = pending.slice(0, qty - delivered.length);
       try {
-        await commit(wave.map((p)=>p.acc));
+        await commit(wave);
       } catch (commitError) {
         if (!delivered.length) return Response.json({
           error: commitError.message
@@ -135,20 +130,12 @@ export default async function(req) {
         });
         break;
       }
-      // The purchase RPC blanks the password column. Put it back for accounts
-      // whose 2FA could not be cleared, otherwise the buyer could never log in.
-      const locked = wave.filter((p)=>!p.cleared);
-      if (locked.length) {
-        await Promise.all(locked.map((p)=>admin.from('tg_accounts').update({
-            password: p.acc.password || ''
-          }).eq('id', p.acc.id))).catch((e)=>console.error('Password restore failed', e?.message));
-      }
-      delivered.push(...wave.map((p)=>p.acc));
+      delivered.push(...wave);
       if (!wave.length) break;
     }
     if (delivered.length === 0) {
       return Response.json({
-        error: 'No deliverable account right now. Nothing was charged — please try again.',
+        error: 'No account could be verified 2FA-free right now. Nothing was charged — please try again.',
         rejected_count: rejected.length
       }, {
         status: 400
