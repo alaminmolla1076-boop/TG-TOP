@@ -6,7 +6,7 @@
 // so every existing session string (and .session file export) stays compatible.
 import MTProto from 'npm:@mtproto/core@6.3.0/envs/browser/index.js';
 import { encodeSession, parseSessionString } from './telegramSessionCodec.js';
-import passwordDigest from './passwordDigest.js';
+import passwordDigest, { srpX } from './passwordDigest.js';
 import { API_ID, API_HASH } from './telegramConfig.js';
 import { Buffer } from 'node:buffer';
 import crypto from 'node:crypto';
@@ -185,8 +185,7 @@ export async function setTwoFactor(mt, newPassword, currentPassword = '', hint =
 }
 
 // Removes the 2FA password from an authenticated account.
-// Telegram deletes the cloud password when new_password_hash is empty. Two
-// payload shapes are accepted by different layers, so try both.
+// core.telegram.org/api/srp: removal = empty new_password_hash and no hint.
 export async function removeTwoFactor(mt, currentPassword) {
   const pwd = await mt.call('account.getPassword', {});
   if (!pwd.has_password) return;
@@ -198,9 +197,6 @@ export async function removeTwoFactor(mt, currentPassword) {
       _: 'account.passwordInputSettings',
       new_algo: { _: 'passwordKdfAlgoUnknown' },
       new_password_hash: Buffer.alloc(0),
-      // A non-empty hint is required: the serializer drops empty strings from
-      // the flagged field group, which makes Telegram reject the payload.
-      hint: 'tgtop',
     },
     // Fallback for builds that cannot serialize passwordKdfAlgoUnknown:
     // send the real algo but an empty hash, which the server treats as delete.
@@ -216,7 +212,6 @@ export async function removeTwoFactor(mt, currentPassword) {
           }
         : { _: 'passwordKdfAlgoUnknown' },
       new_password_hash: Buffer.alloc(0),
-      hint: 'tgtop',
     },
   ];
 
@@ -237,34 +232,78 @@ export async function removeTwoFactor(mt, currentPassword) {
   throw normalizeError(lastError);
 }
 
-// Builds an inputCheckPasswordSRP for an existing password.
-// @mtproto/core's browser build does not expose getSRPParams, so the SRP math
-// is done with gramJS's computeCheck and the result mapped back to raw TL.
+// ---- SRP proof -------------------------------------------------------------
+
+const MODP_SIZE = 256; // 2048-bit group, big-endian
+const sha256 = async (parts) => Buffer.from(await globalThis.crypto.subtle.digest('SHA-256', Buffer.concat(parts)));
+
+const pad256 = (value) => {
+  const b = Buffer.from(value);
+  if (b.length >= MODP_SIZE) return b;
+  const out = Buffer.alloc(MODP_SIZE);
+  b.copy(out, MODP_SIZE - b.length);
+  return out;
+};
+
+const toBigInt = (buf) => BigInt('0x' + Buffer.from(buf).toString('hex'));
+const toBytes = (n) => Buffer.from(n.toString(16).padStart(MODP_SIZE * 2, '0'), 'hex');
+
+const modPow = (base, exponent, mod) => {
+  let b = base % mod, e = exponent, result = 1n;
+  while (e > 0n) {
+    if (e & 1n) result = (result * b) % mod;
+    b = (b * b) % mod;
+    e >>= 1n;
+  }
+  return result;
+};
+
+const xorBytes = (l, r) => {
+  const out = Buffer.alloc(l.length);
+  for (let i = 0; i < l.length; i++) out[i] = l[i] ^ r[i];
+  return out;
+};
+
+// Builds inputCheckPasswordSRP with the app's own KDF and SRP math, i.e. the
+// exact same code that sets the password. A password the system set therefore
+// always verifies — no library translation layer in between.
 export async function srpCheck(pwd, password) {
-  const [{ computeCheck }, { Api }] = await Promise.all([
-    import('npm:telegram@2.26.22/Password.js'),
-    import('npm:telegram@2.26.22/tl/index.js'),
-  ]);
-  const algo = new Api.PasswordKdfAlgoSHA256SHA256PBKDF2HMACSHA512iter100000SHA256ModPow({
+  if (!pwd.current_algo || !pwd.srp_B) throw new Error('2FA password state unavailable');
+  const algo = {
     salt1: Buffer.from(pwd.current_algo.salt1),
     salt2: Buffer.from(pwd.current_algo.salt2),
     g: pwd.current_algo.g,
     p: Buffer.from(pwd.current_algo.p),
-  });
-  const req = new Api.account.Password({
-    hasPassword: true,
-    currentAlgo: algo,
-    // gramJS's generated class keeps this field as srp_B (not srpB).
-    srp_B: Buffer.from(pwd.srp_B),
-    srpId: BigInt(pwd.srp_id),
-  });
-  const check = await computeCheck(req, password);
-  return {
-    _: 'inputCheckPasswordSRP',
-    srp_id: pwd.srp_id,
-    A: Buffer.from(check.A),
-    M1: Buffer.from(check.M1),
   };
+  const prime = toBigInt(algo.p);
+  const generator = BigInt(algo.g);
+  const pPadded = pad256(algo.p);
+  const gPadded = pad256(Buffer.from([algo.g]));
+  const bPadded = pad256(pwd.srp_B);
+
+  const x = toBigInt(await srpX(algo, password));
+  const v = modPow(generator, x, prime);
+  const k = toBigInt(await sha256([pPadded, gPadded]));
+
+  const a = toBigInt(crypto.randomBytes(MODP_SIZE));
+  const A = toBytes(modPow(generator, a, prime));
+  const u = toBigInt(await sha256([A, bPadded]));
+
+  let base = (toBigInt(bPadded) - k * v) % prime;
+  if (base < 0n) base += prime;
+  const S = modPow(base, a + u * x, prime);
+  const K = await sha256([toBytes(S)]);
+
+  const M1 = await sha256([
+    xorBytes(await sha256([pPadded]), await sha256([gPadded])),
+    await sha256([algo.salt1]),
+    await sha256([algo.salt2]),
+    A,
+    bPadded,
+    K,
+  ]);
+
+  return { _: 'inputCheckPasswordSRP', srp_id: pwd.srp_id, A, M1 };
 }
 
 export function generatePassword(length = 12) {
