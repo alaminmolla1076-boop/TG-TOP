@@ -27,7 +27,7 @@ export default async function(req) {
       )`
     );
 
-    const [userCount, reports, pendingWithdrawals, purchases, sales, topups, withdrawals, twofaRows] = await Promise.all([
+    const [userCount, reports, pendingWithdrawals, purchases, sales, topups, withdrawals] = await Promise.all([
       runSql(
         `select count(*)::int as count from tg_web_users`
       ),
@@ -69,14 +69,6 @@ export default async function(req) {
          left join tg_web_users u on u.identity_email = w.user_email
          order by w.created_date desc limit 50`
       ),
-      // Every number whose system 2FA password is stored — the admin 2FA tab
-      // lists these and exports them as a text file on demand.
-      runSql(
-        `select phone_number, password, status, owner_email, created_date
-         from tg_accounts
-         where coalesce(password, '') <> ''
-         order by created_date desc limit 5000`
-      ),
     ]);
 
     return Response.json({
@@ -87,7 +79,6 @@ export default async function(req) {
       sales: sales.map((s) => ({ ...s, reward_amount: s.reward_amount === null ? null : Number(s.reward_amount) })),
       topups: topups.map((x) => ({ ...x, amount: Number(x.amount) })),
       withdrawals: withdrawals.map((w) => ({ ...w, amount: Number(w.amount) })),
-      twofa_rows: twofaRows || [],
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 400 });

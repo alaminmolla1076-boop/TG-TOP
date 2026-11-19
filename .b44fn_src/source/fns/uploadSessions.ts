@@ -1,6 +1,6 @@
 import { makeB44 } from '../_shared/b44.ts';
 import { isAdminRequest } from '../_shared/isAdmin.ts';
-import { Mt, errorMessageOf, srpCheck } from '../_shared/mtproto.js';
+import { Mt, errorMessageOf } from '../_shared/mtproto.js';
 import { generatePassword, setTwoFactorPassword } from '../_shared/twoFactor.js';
 import { syncCountryStock } from '../_shared/inventory.js';
 import { normalizeSessionInput } from '../_shared/sessionParser.js';
@@ -87,18 +87,6 @@ export default async function(req) {
             if (!providedPassword) {
               addFailure('Account has existing 2FA — password required', phone, sessionString);
               continue;
-            }
-            // Prove the password before storing it — a wrong one would make the
-            // account impossible to sell, because 2FA removal can never succeed.
-            try {
-              await mt.call('account.getPasswordSettings', {
-                password: await srpCheck(pwd, providedPassword)
-              });
-            } catch (e) {
-              if (/PASSWORD_HASH_INVALID/i.test(errorMessageOf(e))) {
-                addFailure('2FA password does not match this account', phone, sessionString);
-                continue;
-              }
             }
             storedPassword = providedPassword;
           } else {
