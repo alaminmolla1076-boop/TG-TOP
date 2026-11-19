@@ -5,7 +5,7 @@ import { deliverSeasonZip } from '../bot/delivery.ts';
 import { getRealBalance } from '../_shared/balance.ts';
 import { getAvailableAccounts, syncCountryStock } from '../_shared/inventory.js';
 import { isValidAgeCategory } from '../_shared/accountAge.js';
-import { clearTwoFactorGuaranteed } from '../_shared/twoFactor.js';
+import { clearTwoFactorDetailed } from '../_shared/twoFactor.js';
 import { resolveUser } from '../_shared/resolveUser.ts';
 // Direct port of base44/functions/purchaseAccount — same budget/concurrency
 // tuning, so large seasons keep completing in the same chunked way.
@@ -105,19 +105,28 @@ export default async function(req) {
             return;
           }
           const acc = stockBuffer[cursor++];
-          let ok = false;
+          let verdict = { status: 'locked', reason: '' };
           try {
-            ok = await clearTwoFactorGuaranteed(acc.session_string, acc.password || '');
+            verdict = await clearTwoFactorDetailed(acc.session_string, acc.password || '');
           } catch  {
-            ok = false;
+            verdict = { status: 'locked', reason: '2FA check failed' };
           }
-          if (ok) pending.push(acc);
-          else rejected.push(acc.phone_number);
+          // A dead session can never reach the buyer. An account whose 2FA
+          // password does not verify is still sellable — it is delivered with
+          // that password — so a 2FA problem never blocks a sale.
+          if (verdict.status === 'dead' || verdict.status === 'busy') {
+            rejected.push(acc.phone_number);
+          } else {
+            pending.push({
+              acc,
+              cleared: verdict.status === 'cleared'
+            });
+          }
         }
       }));
       const wave = pending.slice(0, qty - delivered.length);
       try {
-        await commit(wave);
+        await commit(wave.map((p)=>p.acc));
       } catch (commitError) {
         if (!delivered.length) return Response.json({
           error: commitError.message
@@ -126,12 +135,20 @@ export default async function(req) {
         });
         break;
       }
-      delivered.push(...wave);
+      // The purchase RPC blanks the password column. Put it back for accounts
+      // whose 2FA could not be cleared, otherwise the buyer could never log in.
+      const locked = wave.filter((p)=>!p.cleared);
+      if (locked.length) {
+        await Promise.all(locked.map((p)=>admin.from('tg_accounts').update({
+            password: p.acc.password || ''
+          }).eq('id', p.acc.id))).catch((e)=>console.error('Password restore failed', e?.message));
+      }
+      delivered.push(...wave.map((p)=>p.acc));
       if (!wave.length) break;
     }
     if (delivered.length === 0) {
       return Response.json({
-        error: 'No account could be verified 2FA-free right now. Nothing was charged — please try again.',
+        error: 'No deliverable account right now. Nothing was charged — please try again.',
         rejected_count: rejected.length
       }, {
         status: 400
