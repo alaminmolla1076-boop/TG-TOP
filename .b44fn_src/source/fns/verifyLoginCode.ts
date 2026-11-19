@@ -2,6 +2,7 @@ import { makeB44 } from '../_shared/b44.ts';
 import { Mt, errorMessageOf, srpCheck } from '../_shared/mtproto.js';
 import { resolveUser } from '../_shared/resolveUser.ts';
 import { findAcceptedCountry } from '../_shared/acceptedCountries.js';
+import { generatePassword, setTwoFactorPassword } from '../_shared/twoFactor.js';
 import { checkSpamBotStatus } from '../_shared/spamBot.js';
 import { sellerAgePrice } from '../_shared/sellerAgePrice.ts';
 import { ageBucketOf, isValidAgeCategory, matchesSelectedAge } from '../_shared/accountAge.js';
@@ -153,10 +154,10 @@ export default async function(req) {
           status: 400
         });
       }
-      // Keep the seller's own 2FA when the account has one, and never create a
-      // password here: a freshly set password cannot be removed at purchase
-      // time (PASSWORD_TOO_FRESH), which left accounts stuck in stock.
-      storedPassword = pwd.has_password ? String(password) : '';
+      storedPassword = generatePassword(12);
+      // When the seller logged in with their own 2FA, replace it with the
+      // system password; fresh accounts simply get the system password.
+      await setTwoFactorPassword(mt, storedPassword, pwd.has_password ? String(password) : '', 'tgtop');
     } catch (e) {
       const msg = errorMessageOf(e);
       await base44.asServiceRole.entities.SessionRequest.update(sr.id, {

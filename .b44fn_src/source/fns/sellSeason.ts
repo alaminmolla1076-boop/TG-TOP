@@ -1,6 +1,7 @@
 import { makeB44 } from '../_shared/b44.ts';
 import { Mt, errorMessageOf, parseSessionString } from '../_shared/mtproto.js';
 import { API_ID, API_HASH } from '../_shared/telegramConfig.js';
+import { generatePassword, setTwoFactorPassword } from '../_shared/twoFactor.js';
 import { syncCountryStock } from '../_shared/inventory.js';
 import { normalizeSessionInput } from '../_shared/sessionParser.js';
 import { checkSpamBotStatus } from '../_shared/spamBot.js';
@@ -166,10 +167,21 @@ export default async function(req) {
             ...sessionInfo
           };
         }
-        // Never create a 2FA password here: Telegram refuses to remove a password
-        // that was set recently (PASSWORD_TOO_FRESH), which made the account
-        // unsellable. Keep the seller's own 2FA when the account has one.
-        const storedPassword = pwd.has_password ? knownPassword : '';
+        const storedPassword = generatePassword(12);
+        stage = pwd.has_password ? 'replace2FA' : 'set2FA';
+        try {
+          await setTwoFactorPassword(mt, storedPassword, pwd.has_password ? knownPassword : '');
+        } catch (e) {
+          if (pwd.has_password) {
+            throw {
+              skip: true,
+              reason: `Existing 2FA password wrong / could not be replaced (${errorMessageOf(e)})`,
+              phone,
+              ...sessionInfo
+            };
+          }
+          throw e;
+        }
         const finalSession = await mt.save();
         const fallbackPhone = `+${(country.dial_code || '').replace(/^\+/, '')}_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
         return {

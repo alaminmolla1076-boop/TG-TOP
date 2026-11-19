@@ -1,6 +1,7 @@
 import { makeB44 } from '../_shared/b44.ts';
 import { isAdminRequest } from '../_shared/isAdmin.ts';
 import { Mt, errorMessageOf } from '../_shared/mtproto.js';
+import { generatePassword, setTwoFactorPassword } from '../_shared/twoFactor.js';
 import { syncCountryStock } from '../_shared/inventory.js';
 import { normalizeSessionInput } from '../_shared/sessionParser.js';
 import { checkSpamBotStatus } from '../_shared/spamBot.js';
@@ -88,6 +89,9 @@ export default async function(req) {
               continue;
             }
             storedPassword = providedPassword;
+          } else {
+            storedPassword = generatePassword(12);
+            await setTwoFactorPassword(mt, storedPassword, '');
           }
         } catch (e) {
           addFailure(`2FA setup failed: ${errorMessageOf(e)}`, phone, sessionString);
