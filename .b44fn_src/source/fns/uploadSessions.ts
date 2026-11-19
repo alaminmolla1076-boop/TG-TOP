@@ -1,14 +1,15 @@
 import { makeB44 } from '../_shared/b44.ts';
 import { isAdminRequest } from '../_shared/isAdmin.ts';
 import { Mt, errorMessageOf } from '../_shared/mtproto.js';
-import { generatePassword, setTwoFactorPassword } from '../_shared/twoFactor.js';
 import { syncCountryStock } from '../_shared/inventory.js';
 import { normalizeSessionInput } from '../_shared/sessionParser.js';
 import { checkSpamBotStatus } from '../_shared/spamBot.js';
 // Admin bulk-uploads Telegram StringSession strings for a chosen country.
-// Each session is connected, checked against @SpamBot, given a system 2FA
-// password, then stored as available inventory. Anything that fails validation
-// never enters stock and is written into a downloadable failure log.
+// Each session is connected, checked against @SpamBot and stored as available
+// inventory. No 2FA is created here: Telegram refuses to remove a password set
+// recently, so a system password would lock the account out of sale. The
+// seller's own 2FA password is kept as-is. Anything that fails validation never
+// enters stock and is written into a downloadable failure log.
 export default async function(req) {
   try {
     const base44 = makeB44(req);
@@ -89,9 +90,6 @@ export default async function(req) {
               continue;
             }
             storedPassword = providedPassword;
-          } else {
-            storedPassword = generatePassword(12);
-            await setTwoFactorPassword(mt, storedPassword, '');
           }
         } catch (e) {
           addFailure(`2FA setup failed: ${errorMessageOf(e)}`, phone, sessionString);

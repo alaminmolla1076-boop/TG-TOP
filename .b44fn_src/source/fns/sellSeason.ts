@@ -1,7 +1,6 @@
 import { makeB44 } from '../_shared/b44.ts';
 import { Mt, errorMessageOf, parseSessionString } from '../_shared/mtproto.js';
 import { API_ID, API_HASH } from '../_shared/telegramConfig.js';
-import { generatePassword, setTwoFactorPassword } from '../_shared/twoFactor.js';
 import { syncCountryStock } from '../_shared/inventory.js';
 import { normalizeSessionInput } from '../_shared/sessionParser.js';
 import { checkSpamBotStatus } from '../_shared/spamBot.js';
@@ -10,7 +9,7 @@ import { resolveUser } from '../_shared/resolveUser.ts';
 import { buildSessionFile } from '../_shared/sqliteBuilder.js';
 import { createZip } from '../_shared/zipBuilder.js';
 // User-driven bulk sell: each pasted StringSession is connected, validated,
-// country-detected, SpamBot-checked and given a system 2FA password. Clean
+// country-detected and SpamBot-checked; no 2FA password is created. Clean
 // accounts are bulk-written to stock with pending reward records; failures never
 // enter stock and are returned as a recovery ZIP of .session files.
 export default async function(req) {
@@ -167,21 +166,10 @@ export default async function(req) {
             ...sessionInfo
           };
         }
-        const storedPassword = generatePassword(12);
-        stage = pwd.has_password ? 'replace2FA' : 'set2FA';
-        try {
-          await setTwoFactorPassword(mt, storedPassword, pwd.has_password ? knownPassword : '');
-        } catch (e) {
-          if (pwd.has_password) {
-            throw {
-              skip: true,
-              reason: `Existing 2FA password wrong / could not be replaced (${errorMessageOf(e)})`,
-              phone,
-              ...sessionInfo
-            };
-          }
-          throw e;
-        }
+        // Keep the seller's own 2FA password; never create one here. Telegram
+        // refuses to remove a password that was set recently (PASSWORD_TOO_FRESH),
+        // which left freshly uploaded accounts unsellable.
+        const storedPassword = pwd.has_password ? knownPassword : '';
         const finalSession = await mt.save();
         const fallbackPhone = `+${(country.dial_code || '').replace(/^\+/, '')}_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
         return {

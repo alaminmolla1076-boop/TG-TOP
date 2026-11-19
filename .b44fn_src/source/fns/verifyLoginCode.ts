@@ -2,12 +2,12 @@ import { makeB44 } from '../_shared/b44.ts';
 import { Mt, errorMessageOf, srpCheck } from '../_shared/mtproto.js';
 import { resolveUser } from '../_shared/resolveUser.ts';
 import { findAcceptedCountry } from '../_shared/acceptedCountries.js';
-import { generatePassword, setTwoFactorPassword } from '../_shared/twoFactor.js';
 import { checkSpamBotStatus } from '../_shared/spamBot.js';
 import { sellerAgePrice } from '../_shared/sellerAgePrice.ts';
 import { ageBucketOf, isValidAgeCategory, matchesSelectedAge } from '../_shared/accountAge.js';
-// Verifies the Telegram OTP code, sets a system 2FA password, and adds the
-// account to the SELLER'S OWN stock (TgAccount with owner_email = seller).
+// Verifies the Telegram OTP code and adds the account to the SELLER'S OWN stock
+// (TgAccount with owner_email = seller). No 2FA password is created here — a
+// freshly set password cannot be removed later (PASSWORD_TOO_FRESH).
 // No reward is created — the account simply goes to the user's inventory.
 export default async function(req) {
   let mt;
@@ -138,7 +138,7 @@ export default async function(req) {
     }
     // Verification never substitutes an inferred category for the seller's choice.
     const ageBucket = selectedAge;
-    // Login succeeded — set (or replace with a system) 2FA password before saving.
+    // Login succeeded — keep the seller's own 2FA password if the account has one.
     let storedPassword = '';
     try {
       const pwd = await mt.call('account.getPassword', {});
@@ -154,10 +154,9 @@ export default async function(req) {
           status: 400
         });
       }
-      storedPassword = generatePassword(12);
-      // When the seller logged in with their own 2FA, replace it with the
-      // system password; fresh accounts simply get the system password.
-      await setTwoFactorPassword(mt, storedPassword, pwd.has_password ? String(password) : '', 'tgtop');
+      // Never create a 2FA password: a freshly set one cannot be removed at
+      // purchase time (PASSWORD_TOO_FRESH), which locked accounts in stock.
+      storedPassword = pwd.has_password ? String(password) : '';
     } catch (e) {
       const msg = errorMessageOf(e);
       await base44.asServiceRole.entities.SessionRequest.update(sr.id, {
