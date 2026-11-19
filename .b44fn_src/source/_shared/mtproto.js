@@ -8,8 +8,33 @@ import MTProto from 'npm:@mtproto/core@6.3.0/envs/browser/index.js';
 import { encodeSession, parseSessionString } from './telegramSessionCodec.js';
 import passwordDigest, { srpX } from './passwordDigest.js';
 import { API_ID, API_HASH } from './telegramConfig.js';
+import builderMap from 'npm:@mtproto/core@6.3.0/src/tl/builder/index.js';
 import { Buffer } from 'node:buffer';
 import crypto from 'node:crypto';
+
+// @mtproto/core 6.3.0 generates account.passwordInputSettings with wrong
+// optional-flag bits: new_algo, new_password_hash and hint all share bit 0, so
+// Telegram read new_algo alone and silently dropped the password hash. Every
+// 2FA password this app set was therefore not the one Telegram stored, and
+// removing it later failed with PASSWORD_HASH_INVALID. Re-register the builder
+// with the schema's real flags:
+//   new_algo:flags.0 new_password_hash:flags.1 hint:flags.2 email:flags.3
+//   new_secure_settings:flags.4
+builderMap['account.passwordInputSettings'] = function (params) {
+  this.int32(-1036572727);
+  const flags =
+    (this.has(params.new_algo) << 0) |
+    (this.has(params.new_password_hash) << 1) |
+    (this.has(params.hint) << 2) |
+    (this.has(params.email) << 3) |
+    (this.has(params.new_secure_settings) << 4);
+  this.int32(flags);
+  this.flag(this.predicate, params.new_algo);
+  this.flag(this.bytes, params.new_password_hash);
+  this.flag(this.string, params.hint);
+  this.flag(this.string, params.email);
+  this.flag(this.predicate, params.new_secure_settings);
+};
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -185,12 +210,40 @@ export async function setTwoFactor(mt, newPassword, currentPassword = '', hint =
 }
 
 // Removes the 2FA password from an authenticated account.
-// core.telegram.org/api/srp: removal = empty new_password_hash and no hint.
+// core.telegram.org/api/srp: removal = new_algo passwordKdfAlgoUnknown and an
+// empty new_password_hash.
 export async function removeTwoFactor(mt, currentPassword) {
   const pwd = await mt.call('account.getPassword', {});
   if (!pwd.has_password) return;
-  const password = await srpCheck(pwd, currentPassword);
 
+  // Accounts whose password hash never reached Telegram (builds that dropped
+  // it while serializing new_settings) only verify with an empty password, so
+  // fall back to it when the stored one is rejected.
+  const candidates = currentPassword ? [currentPassword, ''] : [''];
+  let lastError;
+  for (const candidate of candidates) {
+    let password;
+    try {
+      password = await srpCheck(pwd, candidate);
+    } catch (e) {
+      lastError = e;
+      continue;
+    }
+    try {
+      await applyPasswordRemoval(mt, pwd, password);
+      return;
+    } catch (e) {
+      lastError = e;
+      // Only a rejected proof moves on to the next candidate; FLOOD_WAIT and
+      // transport failures must abort instead of hammering the account.
+      if (!/PASSWORD_HASH_INVALID/i.test(errorMessageOf(e))) throw normalizeError(e);
+    }
+  }
+  throw normalizeError(lastError);
+}
+
+// Sends the removal request and proves against Telegram that it worked.
+async function applyPasswordRemoval(mt, pwd, password) {
   const variants = [
     // Canonical removal: unknown KDF algo + empty hash.
     {
@@ -221,6 +274,7 @@ export async function removeTwoFactor(mt, currentPassword) {
       await mt.call('account.updatePasswordSettings', { password, new_settings });
     } catch (e) {
       lastError = e;
+      if (/PASSWORD_HASH_INVALID/i.test(errorMessageOf(e))) throw normalizeError(e);
       continue;
     }
     // Verify against Telegram itself — only a has_password=false reply proves
