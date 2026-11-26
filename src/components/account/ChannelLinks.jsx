@@ -19,12 +19,12 @@ export default function ChannelLinks() {
       <a href={CHANNEL_URL} target="_blank" rel="noreferrer" className={btnClass}>
         <Send className="h-4 w-4 shrink-0 text-ring" strokeWidth={1.7} />
         <span className="min-w-0 flex-1 truncate">{t("sb.channel")}</span>
-        <ChevronRight className="h-3.5 w-3.5 shrink-0 text-[#8d88b4]" strokeWidth={2} />
+        <ChevronRight className="h-3.5 w-3.5 shrink-0 text-[#8896b4]" strokeWidth={2} />
       </a>
       <a href={GROUP_URL} target="_blank" rel="noreferrer" className={btnClass}>
         <MessageCircle className="h-4 w-4 shrink-0 text-ring" strokeWidth={1.7} />
         <span className="min-w-0 flex-1 truncate">{t("sb.group")}</span>
-        <ChevronRight className="h-3.5 w-3.5 shrink-0 text-[#8d88b4]" strokeWidth={2} />
+        <ChevronRight className="h-3.5 w-3.5 shrink-0 text-[#8896b4]" strokeWidth={2} />
       </a>
     </div>
   );
