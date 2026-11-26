@@ -18,11 +18,11 @@ export default function SellerList({ sellers, query }) {
       {sellers === null ? (
         <p className="text-[13px] text-[#8B93A7]">{t("c.loading")}</p>
       ) : sellers.length === 0 ? (
-        <div className="rounded-[22px] border border-dashed border-[#6FA8FF]/30 bg-[rgba(45,38,78,.3)] p-[18px] text-[13px] text-[#8B93A7]">
+        <div className="rounded-[22px] border border-dashed border-white/10 bg-white/[.02] p-[18px] text-[13px] text-[#8B93A7]">
           {query ? t("mk.searchNone", { query }) : t("mk.noSellers")}
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-2.5">
+        <div className="grid grid-cols-2 gap-2">
           {sellers.map((s) => (
             <SellerCard key={s.id} seller={s} />
           ))}

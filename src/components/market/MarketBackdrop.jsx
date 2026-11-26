@@ -1,22 +1,12 @@
 import React from "react";
 
-const BACKDROP_URL =
-  "https://media.base44.com/images/public/6ad1ec4d9f3d182acc871a46/53007f17e_generated_64743059.jpg";
-
-// Capsule List — faint Account-style hero wash behind the market pages.
+// Market — a very soft neutral wash behind the top of the page. No image:
+// just a faint blue/gold glow so the page reads calm and premium.
 export default function MarketBackdrop() {
   return (
-    <>
-      <img
-        aria-hidden
-        src={BACKDROP_URL}
-        alt=""
-        className="fixed inset-x-0 top-0 z-0 h-[520px] w-full object-cover opacity-30"
-      />
-      <div
-        aria-hidden
-        className="fixed inset-x-0 top-0 z-0 h-[520px] bg-gradient-to-b from-[rgba(19,17,28,.2)] to-[#11141c]"
-      />
-    </>
+    <div
+      aria-hidden
+      className="pointer-events-none fixed inset-x-0 top-0 z-0 h-[320px] bg-[radial-gradient(120%_100%_at_50%_0%,rgba(45,111,253,.10),rgba(245,196,81,.045)_45%,transparent_78%)]"
+    />
   );
 }

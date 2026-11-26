@@ -91,7 +91,7 @@ export default function Market() {
     <div className="relative">
       <MarketBackdrop />
       <div className="relative z-10 flex flex-col gap-[22px] lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-6 lg:gap-y-7">
-        <span className="mk-fade inline-flex self-center items-center gap-1.5 rounded-full border border-[#2D6FFD]/55 bg-[linear-gradient(120deg,rgba(108,92,231,.28),rgba(245,196,81,.1))] px-4 py-1.5 text-[10.5px] font-semibold uppercase tracking-[.14em] text-[#A8C8FF] shadow-[inset_0_1px_0_rgba(255,255,255,.1),0_10px_24px_-16px_rgba(108,92,231,.9)] lg:col-span-2">
+        <span className="mk-fade inline-flex self-center items-center gap-1.5 rounded-full border border-white/10 bg-[linear-gradient(120deg,rgba(45,111,253,.16),rgba(245,196,81,.08))] px-4 py-1.5 text-[10.5px] font-semibold uppercase tracking-[.14em] text-[#A8C8FF] shadow-[inset_0_1px_0_rgba(255,255,255,.07),0_12px_26px_-22px_rgba(0,0,0,.9)] lg:col-span-2">
           <Gem className="h-3 w-3 shrink-0 text-[#6FA8FF]" strokeWidth={2} />
           {t("mk.badge")}
         </span>
@@ -107,12 +107,12 @@ export default function Market() {
           />
         </div>
         {loadError ? (
-          <div className="mk-sec flex flex-col items-center gap-3 rounded-[22px] border border-[#6FA8FF]/30 bg-[rgba(45,38,78,.5)] p-[18px] text-center lg:col-span-2">
+          <div className="mk-sec flex flex-col items-center gap-3 rounded-2xl border border-white/[.08] bg-white/[.02] p-[18px] text-center lg:col-span-2">
             <p className="text-[13px] text-[#8B93A7]">{t("mk.loadError")}</p>
             <button
               type="button"
               onClick={load}
-              className="cursor-pointer rounded-full border border-[#6FA8FF]/40 bg-[rgba(108,92,231,.25)] px-5 py-2 text-[13px] font-semibold text-[#6FA8FF] transition-colors duration-200 hover:bg-[rgba(108,92,231,.45)]"
+              className="cursor-pointer rounded-full border border-[#F5C451]/30 bg-[rgba(245,196,81,.08)] px-5 py-2 text-[#F5C451] text-[13px] font-semibold text-[#6FA8FF] transition-colors duration-200 hover:bg-[rgba(245,196,81,.16)]"
             >
               {t("c.retry")}
             </button>
