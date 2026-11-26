@@ -108,10 +108,15 @@ export default async function(req) {
             });
           }
         } else {
-          await base44.asServiceRole.entities.SessionRequest.update(sr.id, {
-            status: 'failed',
-            error: msg
-          });
+          // A mistyped code or a network blip keeps the request alive so the
+          // seller can retype the same code instead of starting over.
+          const retryable = /PHONE_CODE_INVALID|PHONE_CODE_EMPTY|ETIMEDOUT|not responding|timed? ?out|network|socket|websocket|closed|Internal|-503/i.test(msg);
+          if (!retryable) {
+            await base44.asServiceRole.entities.SessionRequest.update(sr.id, {
+              status: 'failed',
+              error: msg
+            });
+          }
           return Response.json({
             error: msg
           }, {
