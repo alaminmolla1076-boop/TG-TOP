@@ -57,7 +57,7 @@ export default function MenuDrawer() {
       to: "/language",
       label: t("menu.language"),
       icon: Languages,
-      tile: "from-[#A29BFE]/30 to-[#6C5CE7]/10 text-[#C9C4FF] border-[#A29BFE]/30",
+      tile: "from-[#6FA8FF]/30 to-[#2D6FFD]/10 text-[#A8C8FF] border-[#6FA8FF]/30",
       glow: "hover:border-ring/45 hover:bg-ring/[.1]",
     },
     {
@@ -80,8 +80,8 @@ export default function MenuDrawer() {
             to: "/admin",
             label: t("menu.admin"),
             icon: ShieldCheck,
-            tile: "from-[#8E7DFF]/35 to-[#6C5CE7]/10 text-[#DCD8FF] border-[#A29BFE]/35",
-            glow: "hover:border-[#A29BFE]/50 hover:bg-[#6C5CE7]/[.12]",
+            tile: "from-[#4C8DFF]/35 to-[#2D6FFD]/10 text-[#DCD8FF] border-[#6FA8FF]/35",
+            glow: "hover:border-[#6FA8FF]/50 hover:bg-[#2D6FFD]/[.12]",
           },
         ]
       : []),
@@ -119,8 +119,8 @@ export default function MenuDrawer() {
                 transition={{ type: "tween", duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
                 className="fixed inset-y-0 left-0 z-50 flex w-[86%] max-w-[324px] flex-col overflow-hidden rounded-r-[30px] border-r border-white/[.08] bg-[linear-gradient(165deg,#1b1626_0%,#141020_45%,#0a0810_100%)] shadow-[0_20px_60px_rgba(0,0,0,.65)]"
               >
-                <div className="pointer-events-none absolute -left-20 -top-24 h-56 w-56 rounded-full bg-[#6C5CE7]/25 blur-[80px]" />
-                <div className="pointer-events-none absolute -bottom-24 -right-16 h-48 w-48 rounded-full bg-[#8E7DFF]/15 blur-[70px]" />
+                <div className="pointer-events-none absolute -left-20 -top-24 h-56 w-56 rounded-full bg-[#2D6FFD]/25 blur-[80px]" />
+                <div className="pointer-events-none absolute -bottom-24 -right-16 h-48 w-48 rounded-full bg-[#4C8DFF]/15 blur-[70px]" />
 
                 <div className="relative flex items-start justify-between px-5 pt-6">
                   <div className="flex items-center gap-3">
