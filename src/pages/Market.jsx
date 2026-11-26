@@ -88,6 +88,10 @@ export default function Market() {
     setBuyingId(null);
   }
 
+  const topSellerCard = topSeller
+    ? (sellers || []).find((s) => s.id === topSeller.id) || topSeller
+    : null;
+
   const topHolder = (sellers || []).reduce((best, s) => {
     const stock = (s.countries || []).reduce((n, c) => n + (c.stock || 0), 0);
     return !best || stock > best.stock ? { ...s, stock } : best;
@@ -101,8 +105,8 @@ export default function Market() {
           <Gem className="h-3 w-3 shrink-0 text-[#6FA8FF]" strokeWidth={2} />
           {t("mk.badge")}
         </span>
-        <div className="grid grid-cols-2 gap-2.5 lg:col-span-2">
-          <TopSellerCapsule topSeller={topSeller} />
+        <div className="grid grid-cols-2 gap-2 lg:col-span-2">
+          <TopSellerCapsule topSeller={topSellerCard} />
           <TopHolderCapsule holder={topHolder} />
         </div>
         <div className="lg:col-span-2">
