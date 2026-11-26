@@ -72,12 +72,12 @@ export default function NumberPricePanel() {
 
       {numbers === null ? (
         <div className={panel}>
-          <span className="h-[7px] w-[7px] shrink-0 rounded-full bg-ring shadow-[0_0_8px_#6C5CE7]" />
+          <span className="h-[7px] w-[7px] shrink-0 rounded-full bg-ring shadow-[0_0_8px_#2D6FFD]" />
           {t("c.loading")}
         </div>
       ) : numbers.length === 0 ? (
         <div className={panel}>
-          <span className="h-[7px] w-[7px] shrink-0 rounded-full bg-ring shadow-[0_0_8px_#6C5CE7]" />
+          <span className="h-[7px] w-[7px] shrink-0 rounded-full bg-ring shadow-[0_0_8px_#2D6FFD]" />
           {t("s1.noNumbers")}
         </div>
       ) : (
@@ -99,7 +99,7 @@ export default function NumberPricePanel() {
                     {number.dial_code ? ` +${String(number.dial_code).replace(/^\+/, "")}` : ""}
                   </p>
                 </div>
-                <span className="shrink-0 rounded-full border border-ring/35 bg-ring/[.14] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[.06em] text-[#C9C4FF]">
+                <span className="shrink-0 rounded-full border border-ring/35 bg-ring/[.14] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[.06em] text-[#A8C8FF]">
                   {ageLabel(number.kind, t)}
                 </span>
               </div>
@@ -115,7 +115,7 @@ export default function NumberPricePanel() {
                   type="button"
                   onClick={() => save(number)}
                   disabled={busyId === number.id}
-                  className="h-10 shrink-0 cursor-pointer rounded-full border border-ring/40 bg-ring/[.16] px-5 text-xs font-semibold text-[#C9C4FF] transition-[background-color] duration-200 hover:bg-ring/[.26] focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring disabled:opacity-50"
+                  className="h-10 shrink-0 cursor-pointer rounded-full border border-ring/40 bg-ring/[.16] px-5 text-xs font-semibold text-[#A8C8FF] transition-[background-color] duration-200 hover:bg-ring/[.26] focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring disabled:opacity-50"
                 >
                   {busyId === number.id ? t("c.saving") : t("c.save")}
                 </button>
