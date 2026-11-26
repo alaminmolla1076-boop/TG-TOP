@@ -28,7 +28,7 @@ export default function ServiceBand({ referralLink }) {
           <span className="block text-sm font-semibold text-foreground">{t("sb.refer")}</span>
           <span className="mt-0.5 block text-[11px] text-muted-foreground">{t("sb.referDesc")}</span>
         </span>
-        <ChevronRight className="h-4 w-4 shrink-0 text-[#8d88b4]" strokeWidth={2} />
+        <ChevronRight className="h-4 w-4 shrink-0 text-[#8896b4]" strokeWidth={2} />
       </button>
     </nav>
   );
