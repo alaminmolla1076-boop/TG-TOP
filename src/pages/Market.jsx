@@ -5,6 +5,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useAppLang } from "@/lib/AppLanguageContext";
 import MarketBackdrop from "@/components/market/MarketBackdrop";
 import TopSellerCapsule from "@/components/market/TopSellerCapsule";
+import TopHolderCapsule from "@/components/market/TopHolderCapsule";
 import SellerList from "@/components/market/SellerList";
 import SellerSearchBar from "@/components/market/SellerSearchBar";
 import ProductsList from "@/components/market/ProductsList";
@@ -87,6 +88,11 @@ export default function Market() {
     setBuyingId(null);
   }
 
+  const topHolder = (sellers || []).reduce((best, s) => {
+    const stock = (s.countries || []).reduce((n, c) => n + (c.stock || 0), 0);
+    return !best || stock > best.stock ? { ...s, stock } : best;
+  }, null);
+
   return (
     <div className="relative">
       <MarketBackdrop />
@@ -95,8 +101,9 @@ export default function Market() {
           <Gem className="h-3 w-3 shrink-0 text-[#6FA8FF]" strokeWidth={2} />
           {t("mk.badge")}
         </span>
-        <div className="lg:col-span-2">
+        <div className="grid grid-cols-2 gap-2.5 lg:col-span-2">
           <TopSellerCapsule topSeller={topSeller} />
+          <TopHolderCapsule holder={topHolder} />
         </div>
         <div className="lg:col-span-2">
           <SellerSearchBar
