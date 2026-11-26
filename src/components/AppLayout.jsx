@@ -31,10 +31,10 @@ export default function AppLayout() {
       <div className="lg:pl-[264px]">
         <header
           className="og-rise sticky top-0 z-40 lg:hidden"
-          style={{ paddingTop: "calc(max(var(--tg-content-safe-area-inset-top, 0px), 40px) + 2px)" }}
+          style={{ paddingTop: "calc(max(var(--tg-content-safe-area-inset-top, 0px), 36px))" }}
         >
-          <div className="mx-auto grid max-w-md grid-cols-[1fr_auto_1fr] items-center gap-2 pl-3 pr-0">
-            <div className="flex justify-start">
+          <div className="mx-auto grid max-w-md grid-cols-[1fr_auto_1fr] items-start gap-2 pl-3 pr-0">
+            <div className="mt-[5px] flex justify-start">
               <MenuDrawer />
             </div>
             <img
@@ -42,7 +42,7 @@ export default function AppLayout() {
               alt="TGTOP"
               className="h-20 w-20 object-contain"
             />
-            <div className="flex justify-end">
+            <div className="mt-[5px] flex justify-end">
               <span className="inline-flex items-center justify-end gap-1.5 whitespace-nowrap rounded-full rounded-r-none border border-white/10 bg-white/[.06] px-3 py-[5px] backdrop-blur-xl font-mono text-[13px] font-semibold text-ring shadow-[0_8px_20px_rgba(0,0,0,.35)] backdrop-blur-md">
                 <Wallet className="h-3.5 w-3.5" strokeWidth={1.5} />
                 {balance === null ? "\u2026" : formatMoney(balance)}
