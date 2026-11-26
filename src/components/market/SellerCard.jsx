@@ -59,23 +59,25 @@ export default function SellerCard({ seller, tone: toneKey = "plain", rank = nul
     return (
       <div className={"relative overflow-hidden rounded-[20px] border p-3 " + tone.card}>
         <span aria-hidden className={"pointer-events-none absolute -right-8 -top-10 h-20 w-20 rounded-full " + tone.glow} />
-        <a
-          href="#mk-sellers"
-          className="absolute right-2.5 top-2 z-10 inline-flex items-center gap-0.5 text-[9px] font-semibold text-[#8B93A7] no-underline transition-colors duration-200 hover:text-white"
-        >
-          See All
-          <ChevronRight className="h-2.5 w-2.5 shrink-0" strokeWidth={2.6} />
-        </a>
+        <div className="relative mb-1 flex justify-end">
+          <a
+            href="#mk-sellers"
+            className="inline-flex items-center gap-0.5 text-[9px] font-semibold text-[#8B93A7] no-underline transition-colors duration-200 hover:text-white"
+          >
+            See All
+            <ChevronRight className="h-2.5 w-2.5 shrink-0" strokeWidth={2.6} />
+          </a>
+        </div>
 
-        <Link to={profileTo} className="relative flex items-center gap-2.5 pr-12 no-underline">
+        <Link to={profileTo} className="relative flex items-center gap-2.5 no-underline">
           <CardAvatar seller={person} size="h-11 w-11" rank={rank} rankClass={tone.rank} />
           <div className="min-w-0 flex-1">
-            <p className="flex items-center gap-1 text-[13px] font-bold leading-tight text-white">
+            <p className="flex items-center gap-1 text-[12.5px] font-bold leading-tight text-white">
               <span className="truncate">{person.name}</span>
               <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-[#4DA3FF]" strokeWidth={2.4} />
             </p>
             {person.username ? (
-              <p className="truncate text-[10.5px] leading-tight text-[#8B93A7]">{"@" + person.username}</p>
+              <p className="truncate text-[10px] leading-tight text-[#8B93A7]">{"@" + person.username}</p>
             ) : null}
           </div>
         </Link>
@@ -96,12 +98,12 @@ export default function SellerCard({ seller, tone: toneKey = "plain", rank = nul
       <Link to={profileTo} className="relative flex items-start gap-2.5 no-underline">
         <CardAvatar seller={person} size="h-12 w-12" />
         <div className="min-w-0 flex-1">
-          <p className="flex items-center gap-1 text-[13px] font-bold leading-tight text-white">
+          <p className="flex items-center gap-1 text-[12.5px] font-bold leading-tight text-white">
             <span className="truncate">{person.name}</span>
             <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-[#4DA3FF]" strokeWidth={2.4} />
           </p>
           {person.username ? (
-            <p className="truncate text-[10.5px] leading-tight text-[#8B93A7]">{"@" + person.username}</p>
+            <p className="truncate text-[10px] leading-tight text-[#8B93A7]">{"@" + person.username}</p>
           ) : person.is_self ? (
             <p className="mt-0.5 inline-flex items-center rounded-full bg-[rgba(245,196,81,.12)] px-1.5 text-[9px] font-semibold text-[#F5C451]">
               {t("c.you")}
@@ -113,15 +115,15 @@ export default function SellerCard({ seller, tone: toneKey = "plain", rank = nul
       </Link>
 
       <div className="relative mt-2.5 flex items-center gap-1.5">
-        <span className="flex min-w-0 flex-1 items-center justify-center gap-1 rounded-xl border border-white/[.07] bg-white/[.03] px-2 py-1.5 text-[9.5px] font-semibold text-[#C7CEDD]">
+        <span className="flex min-w-0 flex-1 items-center justify-center gap-1 rounded-xl border border-white/[.07] bg-white/[.03] px-1.5 py-1.5 text-[8.5px] font-semibold text-[#C7CEDD]">
           <ShoppingCart className="h-3 w-3 shrink-0 text-[#6FA8FF]" strokeWidth={2.2} />
           <span className="font-bold tabular-nums text-white">{person.sold || 0}</span>
-          <span className="truncate">{t("mk.totalSell")}</span>
+          <span className="whitespace-nowrap">{t("mk.totalSell")}</span>
         </span>
-        <span className="flex min-w-0 flex-1 items-center justify-center gap-1 rounded-xl border border-white/[.07] bg-white/[.03] px-2 py-1.5 text-[9.5px] font-semibold text-[#C7CEDD]">
+        <span className="flex min-w-0 flex-1 items-center justify-center gap-1 rounded-xl border border-white/[.07] bg-white/[.03] px-1.5 py-1.5 text-[8.5px] font-semibold text-[#C7CEDD]">
           <Package className="h-3 w-3 shrink-0 text-[#F5C451]" strokeWidth={2.2} />
           <span className="font-bold tabular-nums text-white">{stock}</span>
-          <span className="truncate">{t("mk.stockLabel")}</span>
+          <span className="whitespace-nowrap">{t("mk.stockLabel")}</span>
         </span>
       </div>
 
