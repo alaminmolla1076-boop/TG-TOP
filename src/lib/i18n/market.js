@@ -512,6 +512,14 @@ export const MARKET = {
   "pr.password": {
     en: "Login password", bn: "লগইন পাসওয়ার্ড",
   },
+  "mk.topHolder": {
+    en: "Top Account Holder", bn: "শীর্ষ অ্যাকাউন্ট হোল্ডার", zh: "顶级账户持有者", es: "Mayor Tenedor de Cuentas", hi: "शीर्ष खाता धारक",
+    ar: "أكبر حائز حسابات", fr: "Meilleur Détenteur de Comptes", ru: "Топ-держатель аккаунтов", pt: "Maior Detentor de Contas", de: "Top-Kontoinhaber",
+  },
+  "mk.totalStock": {
+    en: "Accounts in Stock", bn: "স্টকে অ্যাকাউন্ট", zh: "库存账户", es: "Cuentas en stock", hi: "स्टॉक में खाते",
+    ar: "حسابات متاحة", fr: "Comptes en stock", ru: "Аккаунтов в наличии", pt: "Contas em estoque", de: "Konten auf Lager",
+  },
   "mk.totalSales": {
     en: "Total Sales", bn: "মোট বিক্রি", zh: "总销量", es: "Ventas totales", hi: "कुल बिक्री",
     ar: "إجمالي المبيعات", fr: "Ventes totales", ru: "Всего продаж", pt: "Vendas totais", de: "Verkäufe gesamt",
