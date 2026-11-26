@@ -23,7 +23,7 @@ export default function SellerSearchBar({ onSearch, onClear, searching, activeQu
   return (
     <form
       onSubmit={submit}
-      className="mk-fade flex items-center gap-2 rounded-full border border-[#2D6FFD]/50 bg-[rgba(45,38,78,.55)] p-1.5 pl-4 shadow-[inset_0_1px_0_rgba(255,255,255,.08),0_12px_28px_-20px_rgba(108,92,231,.9)]"
+      className="mk-fade flex items-center gap-2 rounded-full border border-white/[.08] bg-[rgba(13,16,22,.85)] p-1.5 pl-4 shadow-[inset_0_1px_0_rgba(255,255,255,.05),0_14px_30px_-24px_rgba(0,0,0,.95)] backdrop-blur-xl focus-within:border-[#F5C451]/35"
     >
       <Search className="h-4 w-4 shrink-0 text-[#8B93A7]" strokeWidth={1.6} />
       <input
@@ -45,7 +45,7 @@ export default function SellerSearchBar({ onSearch, onClear, searching, activeQu
       <button
         type="submit"
         disabled={!q || searching}
-        className="shrink-0 cursor-pointer rounded-full bg-[linear-gradient(135deg,#4C8DFF,#2D6FFD)] px-4 py-1.5 text-[13px] font-semibold text-white shadow-[0_8px_18px_-8px_rgba(108,92,231,.95)] transition-[filter] duration-200 hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+        className="shrink-0 cursor-pointer rounded-full bg-[linear-gradient(135deg,#3F82FF,#2258D6)] px-4 py-1.5 text-[13px] font-semibold text-white shadow-[0_10px_22px_-14px_rgba(45,111,253,.9)] transition-[filter] duration-200 hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {searching ? "…" : t("c.search")}
       </button>
