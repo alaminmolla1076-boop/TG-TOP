@@ -5,7 +5,7 @@ import { useAppLang } from "@/lib/AppLanguageContext";
 
 // Market — one compact seller card: avatar, handle, real sale + stock counts
 // and a View Profile action that opens the seller's own country-stock page.
-export default function SellerCard({ seller }) {
+export default function SellerCard({ seller, icon = null }) {
   const { t } = useAppLang();
   const stock = (seller.countries || []).reduce((n, c) => n + (c.stock || 0), 0);
 
@@ -23,6 +23,7 @@ export default function SellerCard({ seller }) {
 
       <div className="min-w-0 w-full">
         <p className="flex items-center justify-center gap-1 text-[12px] font-semibold leading-tight text-white">
+          {icon}
           <span className="truncate">{seller.name}</span>
           <BadgeCheck className="h-3 w-3 shrink-0 text-[#4DA3FF]" strokeWidth={2.2} />
         </p>
