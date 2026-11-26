@@ -29,33 +29,33 @@ export default function AgeCountryList({ sellers, category }) {
         badge={t("sl.ageCount", { n: totalStock })}
       />
       {countries.length === 0 ? (
-        <div className="rounded-[22px] border border-dashed border-[#A29BFE]/30 bg-[rgba(45,38,78,.3)] p-[18px] text-[13px] text-[#a8a3cf]">
+        <div className="rounded-[22px] border border-dashed border-[#6FA8FF]/30 bg-[rgba(45,38,78,.3)] p-[18px] text-[13px] text-[#8B93A7]">
           {t("mk.ageNoStock")}
         </div>
       ) : (
         countries.map((c) => (
           <div
             key={c.country_iso}
-            className="flex flex-col gap-2 rounded-[26px] border border-[#A29BFE]/25 bg-[rgba(45,38,78,.5)] p-2.5 shadow-[inset_0_1px_0_rgba(255,255,255,.07)]"
+            className="flex flex-col gap-2 rounded-[26px] border border-[#6FA8FF]/25 bg-[rgba(45,38,78,.5)] p-2.5 shadow-[inset_0_1px_0_rgba(255,255,255,.07)]"
           >
-            <div className="flex items-center gap-3 rounded-full border border-[#A29BFE]/25 bg-[rgba(20,16,43,.45)] py-2.5 pl-2.5 pr-4">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#A29BFE]/40 bg-[rgba(108,92,231,.14)] text-base font-bold text-[#A29BFE]">
+            <div className="flex items-center gap-3 rounded-full border border-[#6FA8FF]/25 bg-[rgba(20,16,43,.45)] py-2.5 pl-2.5 pr-4">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#6FA8FF]/40 bg-[rgba(108,92,231,.14)] text-base font-bold text-[#6FA8FF]">
                 <CountryFlag iso={c.country_iso} emoji={c.flag} label={c.country_name} />
               </div>
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-[15px] font-medium text-foreground">
                   {c.country_name}
                   {c.dial_code ? (
-                    <span className="ml-1.5 text-[12px] font-semibold text-[#A29BFE]">
+                    <span className="ml-1.5 text-[12px] font-semibold text-[#6FA8FF]">
                       +{String(c.dial_code).replace(/^\+/, "")}
                     </span>
                   ) : null}
                 </span>
-                <span className="block text-[11px] text-[#a8a3cf]">
+                <span className="block text-[11px] text-[#8B93A7]">
                   {t("sl.ageCount", { n: c.total })}
                 </span>
               </span>
-              <span className="shrink-0 text-[15px] font-bold text-[#A29BFE] tabular-nums">
+              <span className="shrink-0 text-[15px] font-bold text-[#6FA8FF] tabular-nums">
                 {t("sl.fromPrice", { price: formatMoney(c.fromPrice) })}
               </span>
             </div>
@@ -66,16 +66,16 @@ export default function AgeCountryList({ sellers, category }) {
                   <Link
                     key={`${o.seller.id}-${o.pool}-${i}`}
                     to={buyUrl}
-                    className="flex w-full items-center gap-2.5 rounded-2xl border border-[#A29BFE]/20 bg-[rgba(20,16,43,.45)] px-2.5 py-2 text-left no-underline transition-[border-color,background-color] duration-200 hover:border-[#A29BFE]/60 hover:bg-[rgba(108,92,231,.2)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#A29BFE]"
+                    className="flex w-full items-center gap-2.5 rounded-2xl border border-[#6FA8FF]/20 bg-[rgba(20,16,43,.45)] px-2.5 py-2 text-left no-underline transition-[border-color,background-color] duration-200 hover:border-[#6FA8FF]/60 hover:bg-[rgba(108,92,231,.2)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#6FA8FF]"
                   >
                     {o.seller.photo_url ? (
                       <img
                         src={o.seller.photo_url}
                         alt={o.seller.name}
-                        className="h-7 w-7 shrink-0 rounded-full border border-[#A29BFE]/40 object-cover"
+                        className="h-7 w-7 shrink-0 rounded-full border border-[#6FA8FF]/40 object-cover"
                       />
                     ) : (
-                      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[#A29BFE]/40 bg-[rgba(108,92,231,.18)] text-[11px] font-bold text-[#A29BFE]">
+                      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[#6FA8FF]/40 bg-[rgba(108,92,231,.18)] text-[11px] font-bold text-[#6FA8FF]">
                         {(o.seller.name || "S")[0].toUpperCase()}
                       </div>
                     )}
@@ -83,7 +83,7 @@ export default function AgeCountryList({ sellers, category }) {
                       <span className="block truncate text-[13px] font-medium text-foreground">
                         {o.seller.name}
                         {o.seller.is_self && (
-                          <span className="ml-1.5 rounded-full bg-[rgba(108,92,231,.22)] px-[6px] py-px text-[9px] font-semibold text-[#A29BFE]">
+                          <span className="ml-1.5 rounded-full bg-[rgba(108,92,231,.22)] px-[6px] py-px text-[9px] font-semibold text-[#6FA8FF]">
                             {t("c.you")}
                           </span>
                         )}
@@ -92,13 +92,13 @@ export default function AgeCountryList({ sellers, category }) {
                         <span className={poolTagClass(o.pool === "spam")}>
                           {t(o.pool === "spam" ? "sl.spam" : "sl.nonSpam")}
                         </span>
-                        <span className="text-[10px] text-[#a8a3cf]">{t("sl.ageCount", { n: o.stock })}</span>
+                        <span className="text-[10px] text-[#8B93A7]">{t("sl.ageCount", { n: o.stock })}</span>
                       </span>
                     </span>
-                    <span className="bg-gradient-to-r from-[#A29BFE] to-[#6C5CE7] bg-clip-text font-display text-[14px] font-bold text-transparent tabular-nums">
+                    <span className="bg-gradient-to-r from-[#6FA8FF] to-[#2D6FFD] bg-clip-text font-display text-[14px] font-bold text-transparent tabular-nums">
                       {formatMoney(o.price)}
                     </span>
-                    <ShoppingCart className="h-3.5 w-3.5 shrink-0 text-[#a8a3cf]" strokeWidth={1.5} />
+                    <ShoppingCart className="h-3.5 w-3.5 shrink-0 text-[#8B93A7]" strokeWidth={1.5} />
                   </Link>
                 );
               })}
