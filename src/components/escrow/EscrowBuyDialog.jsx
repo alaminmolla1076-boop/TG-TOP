@@ -86,7 +86,7 @@ export default function EscrowBuyDialog({ number, open, onClose, onDone }) {
               </div>
               <div className="mt-1 flex items-center justify-between border-t border-white/10 pt-2 text-[13px] font-semibold">
                 <span>{t("total")}</span>
-                <span className="bg-gradient-to-r from-[#A29BFE] to-[#6C5CE7] bg-clip-text font-display text-transparent">
+                <span className="bg-gradient-to-r from-[#6FA8FF] to-[#2D6FFD] bg-clip-text font-display text-transparent">
                   {formatMoney(total)}
                 </span>
               </div>
@@ -96,7 +96,7 @@ export default function EscrowBuyDialog({ number, open, onClose, onDone }) {
               type="button"
               onClick={createOrder}
               disabled={busy}
-              className="flex items-center justify-center gap-2 rounded-full border border-white/20 bg-gradient-to-br from-primary to-[#8E7DFF] px-4 py-3 text-[13px] font-semibold text-white shadow-[0_10px_24px_-6px_rgba(108,92,231,.8)] transition-[filter,transform] duration-200 hover:brightness-110 active:scale-[.97] disabled:opacity-60"
+              className="flex items-center justify-center gap-2 rounded-full border border-white/20 bg-gradient-to-br from-primary to-[#4C8DFF] px-4 py-3 text-[13px] font-semibold text-white shadow-[0_10px_24px_-6px_rgba(108,92,231,.8)] transition-[filter,transform] duration-200 hover:brightness-110 active:scale-[.97] disabled:opacity-60"
             >
               {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />}
               {t("continue")}
@@ -117,7 +117,7 @@ export default function EscrowBuyDialog({ number, open, onClose, onDone }) {
             <button
               type="submit"
               disabled={busy || address.trim().length < 40}
-              className="flex items-center justify-center gap-2 rounded-full border border-white/20 bg-gradient-to-br from-primary to-[#8E7DFF] px-4 py-3 text-[13px] font-semibold text-white shadow-[0_10px_24px_-6px_rgba(108,92,231,.8)] transition-[filter,transform] duration-200 hover:brightness-110 active:scale-[.97] disabled:opacity-60"
+              className="flex items-center justify-center gap-2 rounded-full border border-white/20 bg-gradient-to-br from-primary to-[#4C8DFF] px-4 py-3 text-[13px] font-semibold text-white shadow-[0_10px_24px_-6px_rgba(108,92,231,.8)] transition-[filter,transform] duration-200 hover:brightness-110 active:scale-[.97] disabled:opacity-60"
             >
               {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
               {t("send")}
