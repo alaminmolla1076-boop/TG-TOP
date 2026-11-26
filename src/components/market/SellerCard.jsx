@@ -57,13 +57,17 @@ export default function SellerCard({ seller, icon = null }) {
         </div>
       </div>
 
-      <Link
-        to={`/market/seller/${seller.id}`}
-        className="mt-0.5 flex w-full items-center justify-center gap-1 rounded-lg border border-[#6FA8FF]/22 bg-[rgba(45,111,253,.10)] px-2 py-1 text-[10px] font-semibold text-[#A8C8FF] no-underline transition-[background-color,border-color] duration-200 hover:border-[#6FA8FF]/45 hover:bg-[rgba(45,111,253,.20)] active:opacity-85"
-      >
-        {t("mk.viewProfile")}
-        <ChevronRight className="h-2.5 w-2.5 shrink-0" strokeWidth={2.4} />
-      </Link>
+      {seller.id ? (
+        <Link to={`/market/seller/${seller.id}`} className={`mt-0.5 flex w-full items-center justify-center gap-1 rounded-lg border border-[#6FA8FF]/22 bg-[rgba(45,111,253,.10)] px-2 py-1 text-[10px] font-semibold text-[#A8C8FF] no-underline transition-[background-color,border-color] duration-200 hover:border-[#6FA8FF]/45 hover:bg-[rgba(45,111,253,.20)] active:opacity-85`}>
+          {t("mk.viewProfile")}
+          <ChevronRight className="h-2.5 w-2.5 shrink-0" strokeWidth={2.4} />
+        </Link>
+      ) : (
+        <span className={`mt-0.5 flex w-full items-center justify-center gap-1 rounded-lg border border-[#6FA8FF]/22 bg-[rgba(45,111,253,.10)] px-2 py-1 text-[10px] font-semibold text-[#A8C8FF] no-underline transition-[background-color,border-color] duration-200 hover:border-[#6FA8FF]/45 hover:bg-[rgba(45,111,253,.20)] active:opacity-85 cursor-default`}>
+          {t("mk.viewProfile")}
+          <ChevronRight className="h-2.5 w-2.5 shrink-0" strokeWidth={2.4} />
+        </span>
+      )}
     </div>
   );
 }
