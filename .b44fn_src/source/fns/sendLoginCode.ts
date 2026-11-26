@@ -27,10 +27,11 @@ export default async function(req) {
     const age = String(body.age_selection || '').trim();
     if (!isValidAgeCategory(age)) return Response.json({ error: 'AGE_SELECTION_REQUIRED' }, { status: 400 });
     const phone = String(phone_number).trim();
-    mt = new Mt();
-    let sentCode;
-    try {
-      sentCode = await mt.call('auth.sendCode', {
+    // A dead socket must not cost the seller the code: retry once on a fresh
+    // connection. Real Telegram rejections are returned straight away.
+    const sendOnce = async () => {
+      mt = new Mt();
+      return await mt.call('auth.sendCode', {
         phone_number: phone,
         api_id: Number(API_ID),
         api_hash: API_HASH,
@@ -38,12 +39,32 @@ export default async function(req) {
           _: 'codeSettings'
         }
       });
+    };
+    let sentCode;
+    try {
+      sentCode = await sendOnce();
     } catch (e) {
-      return Response.json({
-        error: errorMessageOf(e)
-      }, {
-        status: 400
-      });
+      const first = errorMessageOf(e);
+      const transport = /ETIMEDOUT|not responding|timed? ?out|timeout|network|socket|websocket|handshake|connect|closed|ECONN|EPIPE|Internal|-503|RPC_CALL_FAIL/i.test(first);
+      if (!transport) {
+        return Response.json({
+          error: first
+        }, {
+          status: 400
+        });
+      }
+      try {
+        mt?.close();
+      } catch {}
+      try {
+        sentCode = await sendOnce();
+      } catch (e2) {
+        return Response.json({
+          error: errorMessageOf(e2)
+        }, {
+          status: 400
+        });
+      }
     }
     const sessionString = await mt.save();
     const sr = await base44.asServiceRole.entities.SessionRequest.create({
