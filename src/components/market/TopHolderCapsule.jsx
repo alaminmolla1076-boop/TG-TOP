@@ -1,17 +1,19 @@
 import React from "react";
-import { Gem } from "lucide-react";
+import { Coins } from "lucide-react";
 import SellerCard from "./SellerCard";
 import { useAppLang } from "@/lib/AppLanguageContext";
 
-// Market hero — the Top Account Holder is the same compact card as every
-// seller, with a blue gem badge.
+// Market hero — Top Account Holder: the shared seller card in its blue frame
+// with a #1 badge and the holder's total accounts in stock.
 export default function TopHolderCapsule({ holder }) {
   const { t } = useAppLang();
-  const label = t("mk.topHolder");
+  const stock = ((holder && holder.countries) || []).reduce((n, c) => n + (c.stock || 0), 0);
   return (
     <SellerCard
-      seller={holder || { name: label, sold: 0 }}
-      badge={{ tone: "blue", label, icon: <Gem className="h-2 w-2 shrink-0" strokeWidth={2.6} /> }}
+      seller={holder || { name: t("mk.topHolder"), sold: 0 }}
+      tone="blue"
+      rank={1}
+      stat={{ icon: <Coins className="h-3 w-3" strokeWidth={2.4} />, value: stock, label: t("mk.stockLabel") }}
     />
   );
 }

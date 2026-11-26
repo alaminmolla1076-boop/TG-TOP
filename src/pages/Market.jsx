@@ -131,7 +131,7 @@ export default function Market() {
         ) : (
           <SellerList sellers={sellers} query={searchQuery} />
         )}
-        <ProductsList products={products} buyingId={buyingId} onBuy={handleBuy} />
+        <ProductsList products={products} buyingId={buyingId} onBuy={handleBuy} onRefresh={load} />
         <div className="lg:col-span-2">
           <HowItWorksBand />
         </div>

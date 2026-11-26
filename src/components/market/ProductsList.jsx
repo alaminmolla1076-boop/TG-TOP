@@ -1,14 +1,14 @@
 import React from "react";
-import { Gem } from "lucide-react";
+import { Gem, RotateCw, ShoppingBag } from "lucide-react";
 import SectionHead from "./SectionHead";
 import { formatMoney } from "@/lib/format";
 import { useAppLang } from "@/lib/AppLanguageContext";
 
 // Market — product cards with a glowing icon plate and a gold Buy button.
-export default function ProductsList({ products, buyingId, onBuy }) {
+export default function ProductsList({ products, buyingId, onBuy, onRefresh }) {
   const { t } = useAppLang();
   return (
-    <section className="mk-sec flex flex-col gap-3">
+    <section id="mk-products" className="mk-sec flex scroll-mt-24 flex-col gap-3">
       <SectionHead
         icon={<Gem className="h-4 w-4" strokeWidth={1.6} />}
         title={t("mk.products")}
@@ -17,7 +17,25 @@ export default function ProductsList({ products, buyingId, onBuy }) {
       {products === null ? (
         <p className="text-[13px] text-[#8B93A7]">{t("c.loading")}</p>
       ) : products.length === 0 ? (
-        <p className="text-[13px] text-[#8B93A7]">{t("mk.noProducts")}</p>
+        <div className="relative overflow-hidden rounded-[24px] border border-white/[.07] bg-[linear-gradient(140deg,#07090d,#0b1119)] p-3.5">
+          <span aria-hidden className="pointer-events-none absolute -left-14 top-1/2 h-44 w-44 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(77,139,255,.34),transparent_70%)]" />
+          <div className="relative flex items-center gap-3">
+            <span className="flex h-[68px] w-[68px] shrink-0 items-center justify-center rounded-[20px] border border-[#4D8BFF]/30 bg-[rgba(45,111,253,.10)] shadow-[0_0_30px_-6px_rgba(77,139,255,.75)]">
+              <ShoppingBag className="h-8 w-8 text-[#6FA8FF]" strokeWidth={1.5} />
+            </span>
+            <p className="flex-1 text-[11.5px] font-medium leading-relaxed text-[#9AA3B5]">{t("mk.noProducts")}</p>
+          </div>
+          <div className="relative mt-3 flex justify-end">
+            <button
+              type="button"
+              onClick={onRefresh}
+              className="inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-[#4D8BFF]/35 bg-[rgba(45,111,253,.12)] px-3.5 py-1.5 text-[11px] font-semibold text-[#A8C8FF] transition-colors duration-200 hover:border-[#4D8BFF]/60 hover:bg-[rgba(45,111,253,.22)] active:scale-[.98]"
+            >
+              <RotateCw className="h-3 w-3 shrink-0" strokeWidth={2.6} />
+              {t("c.retry")}
+            </button>
+          </div>
+        </div>
       ) : (
         <div className="grid gap-3 lg:grid-cols-2">
           {products.map((p) => (

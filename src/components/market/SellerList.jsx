@@ -9,7 +9,7 @@ import { useAppLang } from "@/lib/AppLanguageContext";
 export default function SellerList({ sellers, query }) {
   const { t } = useAppLang();
   return (
-    <section className="mk-sec flex flex-col gap-3">
+    <section id="mk-sellers" className="mk-sec flex scroll-mt-24 flex-col gap-3">
       <SectionHead
         icon={<Users className="h-4 w-4" strokeWidth={1.6} />}
         title={t("mk.sellers")}
