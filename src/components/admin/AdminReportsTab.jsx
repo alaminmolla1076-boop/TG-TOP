@@ -26,7 +26,7 @@ export default function AdminReportsTab({ reports, loading }) {
                 style={{
                   margin: 0,
                   fontWeight: 700,
-                  color: "#ECEAFF",
+                  color: "#EAF1FF",
                   overflow: "hidden",
                   textOverflow: "ellipsis",
                   whiteSpace: "nowrap",
@@ -40,7 +40,7 @@ export default function AdminReportsTab({ reports, loading }) {
             <p className="adm-mut">
               {SCAM_TYPES.includes(r.scam_type) ? t("rs.type." + r.scam_type) : r.scam_type}
             </p>
-            {r.details && <p style={{ margin: 0, lineHeight: 1.5, color: "#a8a3cf" }}>{r.details}</p>}
+            {r.details && <p style={{ margin: 0, lineHeight: 1.5, color: "#8B93A7" }}>{r.details}</p>}
             <p className="adm-mut" style={{ fontSize: 11 }}>
               {t("adm.reportedBy")}: {r.reporter_email} · {formatDate(r.created_date)}
             </p>
