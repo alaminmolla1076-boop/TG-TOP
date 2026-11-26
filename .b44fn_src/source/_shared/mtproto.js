@@ -41,7 +41,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 // Telegram's WebSocket transport can stall without ever rejecting, which left
 // the whole function (and the seller's screen) waiting forever. Cap every RPC
 // so a dead socket always becomes a real error.
-const CALL_TIMEOUT_MS = 30000;
+const CALL_TIMEOUT_MS = 25000;
 function withTimeout(promise, ms) {
   let timer;
   const guard = new Promise((_, reject) => {
@@ -94,6 +94,25 @@ export class Mt {
   // Invoke a TL method, transparently following DC migrations.
   // Transient transport failures (DC timeout, dropped WebSocket, FLOOD_WAIT)
   // are retried here so callers never see them as real errors.
+  // The library's WebSocket transport can die without ever rejecting. Rebuild
+  // the client on the same stored auth key so a stalled socket is replaced
+  // instead of failing the seller's request.
+  _rebuild() {
+    try { this.close(); } catch {}
+    const mem = this.mem;
+    this.client = new MTProto({
+      api_id: Number(API_ID),
+      api_hash: API_HASH,
+      storageOptions: {
+        instance: {
+          set: (k, v) => { mem.set(k, v); return Promise.resolve(); },
+          get: (k) => Promise.resolve(mem.has(k) ? mem.get(k) : null),
+        },
+      },
+    });
+    if (this.dcId !== 2) this.client.setDefaultDc(this.dcId);
+  }
+
   async call(method, params = {}, attempt = 1) {
     const MAX_ATTEMPTS = 4;
     try {
@@ -121,7 +140,8 @@ export class Mt {
         throw new Error('Telegram is not responding right now. Please try again in a minute.');
       }
       if (isTransportError(msg) && attempt < MAX_ATTEMPTS) {
-        await sleep(1200 * attempt);
+        await sleep(600 * attempt);
+        this._rebuild();
         return await this.call(method, params, attempt + 1);
       }
       throw normalizeError(e);
