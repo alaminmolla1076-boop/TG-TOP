@@ -28,7 +28,7 @@ export default function AppLayout() {
     <div className="lux-bg min-h-screen bg-background pb-[128px] tracking-[0.04em] text-foreground lg:pb-10">
       <DesktopSidebar balance={balance} />
       <div className="lg:pl-[264px]">
-        <header className="og-rise sticky top-0 z-40 border-b border-white/[.06] bg-[#0B0D12]/70 backdrop-blur-xl lg:hidden">
+        <header className="og-rise sticky top-0 z-40 bg-[#0B0D12]/70 backdrop-blur-xl lg:hidden">
           <div className="mx-auto flex max-w-md items-center justify-center px-4 py-2">
             <Image
               src={LOGO_URL}
