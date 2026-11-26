@@ -15,15 +15,15 @@ export default function ProductsList({ products, buyingId, onBuy }) {
         badge={products?.length > 0 ? t("mk.items", { n: products.length }) : undefined}
       />
       {products === null ? (
-        <p className="text-[13px] text-[#a8a3cf]">{t("c.loading")}</p>
+        <p className="text-[13px] text-[#8B93A7]">{t("c.loading")}</p>
       ) : products.length === 0 ? (
-        <p className="text-[13px] text-[#a8a3cf]">{t("mk.noProducts")}</p>
+        <p className="text-[13px] text-[#8B93A7]">{t("mk.noProducts")}</p>
       ) : (
         <div className="grid gap-3 lg:grid-cols-2">
           {products.map((p) => (
             <div
               key={p.id}
-              className="overflow-hidden rounded-[24px] border border-[#A29BFE]/30 bg-[linear-gradient(160deg,rgba(60,48,110,.8),rgba(28,24,46,.92))] shadow-[inset_0_1px_0_rgba(255,255,255,.07),0_16px_34px_-22px_rgba(108,92,231,.9)]"
+              className="overflow-hidden rounded-[24px] border border-[#6FA8FF]/30 bg-[linear-gradient(160deg,rgba(60,48,110,.8),rgba(28,24,46,.92))] shadow-[inset_0_1px_0_rgba(255,255,255,.07),0_16px_34px_-22px_rgba(108,92,231,.9)]"
             >
               <div className="relative flex h-[112px] items-center justify-center bg-[radial-gradient(circle_at_50%_35%,rgba(162,155,254,.4),rgba(19,17,28,0)_70%)]">
                 <span className="text-[44px] leading-none drop-shadow-[0_10px_22px_rgba(108,92,231,.7)]">
@@ -34,7 +34,7 @@ export default function ProductsList({ products, buyingId, onBuy }) {
               <div className="flex flex-col gap-2.5 px-4 pb-4 pt-1">
                 <div className="min-w-0">
                   <p className="truncate text-[14.5px] font-semibold text-white">{p.name}</p>
-                  <p className="mt-0.5 truncate text-[11.5px] text-[#a8a3cf]">
+                  <p className="mt-0.5 truncate text-[11.5px] text-[#8B93A7]">
                     {p.description || p.unit_label || p.category || t("mk.general")}
                   </p>
                 </div>

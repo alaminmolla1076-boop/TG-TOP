@@ -49,7 +49,7 @@ export default function MyEscrowOrders({ sellerEmail, refreshKey = 0 }) {
       {rows.map((order) => (
         <div
           key={order.id}
-          className="flex flex-col gap-2 rounded-[22px] border border-[#A29BFE]/[.22] bg-[rgba(45,38,78,.5)] p-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,.07)]"
+          className="flex flex-col gap-2 rounded-[22px] border border-[#6FA8FF]/[.22] bg-[rgba(45,38,78,.5)] p-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,.07)]"
         >
           <div className="flex items-center justify-between gap-2">
             <p className="truncate font-mono text-[14px] font-semibold text-foreground">{order.phone_number}</p>

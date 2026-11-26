@@ -12,9 +12,9 @@ export default function HowItWorksBand() {
   ];
 
   return (
-    <section className="mk-sec -mx-4 flex flex-col gap-3.5 border-y border-[#A29BFE]/15 bg-[rgba(10,9,17,.7)] px-4 py-[22px]">
+    <section className="mk-sec -mx-4 flex flex-col gap-3.5 border-y border-[#6FA8FF]/15 bg-[rgba(10,9,17,.7)] px-4 py-[22px]">
       <div>
-        <div className="text-[10px] font-semibold uppercase tracking-[.14em] text-[#A29BFE]">
+        <div className="text-[10px] font-semibold uppercase tracking-[.14em] text-[#6FA8FF]">
           {t("hi.badge")}
         </div>
         <h2 className="mt-1 font-heading text-2xl font-bold text-white">{t("hi.title")}</h2>
@@ -23,14 +23,14 @@ export default function HowItWorksBand() {
         {steps.map((s) => (
           <div
             key={s.no}
-            className="flex items-center gap-3.5 rounded-[22px] border border-[#A29BFE]/25 bg-[linear-gradient(140deg,rgba(60,48,110,.6),rgba(28,24,46,.85))] px-4 py-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,.06)]"
+            className="flex items-center gap-3.5 rounded-[22px] border border-[#6FA8FF]/25 bg-[linear-gradient(140deg,rgba(60,48,110,.6),rgba(28,24,46,.85))] px-4 py-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,.06)]"
           >
-            <span className="bg-[linear-gradient(150deg,#A29BFE,#6C5CE7)] bg-clip-text font-display text-[30px] font-bold leading-none tabular-nums text-transparent">
+            <span className="bg-[linear-gradient(150deg,#6FA8FF,#2D6FFD)] bg-clip-text font-display text-[30px] font-bold leading-none tabular-nums text-transparent">
               {s.no}
             </span>
             <div className="min-w-0">
               <h3 className="text-[14.5px] font-semibold text-white">{s.title}</h3>
-              <p className="mt-1 text-[12px] leading-snug text-[#a8a3cf]">{s.desc}</p>
+              <p className="mt-1 text-[12px] leading-snug text-[#8B93A7]">{s.desc}</p>
             </div>
           </div>
         ))}

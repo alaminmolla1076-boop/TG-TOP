@@ -29,35 +29,35 @@ export default function Refer() {
   return (
     <div className="mk-sec mx-auto flex w-full flex-col gap-4 lg:max-w-3xl">
       <div className="flex items-center gap-3">
-        <span className="flex h-11 w-11 items-center justify-center rounded-full border border-[#A29BFE]/40 bg-[rgba(108,92,231,.14)]">
-          <Gift className="h-5 w-5 text-[#A29BFE]" strokeWidth={1.5} />
+        <span className="flex h-11 w-11 items-center justify-center rounded-full border border-[#6FA8FF]/40 bg-[rgba(108,92,231,.14)]">
+          <Gift className="h-5 w-5 text-[#6FA8FF]" strokeWidth={1.5} />
         </span>
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-[#A29BFE]">{t("ref.title")}</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-[#6FA8FF]">{t("ref.title")}</p>
           <h1 className="font-heading text-lg font-bold text-foreground">{t("sb.refer")}</h1>
         </div>
       </div>
 
-      <div className="rounded-[26px] border border-[#A29BFE]/[.22] bg-[rgba(45,38,78,.5)] p-[18px] text-[13px] leading-relaxed text-[#a8a3cf]">
+      <div className="rounded-[26px] border border-[#6FA8FF]/[.22] bg-[rgba(45,38,78,.5)] p-[18px] text-[13px] leading-relaxed text-[#8B93A7]">
         {t("ref.desc")}
       </div>
 
       {referralLink ? (
         <div className="flex gap-2">
-          <p className="min-w-0 flex-1 truncate rounded-full border border-[#A29BFE]/30 bg-[rgba(45,38,78,.7)] px-4 py-[13px] font-mono text-[12px] text-[#a8a3cf]">
+          <p className="min-w-0 flex-1 truncate rounded-full border border-[#6FA8FF]/30 bg-[rgba(45,38,78,.7)] px-4 py-[13px] font-mono text-[12px] text-[#8B93A7]">
             {referralLink}
           </p>
           <button
             type="button"
             onClick={copy}
-            className="flex shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-full border border-[#A29BFE]/30 bg-[rgba(45,38,78,.7)] px-[18px] text-xs font-semibold text-[#A29BFE] transition-[border-color] duration-200 hover:border-[#A29BFE]/70"
+            className="flex shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-full border border-[#6FA8FF]/30 bg-[rgba(45,38,78,.7)] px-[18px] text-xs font-semibold text-[#6FA8FF] transition-[border-color] duration-200 hover:border-[#6FA8FF]/70"
           >
             {copied ? <Check className="h-4 w-4" strokeWidth={1.5} /> : <Copy className="h-4 w-4" strokeWidth={1.5} />}
             {t("c.copy")}
           </button>
         </div>
       ) : (
-        <p className="text-[13px] text-[#a8a3cf]">{t("ref.none")}</p>
+        <p className="text-[13px] text-[#8B93A7]">{t("ref.none")}</p>
       )}
     </div>
   );

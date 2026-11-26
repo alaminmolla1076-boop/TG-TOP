@@ -83,7 +83,7 @@ export default function SellerEscrowOrders({ refreshKey = 0 }) {
         </div>
       ) : !active.length && !history.length ? (
         <div className={glass}>
-          <span className="h-[7px] w-[7px] shrink-0 rounded-full bg-ring shadow-[0_0_8px_#6C5CE7]" />
+          <span className="h-[7px] w-[7px] shrink-0 rounded-full bg-ring shadow-[0_0_8px_#2D6FFD]" />
           {t("sellerNone")}
         </div>
       ) : (
@@ -152,7 +152,7 @@ export default function SellerEscrowOrders({ refreshKey = 0 }) {
                       type="button"
                       onClick={() => submit(order)}
                       disabled={busyId === order.id || !(hashes[order.id] || "").trim()}
-                      className="flex shrink-0 items-center gap-1.5 rounded-full border border-white/20 bg-gradient-to-br from-primary to-[#8E7DFF] px-3 py-2 text-[11px] font-semibold text-white transition-opacity disabled:opacity-50"
+                      className="flex shrink-0 items-center gap-1.5 rounded-full border border-white/20 bg-gradient-to-br from-primary to-[#4C8DFF] px-3 py-2 text-[11px] font-semibold text-white transition-opacity disabled:opacity-50"
                     >
                       {busyId === order.id ? (
                         <Loader2 className="h-3.5 w-3.5 animate-spin" />

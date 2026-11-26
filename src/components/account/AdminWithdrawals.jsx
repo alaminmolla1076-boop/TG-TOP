@@ -9,11 +9,11 @@ const panelClass =
   "rounded-3xl border border-ring/[.22] bg-card/75 px-[18px] py-4 text-[13px] text-muted-foreground shadow-[inset_0_1px_0_rgba(255,255,255,.06),0_6px_16px_rgba(0,0,0,.28)]";
 
 const approveBtn =
-  "flex flex-1 cursor-pointer items-center justify-center gap-[5px] rounded-full bg-gradient-to-br from-primary to-[#8E7DFF] px-2.5 py-[9px] text-xs font-semibold uppercase tracking-[.06em] text-primary-foreground shadow-[0_6px_18px_rgba(108,92,231,.5)] " +
+  "flex flex-1 cursor-pointer items-center justify-center gap-[5px] rounded-full bg-gradient-to-br from-primary to-[#4C8DFF] px-2.5 py-[9px] text-xs font-semibold uppercase tracking-[.06em] text-primary-foreground shadow-[0_6px_18px_rgba(108,92,231,.5)] " +
   "transition-opacity duration-200 hover:opacity-90 active:opacity-80 " +
   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:opacity-50";
 const rejectBtn =
-  "flex flex-1 cursor-pointer items-center justify-center gap-[5px] rounded-full border border-ring/40 bg-ring/[.14] px-2.5 py-[9px] text-xs font-semibold uppercase tracking-[.06em] text-[#C9C4FF] " +
+  "flex flex-1 cursor-pointer items-center justify-center gap-[5px] rounded-full border border-ring/40 bg-ring/[.14] px-2.5 py-[9px] text-xs font-semibold uppercase tracking-[.06em] text-[#A8C8FF] " +
   "transition-[opacity,background-color] duration-200 hover:bg-ring/[.24] active:opacity-80 " +
   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:opacity-50";
 
@@ -56,7 +56,7 @@ export default function AdminWithdrawals({ pending, onChanged }) {
       {pending.map((w) => (
         <div key={w.id} className={`${panelClass} flex flex-col gap-2`}>
           <div className="flex items-center gap-2.5">
-            <span className="h-[5px] w-[5px] shrink-0 rounded-full bg-ring shadow-[0_0_8px_#6C5CE7]" />
+            <span className="h-[5px] w-[5px] shrink-0 rounded-full bg-ring shadow-[0_0_8px_#2D6FFD]" />
             <p className="flex-1 font-display text-lg font-bold text-primary">
               {formatMoney(Number(w.amount))}
             </p>

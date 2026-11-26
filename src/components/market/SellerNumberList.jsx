@@ -79,19 +79,19 @@ export default function SellerNumberList({ sellerEmail, isSelf }) {
           {rows.map((number) => (
             <div
               key={number.id}
-              className="flex items-center gap-3 rounded-[22px] border border-[#A29BFE]/[.22] bg-[rgba(45,38,78,.5)] p-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,.07)]"
+              className="flex items-center gap-3 rounded-[22px] border border-[#6FA8FF]/[.22] bg-[rgba(45,38,78,.5)] p-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,.07)]"
             >
-              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-[#A29BFE]/40 bg-[rgba(108,92,231,.14)]">
+              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-[#6FA8FF]/40 bg-[rgba(108,92,231,.14)]">
                 <CountryFlag iso={number.country_iso} emoji={number.flag} label={number.country_name} />
               </span>
               <div className="min-w-0 flex-1">
                 <p className="truncate font-mono text-[15px] font-semibold text-foreground">{number.phone_number}</p>
-                <p className="truncate text-[12px] text-[#a8a3cf]">
+                <p className="truncate text-[12px] text-[#8B93A7]">
                   {number.country_name}
                   {number.dial_code ? ` · +${String(number.dial_code).replace(/^\+/, "")}` : ""}
                 </p>
               </div>
-              <span className="shrink-0 bg-gradient-to-r from-[#A29BFE] to-[#6C5CE7] bg-clip-text font-display text-[15px] font-bold text-transparent tabular-nums">
+              <span className="shrink-0 bg-gradient-to-r from-[#6FA8FF] to-[#2D6FFD] bg-clip-text font-display text-[15px] font-bold text-transparent tabular-nums">
                 {formatMoney(number.price)}
               </span>
               {!isSelf && (
@@ -100,7 +100,7 @@ export default function SellerNumberList({ sellerEmail, isSelf }) {
                   onClick={() => (number.kind === "p888" ? setEscrow(number) : buy(number))}
                   disabled={busyId === number.id}
                   aria-label={t("c.buy")}
-                  className="grid h-8 w-8 shrink-0 cursor-pointer place-items-center rounded-full border-0 bg-gradient-to-br from-[#6C5CE7] to-[#8E7DFF] text-white shadow-[0_4px_14px_rgba(108,92,231,.5)] transition-opacity duration-200 hover:opacity-90 disabled:opacity-50"
+                  className="grid h-8 w-8 shrink-0 cursor-pointer place-items-center rounded-full border-0 bg-gradient-to-br from-[#2D6FFD] to-[#4C8DFF] text-white shadow-[0_4px_14px_rgba(108,92,231,.5)] transition-opacity duration-200 hover:opacity-90 disabled:opacity-50"
                 >
                   <ShoppingCart className="h-4 w-4" strokeWidth={2} />
                 </button>

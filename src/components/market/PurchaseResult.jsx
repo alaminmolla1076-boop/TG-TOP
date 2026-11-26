@@ -42,10 +42,10 @@ export default function PurchaseResult({ account, flag, countryName }) {
 
   return (
     <section className="mk-sec flex flex-col gap-3">
-      <div className="text-[10px] font-semibold uppercase tracking-[.14em] text-[#A29BFE]">{t("pr.purchased")}</div>
-      <div className="flex flex-col gap-2.5 rounded-[26px] border border-[#A29BFE]/[.22] bg-[rgba(45,38,78,.5)] p-3.5">
+      <div className="text-[10px] font-semibold uppercase tracking-[.14em] text-[#6FA8FF]">{t("pr.purchased")}</div>
+      <div className="flex flex-col gap-2.5 rounded-[26px] border border-[#6FA8FF]/[.22] bg-[rgba(45,38,78,.5)] p-3.5">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#A29BFE]/40 bg-[rgba(108,92,231,.14)] text-base font-bold text-[#A29BFE]">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#6FA8FF]/40 bg-[rgba(108,92,231,.14)] text-base font-bold text-[#6FA8FF]">
             <CountryFlag iso={account.country_iso} emoji={flag} label={countryName} />
           </div>
           <div className="min-w-0 flex-1">
@@ -56,7 +56,7 @@ export default function PurchaseResult({ account, flag, countryName }) {
               <button
                 type="button"
                 onClick={() => handleCopy(account.phone_number, t("sc.label"))}
-                className="flex shrink-0 cursor-pointer items-center justify-center rounded-full border border-[#A29BFE]/30 bg-[rgba(45,38,78,.7)] p-1.5 text-[#A29BFE] transition-[border-color] duration-200 hover:border-[#A29BFE]/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#A29BFE]"
+                className="flex shrink-0 cursor-pointer items-center justify-center rounded-full border border-[#6FA8FF]/30 bg-[rgba(45,38,78,.7)] p-1.5 text-[#6FA8FF] transition-[border-color] duration-200 hover:border-[#6FA8FF]/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#6FA8FF]"
                 aria-label={t("c.copy")}
               >
                 {copied === account.phone_number ? (
@@ -66,20 +66,20 @@ export default function PurchaseResult({ account, flag, countryName }) {
                 )}
               </button>
             </div>
-            <p className="truncate text-[13px] text-[#a8a3cf]">{countryName}</p>
+            <p className="truncate text-[13px] text-[#8B93A7]">{countryName}</p>
           </div>
         </div>
 
         {account.password && (
           <div className="flex gap-2">
-            <p className="min-w-0 flex-1 rounded-full border border-[#A29BFE]/30 bg-[rgba(45,38,78,.7)] px-4 py-2.5 font-mono text-[12px] text-[#a8a3cf]">
-              <span className="mr-1.5 font-body text-[10px] font-semibold uppercase tracking-[.08em] text-[#A29BFE]">{t("pr.password")}</span>
+            <p className="min-w-0 flex-1 rounded-full border border-[#6FA8FF]/30 bg-[rgba(45,38,78,.7)] px-4 py-2.5 font-mono text-[12px] text-[#8B93A7]">
+              <span className="mr-1.5 font-body text-[10px] font-semibold uppercase tracking-[.08em] text-[#6FA8FF]">{t("pr.password")}</span>
               {account.password}
             </p>
             <button
               type="button"
               onClick={() => handleCopy(account.password, t("pr.password"))}
-              className="flex shrink-0 cursor-pointer items-center justify-center rounded-full border border-[#A29BFE]/30 bg-[rgba(45,38,78,.7)] px-4 text-[#A29BFE] transition-[border-color] duration-200 hover:border-[#A29BFE]/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#A29BFE]"
+              className="flex shrink-0 cursor-pointer items-center justify-center rounded-full border border-[#6FA8FF]/30 bg-[rgba(45,38,78,.7)] px-4 text-[#6FA8FF] transition-[border-color] duration-200 hover:border-[#6FA8FF]/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#6FA8FF]"
               aria-label={t("c.copy")}
             >
               {copied === account.password ? <Check className="h-4 w-4" strokeWidth={1.5} /> : <Copy className="h-4 w-4" strokeWidth={1.5} />}
@@ -88,13 +88,13 @@ export default function PurchaseResult({ account, flag, countryName }) {
         )}
         {code ? (
           <div className="flex gap-2">
-            <p className="min-w-0 flex-1 rounded-full border border-[#A29BFE]/30 bg-[rgba(45,38,78,.7)] px-4 py-2.5 text-center font-mono text-base font-bold tracking-[.3em] text-[#A29BFE]">
+            <p className="min-w-0 flex-1 rounded-full border border-[#6FA8FF]/30 bg-[rgba(45,38,78,.7)] px-4 py-2.5 text-center font-mono text-base font-bold tracking-[.3em] text-[#6FA8FF]">
               {code}
             </p>
             <button
               type="button"
               onClick={() => handleCopy(code, t("sc.label"))}
-              className="flex shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-full border border-[#A29BFE]/30 bg-[rgba(45,38,78,.7)] px-[18px] text-xs font-semibold text-[#A29BFE] transition-[border-color] duration-200 hover:border-[#A29BFE]/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#A29BFE]"
+              className="flex shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-full border border-[#6FA8FF]/30 bg-[rgba(45,38,78,.7)] px-[18px] text-xs font-semibold text-[#6FA8FF] transition-[border-color] duration-200 hover:border-[#6FA8FF]/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#6FA8FF]"
               aria-label={t("c.copyCode")}
             >
               {copied === code ? <Check className="h-4 w-4" strokeWidth={1.5} /> : <Copy className="h-4 w-4" strokeWidth={1.5} />}
@@ -106,13 +106,13 @@ export default function PurchaseResult({ account, flag, countryName }) {
             type="button"
             onClick={handleGetCode}
             disabled={loading}
-            className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-full border-0 bg-gradient-to-br from-[#6C5CE7] to-[#8E7DFF] px-[18px] py-3 text-[13px] font-semibold text-white shadow-[0_6px_18px_rgba(108,92,231,.5)] transition-opacity duration-200 hover:opacity-90 active:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A29BFE] disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-full border-0 bg-gradient-to-br from-[#2D6FFD] to-[#4C8DFF] px-[18px] py-3 text-[13px] font-semibold text-white shadow-[0_6px_18px_rgba(108,92,231,.5)] transition-opacity duration-200 hover:opacity-90 active:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6FA8FF] disabled:cursor-not-allowed disabled:opacity-50"
           >
             <KeyRound className="h-4 w-4" strokeWidth={1.5} />
             {loading ? t("c.fetchingCode") : t("c.getCode")}
           </button>
         )}
-        {error && !loading && <p className="text-[11px] text-[#a8a3cf]">{error}</p>}
+        {error && !loading && <p className="text-[11px] text-[#8B93A7]">{error}</p>}
       </div>
     </section>
   );
