@@ -91,7 +91,7 @@ export default function Market() {
     <div className="relative">
       <MarketBackdrop />
       <div className="relative z-10 flex flex-col gap-[22px] lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-6 lg:gap-y-7">
-        <span className="mk-fade inline-flex self-center items-center gap-1.5 rounded-full border border-white/10 bg-[linear-gradient(120deg,rgba(45,111,253,.16),rgba(245,196,81,.08))] px-4 py-1.5 text-[10.5px] font-semibold uppercase tracking-[.14em] text-[#A8C8FF] shadow-[inset_0_1px_0_rgba(255,255,255,.07),0_12px_26px_-22px_rgba(0,0,0,.9)] lg:col-span-2">
+        <span className="mk-fade hidden self-center items-center gap-1.5 lg:inline-flex rounded-full border border-white/10 bg-[linear-gradient(120deg,rgba(45,111,253,.16),rgba(245,196,81,.08))] px-4 py-1.5 text-[10.5px] font-semibold uppercase tracking-[.14em] text-[#A8C8FF] shadow-[inset_0_1px_0_rgba(255,255,255,.07),0_12px_26px_-22px_rgba(0,0,0,.9)] lg:col-span-2">
           <Gem className="h-3 w-3 shrink-0 text-[#6FA8FF]" strokeWidth={2} />
           {t("mk.badge")}
         </span>
