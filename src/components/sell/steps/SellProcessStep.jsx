@@ -11,7 +11,7 @@ export default function SellProcessStep({ phone }) {
     <div className="flex flex-col">
       <span
         aria-hidden
-        className="relative grid h-11 w-11 place-items-center rounded-full border border-ring/30 bg-secondary/80 text-ring shadow-[0_0_24px_-10px_#6C5CE7]"
+        className="relative grid h-11 w-11 place-items-center rounded-full border border-ring/30 bg-secondary/80 text-ring shadow-[0_0_24px_-10px_#2D6FFD]"
       >
         <ShieldCheck className="h-[22px] w-[22px]" strokeWidth={1.7} />
         <span className="sf-bar-active absolute inset-0 rounded-full border border-ring/30" />
