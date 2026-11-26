@@ -30,7 +30,22 @@ export default function AppLayout() {
       <DesktopSidebar balance={balance} />
       <div className="lg:pl-[264px]">
         <header className="og-rise sticky top-0 z-40 lg:hidden">
-          <div className="mx-auto flex max-w-md items-center justify-center px-4 pb-1 pt-4">
+          <div className="mx-auto flex max-w-md items-center justify-between gap-2 pl-3 pr-0 pt-3">
+            <MenuDrawer />
+            {pathname === "/" ? (
+              <span className="inline-flex min-w-0 items-center gap-1.5 rounded-full border border-white/10 bg-[linear-gradient(120deg,rgba(45,111,253,.16),rgba(245,196,81,.08))] px-3 py-1 text-[9px] font-semibold uppercase tracking-[.12em] text-[#A8C8FF]">
+                <Gem className="h-3 w-3 shrink-0 text-[#6FA8FF]" strokeWidth={2} />
+                <span className="truncate">{t("mk.badge")}</span>
+              </span>
+            ) : (
+              <span className="flex-1" />
+            )}
+            <span className="inline-flex items-center justify-end gap-1.5 whitespace-nowrap rounded-full rounded-r-none border border-white/10 bg-white/[.06] px-3 py-[5px] backdrop-blur-xl font-mono text-[13px] font-semibold text-ring shadow-[0_8px_20px_rgba(0,0,0,.35)] backdrop-blur-md">
+              <Wallet className="h-3.5 w-3.5" strokeWidth={1.5} />
+              {balance === null ? "\u2026" : formatMoney(balance)}
+            </span>
+          </div>
+          <div className="mx-auto flex max-w-md items-center justify-center px-4 pb-1 pt-2">
             <img
               src="/tgtop-logo.png"
               alt="TGTOP"
@@ -38,21 +53,6 @@ export default function AppLayout() {
             />
           </div>
         </header>
-        <div className="og-rise sticky top-[50px] z-30 mx-auto flex max-w-md items-center justify-between gap-2 pl-4 pr-0 py-3 lg:hidden">
-          <MenuDrawer />
-          {pathname === "/" ? (
-            <span className="inline-flex min-w-0 items-center gap-1.5 rounded-full border border-white/10 bg-[linear-gradient(120deg,rgba(45,111,253,.16),rgba(245,196,81,.08))] px-3 py-1 text-[9px] font-semibold uppercase tracking-[.12em] text-[#A8C8FF]">
-              <Gem className="h-3 w-3 shrink-0 text-[#6FA8FF]" strokeWidth={2} />
-              <span className="truncate">{t("mk.badge")}</span>
-            </span>
-          ) : (
-            <span className="flex-1" />
-          )}
-          <span className="inline-flex items-center justify-end gap-1.5 whitespace-nowrap rounded-full rounded-r-none border border-white/10 bg-white/[.06] px-3 py-[5px] backdrop-blur-xl font-mono text-[13px] font-semibold text-ring shadow-[0_8px_20px_rgba(0,0,0,.35)] backdrop-blur-md">
-            <Wallet className="h-3.5 w-3.5" strokeWidth={1.5} />
-            {balance === null ? "\u2026" : formatMoney(balance)}
-          </span>
-        </div>
         <main className="mx-auto w-full max-w-md px-4 py-4 lg:max-w-6xl lg:px-8 lg:py-10">
           <Outlet />
         </main>
