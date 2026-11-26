@@ -47,7 +47,7 @@ export default function AdminEscrowTab() {
   if (orders === null) {
     return (
       <div className="flex justify-center py-10">
-        <Loader2 className="h-6 w-6 animate-spin text-[#A29BFE]" />
+        <Loader2 className="h-6 w-6 animate-spin text-[#6FA8FF]" />
       </div>
     );
   }
@@ -66,7 +66,7 @@ export default function AdminEscrowTab() {
         >
           <div className="flex items-center justify-between gap-2">
             <p className="truncate font-mono text-sm font-semibold text-foreground">{order.phone_number}</p>
-            <span className="shrink-0 font-mono text-[12.5px] font-semibold text-[#A29BFE]">
+            <span className="shrink-0 font-mono text-[12.5px] font-semibold text-[#6FA8FF]">
               {formatMoney(Number(order.price))}
             </span>
           </div>
@@ -89,7 +89,7 @@ export default function AdminEscrowTab() {
               type="button"
               onClick={() => review(order, true)}
               disabled={busyId === order.id}
-              className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-white/20 bg-gradient-to-br from-primary to-[#8E7DFF] px-3 py-2 text-[11.5px] font-semibold text-white transition-opacity disabled:opacity-50"
+              className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-white/20 bg-gradient-to-br from-primary to-[#4C8DFF] px-3 py-2 text-[11.5px] font-semibold text-white transition-opacity disabled:opacity-50"
             >
               <Check className="h-3.5 w-3.5" strokeWidth={2.4} />
               {t("approve")}
