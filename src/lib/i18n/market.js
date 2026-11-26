@@ -520,10 +520,6 @@ export const MARKET = {
     en: "Accounts in Stock", bn: "স্টকে অ্যাকাউন্ট", zh: "库存账户", es: "Cuentas en stock", hi: "स्टॉक में खाते",
     ar: "حسابات متاحة", fr: "Comptes en stock", ru: "Аккаунтов в наличии", pt: "Contas em estoque", de: "Konten auf Lager",
   },
-  "mk.verified": {
-    en: "Verified Seller", bn: "ভেরিফাইড বিক্রেতা", zh: "已认证卖家", es: "Vendedor verificado", hi: "सत्यापित विक्रेता",
-    ar: "بائع موثق", fr: "Vendeur vérifié", ru: "Проверенный продавец", pt: "Vendedor verificado", de: "Verifizierter Verkäufer",
-  },
   "mk.totalSales": {
     en: "Total Sales", bn: "মোট বিক্রি", zh: "总销量", es: "Ventas totales", hi: "कुल बिक्री",
     ar: "إجمالي المبيعات", fr: "Ventes totales", ru: "Всего продаж", pt: "Vendas totais", de: "Verkäufe gesamt",
