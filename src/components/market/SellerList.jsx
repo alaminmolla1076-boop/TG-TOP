@@ -16,9 +16,9 @@ export default function SellerList({ sellers, query }) {
         badge={t("mk.sellersCount", { n: sellers?.length ?? 0 })}
       />
       {sellers === null ? (
-        <p className="text-[13px] text-[#a8a3cf]">{t("c.loading")}</p>
+        <p className="text-[13px] text-[#8B93A7]">{t("c.loading")}</p>
       ) : sellers.length === 0 ? (
-        <div className="rounded-[22px] border border-dashed border-[#A29BFE]/30 bg-[rgba(45,38,78,.3)] p-[18px] text-[13px] text-[#a8a3cf]">
+        <div className="rounded-[22px] border border-dashed border-[#6FA8FF]/30 bg-[rgba(45,38,78,.3)] p-[18px] text-[13px] text-[#8B93A7]">
           {query ? t("mk.searchNone", { query }) : t("mk.noSellers")}
         </div>
       ) : (
