@@ -19,9 +19,9 @@ export default function ReportSeller() {
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
 
-  const labelCls = "text-[10px] font-bold uppercase tracking-widest text-[#A29BFE]";
+  const labelCls = "text-[10px] font-bold uppercase tracking-widest text-[#6FA8FF]";
   const fieldCls =
-    "w-full rounded-2xl border border-ring/[.25] bg-[rgba(45,38,78,.5)] px-4 py-3 text-[13px] text-foreground placeholder:text-[#a8a3cf]/60 transition-colors duration-200 focus:border-[#A29BFE]/60 focus:outline-none";
+    "w-full rounded-2xl border border-ring/[.25] bg-[rgba(45,38,78,.5)] px-4 py-3 text-[13px] text-foreground placeholder:text-[#8B93A7]/60 transition-colors duration-200 focus:border-[#6FA8FF]/60 focus:outline-none";
 
   // The only report reason: delivery is automatic and the price is the
   // seller's own, so the single remaining issue is a seller keeping the
@@ -65,11 +65,11 @@ export default function ReportSeller() {
   if (done) {
     return (
       <div className="mk-sec mx-auto flex w-full flex-col gap-4 lg:max-w-3xl">
-        <div className="flex flex-col items-center gap-3 rounded-[26px] border border-[#A29BFE]/[.22] bg-[rgba(45,38,78,.5)] px-[18px] py-8 text-center">
-          <span className="flex h-14 w-14 items-center justify-center rounded-full border border-[#A29BFE]/40 bg-[rgba(108,92,231,.14)]">
-            <ShieldCheck className="h-7 w-7 text-[#A29BFE]" strokeWidth={1.5} />
+        <div className="flex flex-col items-center gap-3 rounded-[26px] border border-[#6FA8FF]/[.22] bg-[rgba(45,38,78,.5)] px-[18px] py-8 text-center">
+          <span className="flex h-14 w-14 items-center justify-center rounded-full border border-[#6FA8FF]/40 bg-[rgba(108,92,231,.14)]">
+            <ShieldCheck className="h-7 w-7 text-[#6FA8FF]" strokeWidth={1.5} />
           </span>
-          <p className="max-w-[280px] text-[13px] leading-relaxed text-[#a8a3cf]">{t("rs.success")}</p>
+          <p className="max-w-[280px] text-[13px] leading-relaxed text-[#8B93A7]">{t("rs.success")}</p>
         </div>
 
         <button
@@ -86,8 +86,8 @@ export default function ReportSeller() {
   return (
     <div className="mk-sec mx-auto flex w-full flex-col gap-4 lg:max-w-3xl">
       <div className="flex items-center gap-3">
-        <span className="flex h-11 w-11 items-center justify-center rounded-full border border-[#A29BFE]/40 bg-[rgba(108,92,231,.14)]">
-          <Flag className="h-5 w-5 text-[#A29BFE]" strokeWidth={1.5} />
+        <span className="flex h-11 w-11 items-center justify-center rounded-full border border-[#6FA8FF]/40 bg-[rgba(108,92,231,.14)]">
+          <Flag className="h-5 w-5 text-[#6FA8FF]" strokeWidth={1.5} />
         </span>
         <div>
           <p className={labelCls}>{t("menu.report")}</p>
@@ -95,7 +95,7 @@ export default function ReportSeller() {
         </div>
       </div>
 
-      <div className="rounded-[26px] border border-[#A29BFE]/[.22] bg-[rgba(45,38,78,.5)] p-[18px] text-[13px] leading-relaxed text-[#a8a3cf]">
+      <div className="rounded-[26px] border border-[#6FA8FF]/[.22] bg-[rgba(45,38,78,.5)] p-[18px] text-[13px] leading-relaxed text-[#8B93A7]">
         {t("rs.desc")}
       </div>
 
@@ -138,15 +138,15 @@ export default function ReportSeller() {
                   className={
                     "flex items-center justify-between rounded-2xl border px-4 py-3 text-left text-[13px] font-semibold transition-colors duration-200 " +
                     (active
-                      ? "border-[#A29BFE]/60 bg-[rgba(108,92,231,.18)] text-foreground"
-                      : "border-ring/[.25] bg-[rgba(45,38,78,.5)] text-[#a8a3cf] hover:bg-accent/90")
+                      ? "border-[#6FA8FF]/60 bg-[rgba(108,92,231,.18)] text-foreground"
+                      : "border-ring/[.25] bg-[rgba(45,38,78,.5)] text-[#8B93A7] hover:bg-accent/90")
                   }
                 >
                   {label}
                   <span
                     className={
                       "h-2.5 w-2.5 rounded-full " +
-                      (active ? "bg-[#A29BFE] shadow-[0_0_10px_rgba(162,155,254,.9)]" : "bg-ring/30")
+                      (active ? "bg-[#6FA8FF] shadow-[0_0_10px_rgba(162,155,254,.9)]" : "bg-ring/30")
                     }
                   />
                 </button>
@@ -172,7 +172,7 @@ export default function ReportSeller() {
         type="button"
         onClick={submit}
         disabled={submitting}
-        className="flex w-full items-center justify-center gap-2 rounded-full border-0 bg-gradient-to-br from-[#6C5CE7] to-[#8E7DFF] px-[18px] py-3 text-[13px] font-semibold text-white shadow-[0_6px_18px_rgba(108,92,231,.5)] transition-opacity duration-200 hover:opacity-90 active:opacity-80 disabled:opacity-60"
+        className="flex w-full items-center justify-center gap-2 rounded-full border-0 bg-gradient-to-br from-[#2D6FFD] to-[#4C8DFF] px-[18px] py-3 text-[13px] font-semibold text-white shadow-[0_6px_18px_rgba(108,92,231,.5)] transition-opacity duration-200 hover:opacity-90 active:opacity-80 disabled:opacity-60"
       >
         <Send className="h-4 w-4" strokeWidth={1.5} />
         {submitting ? t("rs.submitting") : t("rs.submit")}
