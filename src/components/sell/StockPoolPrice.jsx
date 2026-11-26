@@ -43,7 +43,7 @@ export default function StockPoolPrice({ pool, age, value, busy, onValue, onSave
         type="button"
         onClick={onSave}
         disabled={busy}
-        className="h-8 shrink-0 cursor-pointer rounded-lg bg-gradient-to-br from-primary to-[#8E7DFF] px-3 text-[9px] font-semibold uppercase tracking-[.06em] text-primary-foreground shadow-[0_4px_12px_rgba(108,92,231,.45)] transition-opacity duration-200 hover:opacity-90 active:scale-[0.97] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:cursor-not-allowed disabled:opacity-50"
+        className="h-8 shrink-0 cursor-pointer rounded-lg bg-gradient-to-br from-primary to-[#4C8DFF] px-3 text-[9px] font-semibold uppercase tracking-[.06em] text-primary-foreground shadow-[0_4px_12px_rgba(108,92,231,.45)] transition-opacity duration-200 hover:opacity-90 active:scale-[0.97] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:cursor-not-allowed disabled:opacity-50"
       >
         {busy ? t("c.saving") : t("c.save")}
       </button>
