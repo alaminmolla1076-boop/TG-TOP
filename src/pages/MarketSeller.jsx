@@ -33,11 +33,11 @@ export default function MarketSeller() {
   }
 
   if (seller === undefined) {
-    return <p className="mk-fade text-[13px] text-[#a8a3cf]">{t("c.loading")}</p>;
+    return <p className="mk-fade text-[13px] text-[#8B93A7]">{t("c.loading")}</p>;
   }
   if (seller === null) {
     return (
-      <div className="mk-fade rounded-[22px] border border-dashed border-[#A29BFE]/30 bg-[rgba(45,38,78,.3)] p-[18px] text-[13px] text-[#a8a3cf]">
+      <div className="mk-fade rounded-[22px] border border-dashed border-[#6FA8FF]/30 bg-[rgba(45,38,78,.3)] p-[18px] text-[13px] text-[#8B93A7]">
         {t("sl.notFound")}
       </div>
     );
@@ -50,13 +50,13 @@ export default function MarketSeller() {
         <button
           type="button"
           onClick={() => navigate(-1)}
-          className="mk-fade -ml-1 flex w-fit cursor-pointer lg:col-span-2 items-center gap-1 rounded-full px-2 py-1 text-[13px] font-semibold text-[#a8a3cf] transition-colors duration-200 hover:text-[#A29BFE] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#A29BFE]"
+          className="mk-fade -ml-1 flex w-fit cursor-pointer lg:col-span-2 items-center gap-1 rounded-full px-2 py-1 text-[13px] font-semibold text-[#8B93A7] transition-colors duration-200 hover:text-[#6FA8FF] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#6FA8FF]"
         >
           <ChevronLeft className="h-4 w-4" strokeWidth={1.5} /> {t("c.back")}
         </button>
 
-        <div className="mk-cap flex items-center gap-3.5 rounded-[30px] border border-[#A29BFE]/30 bg-gradient-to-br from-[rgba(45,38,78,.85)] to-[rgba(33,28,56,.9)] p-5">
-          <div className="flex h-[52px] w-[52px] shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-[#6C5CE7] to-[#A29BFE] shadow-[0_0_0_2px_#13111C,0_0_0_4px_#6C5CE7,0_0_0_8px_rgba(108,92,231,.18)]">
+        <div className="mk-cap flex items-center gap-3.5 rounded-[30px] border border-[#6FA8FF]/30 bg-gradient-to-br from-[rgba(45,38,78,.85)] to-[rgba(33,28,56,.9)] p-5">
+          <div className="flex h-[52px] w-[52px] shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-[#2D6FFD] to-[#6FA8FF] shadow-[0_0_0_2px_#13111C,0_0_0_4px_#2D6FFD,0_0_0_8px_rgba(108,92,231,.18)]">
             {seller.photo_url ? (
               <img src={seller.photo_url} alt={seller.name} className="h-[52px] w-[52px] object-cover" />
             ) : (
@@ -69,15 +69,15 @@ export default function MarketSeller() {
             <p className="flex items-center gap-1.5 truncate text-base font-semibold text-foreground">
               {seller.name}
               {seller.is_self && (
-                <span className="shrink-0 rounded-full bg-[rgba(108,92,231,.22)] px-[7px] py-px text-[10px] font-semibold text-[#A29BFE]">
+                <span className="shrink-0 rounded-full bg-[rgba(108,92,231,.22)] px-[7px] py-px text-[10px] font-semibold text-[#6FA8FF]">
                   {t("c.you")}
                 </span>
               )}
             </p>
-            <p className="mt-0.5 truncate text-xs text-[#a8a3cf]">
+            <p className="mt-0.5 truncate text-xs text-[#8B93A7]">
               {seller.username ? `@${seller.username} · ` : ""}ID: {seller.telegram_id || seller.id.slice(0, 8)}
             </p>
-            <span className="mt-1.5 inline-block rounded-full border border-[#A29BFE]/30 bg-[rgba(108,92,231,.12)] px-[9px] py-0.5 text-[11px] font-semibold text-[#A29BFE]">
+            <span className="mt-1.5 inline-block rounded-full border border-[#6FA8FF]/30 bg-[rgba(108,92,231,.12)] px-[9px] py-0.5 text-[11px] font-semibold text-[#6FA8FF]">
               {t("sl.soldCount", { n: seller.sold ?? 0 })}
             </span>
           </div>
@@ -101,8 +101,8 @@ export default function MarketSeller() {
                 onClick={() => pool !== p.key && choosePool(p.key)}
                 className={
                   pool === p.key
-                    ? "cursor-pointer rounded-full border border-[#A29BFE]/60 bg-[rgba(108,92,231,.3)] py-2.5 text-[13px] font-semibold text-[#A29BFE] shadow-[inset_0_1px_0_rgba(255,255,255,.07)]"
-                    : "cursor-pointer rounded-full border border-[#A29BFE]/25 bg-[rgba(45,38,78,.5)] py-2.5 text-[13px] font-semibold text-[#a8a3cf] transition-[border-color,background-color] duration-200 hover:border-[#A29BFE]/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#A29BFE]"
+                    ? "cursor-pointer rounded-full border border-[#6FA8FF]/60 bg-[rgba(108,92,231,.3)] py-2.5 text-[13px] font-semibold text-[#6FA8FF] shadow-[inset_0_1px_0_rgba(255,255,255,.07)]"
+                    : "cursor-pointer rounded-full border border-[#6FA8FF]/25 bg-[rgba(45,38,78,.5)] py-2.5 text-[13px] font-semibold text-[#8B93A7] transition-[border-color,background-color] duration-200 hover:border-[#6FA8FF]/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#6FA8FF]"
                 }
               >
                 {p.label}
