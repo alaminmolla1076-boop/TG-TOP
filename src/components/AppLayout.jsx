@@ -30,7 +30,7 @@ export default function AppLayout() {
       <DesktopSidebar balance={balance} />
       <div className="lg:pl-[264px]">
         <header className="og-rise sticky top-0 z-40 lg:hidden">
-          <div className="mx-auto flex max-w-md items-center justify-between gap-2 pl-3 pr-0 pt-3">
+          <div className="mx-auto flex max-w-md items-center justify-between gap-2 pl-3 pr-0 pt-1">
             <MenuDrawer />
             {pathname === "/" ? (
               <span className="inline-flex min-w-0 items-center gap-1.5 rounded-full border border-white/10 bg-[linear-gradient(120deg,rgba(45,111,253,.16),rgba(245,196,81,.08))] px-3 py-1 text-[9px] font-semibold uppercase tracking-[.12em] text-[#A8C8FF]">
