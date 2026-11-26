@@ -20,12 +20,12 @@ export default function TopSellerCapsule({ topSeller }) {
             {topSeller?.photo_url ? (
               <img src={topSeller.photo_url} alt={topSeller?.name || "top seller"} className="h-full w-full rounded-full object-cover" />
             ) : (
-              <span className="flex h-full w-full items-center justify-center rounded-full bg-[#1B1530] text-[#F5C451]">
+              <span className="flex h-full w-full items-center justify-center rounded-full bg-[#151e30] text-[#F5C451]">
                 <Trophy className="h-6 w-6" strokeWidth={1.6} />
               </span>
             )}
           </div>
-          <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-[#F5C451]/50 bg-[#1B1530] px-1.5 py-px text-[7.5px] font-bold uppercase tracking-[.1em] text-[#F5C451]">
+          <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-[#F5C451]/50 bg-[#151e30] px-1.5 py-px text-[7.5px] font-bold uppercase tracking-[.1em] text-[#F5C451]">
             {t("mk.topSeller")}
           </span>
         </div>
@@ -36,13 +36,13 @@ export default function TopSellerCapsule({ topSeller }) {
             <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-[#4DA3FF]" strokeWidth={2.2} />
           </p>
           {topSeller?.username && (
-            <p className="mt-0.5 truncate text-[11.5px] text-[#c3bce6]">@{topSeller.username}</p>
+            <p className="mt-0.5 truncate text-[11.5px] text-[#bcc9e6]">@{topSeller.username}</p>
           )}
           <div className="mt-2.5 flex items-end gap-2">
             <span className="bg-[linear-gradient(120deg,#FFE9A8,#F5C451,#D79A2B)] bg-clip-text font-display text-[30px] font-bold leading-none text-transparent tabular-nums">
               {sold}
             </span>
-            <span className="pb-0.5 text-[10px] font-semibold uppercase tracking-[.1em] text-[#c3bce6]">
+            <span className="pb-0.5 text-[10px] font-semibold uppercase tracking-[.1em] text-[#bcc9e6]">
               {t("mk.totalSales")}
             </span>
           </div>
