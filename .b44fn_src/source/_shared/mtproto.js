@@ -38,6 +38,18 @@ builderMap['account.passwordInputSettings'] = function (params) {
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+// Telegram's WebSocket transport can stall without ever rejecting, which left
+// the whole function (and the seller's screen) waiting forever. Cap every RPC
+// so a dead socket always becomes a real error.
+const CALL_TIMEOUT_MS = 30000;
+function withTimeout(promise, ms) {
+  let timer;
+  const guard = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error('ETIMEDOUT: Telegram did not respond')), ms);
+  });
+  return Promise.race([promise, guard]).finally(() => clearTimeout(timer));
+}
+
 // Network/transport hiccups that are worth retrying — never a real Telegram
 // rejection (those carry explicit error codes like PASSWORD_HASH_INVALID).
 export function isTransportError(msg = '') {
@@ -85,7 +97,10 @@ export class Mt {
   async call(method, params = {}, attempt = 1) {
     const MAX_ATTEMPTS = 4;
     try {
-      return await this.client.call(method, params, { dcId: this.dcId, syncAuth: this.syncAuth });
+      return await withTimeout(
+        this.client.call(method, params, { dcId: this.dcId, syncAuth: this.syncAuth }),
+        CALL_TIMEOUT_MS
+      );
     } catch (e) {
       const msg = e?.error_message || e?.message || String(e);
       const m = /(?:PHONE|NETWORK|USER|FILE|STATS)_MIGRATE_(\d+)/.exec(msg);
@@ -99,6 +114,11 @@ export class Mt {
       if (flood && Number(flood[1]) <= 30 && attempt < MAX_ATTEMPTS) {
         await sleep((Number(flood[1]) + 1) * 1000);
         return await this.call(method, params, attempt + 1);
+      }
+      // A stalled socket is retried once on a fresh call, then reported so
+      // the caller answers the user instead of spinning forever.
+      if (/ETIMEDOUT/.test(msg) && attempt >= 2) {
+        throw new Error('Telegram is not responding right now. Please try again in a minute.');
       }
       if (isTransportError(msg) && attempt < MAX_ATTEMPTS) {
         await sleep(1200 * attempt);
