@@ -4,9 +4,7 @@ import { Wallet } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import DesktopSidebar from "@/components/DesktopSidebar";
 import MenuDrawer from "@/components/MenuDrawer";
-import { Image } from "@/components/ui/image";
 import { formatMoney } from "@/lib/format";
-import { LOGO_URL } from "@/lib/brand";
 import { useTgIdentity } from "@/lib/TgIdentityContext";
 import { useTelegramBackButton } from "@/lib/useTelegramBackButton";
 
@@ -30,13 +28,10 @@ export default function AppLayout() {
       <div className="lg:pl-[264px]">
         <header className="og-rise sticky top-0 z-40 bg-[#0B0D12]/70 backdrop-blur-xl lg:hidden">
           <div className="mx-auto flex max-w-md items-center justify-center px-4 py-2">
-            <Image
-              src={LOGO_URL}
+            <img
+              src="/tgtop-logo.png"
               alt="TGTOP"
-              originWidth={1055}
-              originHeight={1004}
               className="h-16 w-16 object-contain"
-              fittingType="fit"
             />
           </div>
         </header>
