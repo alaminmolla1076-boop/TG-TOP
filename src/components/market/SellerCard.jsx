@@ -115,12 +115,12 @@ export default function SellerCard({ seller, tone: toneKey = "plain", rank = nul
       </Link>
 
       <div className="relative mt-2.5 flex items-center gap-1.5">
-        <span className="flex min-w-0 flex-1 items-center justify-center gap-1 rounded-xl border border-white/[.07] bg-white/[.03] px-1.5 py-1.5 text-[8.5px] font-semibold text-[#C7CEDD]">
+        <span className="flex min-w-0 flex-1 items-center justify-center gap-0.5 rounded-xl border border-white/[.07] bg-white/[.03] px-1 py-1.5 text-[8px] font-semibold text-[#C7CEDD]">
           <ShoppingCart className="h-3 w-3 shrink-0 text-[#6FA8FF]" strokeWidth={2.2} />
           <span className="font-bold tabular-nums text-white">{person.sold || 0}</span>
           <span className="whitespace-nowrap">{t("mk.totalSell")}</span>
         </span>
-        <span className="flex min-w-0 flex-1 items-center justify-center gap-1 rounded-xl border border-white/[.07] bg-white/[.03] px-1.5 py-1.5 text-[8.5px] font-semibold text-[#C7CEDD]">
+        <span className="flex min-w-0 flex-1 items-center justify-center gap-0.5 rounded-xl border border-white/[.07] bg-white/[.03] px-1 py-1.5 text-[8px] font-semibold text-[#C7CEDD]">
           <Package className="h-3 w-3 shrink-0 text-[#F5C451]" strokeWidth={2.2} />
           <span className="font-bold tabular-nums text-white">{stock}</span>
           <span className="whitespace-nowrap">{t("mk.stockLabel")}</span>
