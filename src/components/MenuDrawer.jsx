@@ -80,7 +80,7 @@ export default function MenuDrawer() {
             to: "/admin",
             label: t("menu.admin"),
             icon: ShieldCheck,
-            tile: "from-[#4C8DFF]/35 to-[#2D6FFD]/10 text-[#DCD8FF] border-[#6FA8FF]/35",
+            tile: "from-[#4C8DFF]/35 to-[#2D6FFD]/10 text-[#dee6f9] border-[#6FA8FF]/35",
             glow: "hover:border-[#6FA8FF]/50 hover:bg-[#2D6FFD]/[.12]",
           },
         ]
@@ -131,7 +131,7 @@ export default function MenuDrawer() {
                       <span className="font-display text-[15px] font-bold leading-none tracking-[-0.01em] text-foreground">
                         TGTOP
                       </span>
-                      <span className="text-[10px] font-semibold uppercase tracking-[.2em] text-[#8d88b4]">
+                      <span className="text-[10px] font-semibold uppercase tracking-[.2em] text-[#8896b4]">
                         {t("menu.title")}
                       </span>
                     </div>
@@ -140,7 +140,7 @@ export default function MenuDrawer() {
                     type="button"
                     onClick={() => setOpen(false)}
                     aria-label={t("menu.title")}
-                    className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-white/[.1] bg-white/[.05] text-[#B7B2D9] transition-colors duration-200 hover:bg-white/[.12] hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                    className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-white/[.1] bg-white/[.05] text-[#b2bed9] transition-colors duration-200 hover:bg-white/[.12] hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                   >
                     <X className="h-4 w-4" strokeWidth={1.8} />
                   </button>
@@ -170,7 +170,7 @@ export default function MenuDrawer() {
                           {label}
                         </span>
                         <ChevronRight
-                          className="h-4 w-4 shrink-0 text-[#7a759e] transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-foreground/80"
+                          className="h-4 w-4 shrink-0 text-[#75829e] transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-foreground/80"
                           strokeWidth={1.8}
                         />
                       </Link>

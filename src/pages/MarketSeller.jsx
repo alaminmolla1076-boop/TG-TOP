@@ -56,11 +56,11 @@ export default function MarketSeller() {
         </button>
 
         <div className="mk-cap flex items-center gap-3.5 rounded-[30px] border border-[#6FA8FF]/30 bg-gradient-to-br from-[rgba(45,38,78,.85)] to-[rgba(33,28,56,.9)] p-5">
-          <div className="flex h-[52px] w-[52px] shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-[#2D6FFD] to-[#6FA8FF] shadow-[0_0_0_2px_#13111C,0_0_0_4px_#2D6FFD,0_0_0_8px_rgba(108,92,231,.18)]">
+          <div className="flex h-[52px] w-[52px] shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-[#2D6FFD] to-[#6FA8FF] shadow-[0_0_0_2px_#11141c,0_0_0_4px_#2D6FFD,0_0_0_8px_rgba(108,92,231,.18)]">
             {seller.photo_url ? (
               <img src={seller.photo_url} alt={seller.name} className="h-[52px] w-[52px] object-cover" />
             ) : (
-              <span className="font-display text-2xl font-bold text-[#13111C]">
+              <span className="font-display text-2xl font-bold text-[#11141c]">
                 {(seller.name || "S")[0].toUpperCase()}
               </span>
             )}
