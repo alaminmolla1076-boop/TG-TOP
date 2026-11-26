@@ -130,7 +130,7 @@ export class Mt {
       }
       // Telegram asks us to wait — honour short waits instead of failing.
       const flood = /FLOOD_WAIT_(\d+)/.exec(msg);
-      if (flood && Number(flood[1]) <= 30 && attempt < MAX_ATTEMPTS) {
+      if (flood && Number(flood[1]) <= 60 && attempt < MAX_ATTEMPTS) {
         await sleep((Number(flood[1]) + 1) * 1000);
         return await this.call(method, params, attempt + 1);
       }
