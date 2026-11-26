@@ -71,7 +71,7 @@ export default function DesktopSidebar({ balance }) {
         <span className="font-heading text-sm font-bold uppercase tracking-[.18em] text-ring">TGTOP</span>
       </div>
 
-      <div className="rounded-[22px] border border-ring/30 bg-gradient-to-br from-[#2D264E]/85 to-card/90 px-4 py-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,.07)]">
+      <div className="rounded-[22px] border border-ring/30 bg-gradient-to-br from-[#26334e]/85 to-card/90 px-4 py-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,.07)]">
         <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[.1em] text-ring">
           <Wallet className="h-3 w-3" strokeWidth={1.6} /> {t("a.balance")}
         </p>
@@ -90,7 +90,7 @@ export default function DesktopSidebar({ balance }) {
                     "flex h-8 w-8 shrink-0 items-center justify-center rounded-full " +
                     (isActive
                       ? "bg-gradient-to-br from-primary to-[#4C8DFF] text-white shadow-[0_4px_14px_rgba(108,92,231,.55)]"
-                      : "text-[#8d88b4]")
+                      : "text-[#8896b4]")
                   }
                 >
                   <Icon className="h-4 w-4" strokeWidth={1.5} />

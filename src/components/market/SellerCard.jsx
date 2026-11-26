@@ -15,7 +15,7 @@ export default function SellerCard({ seller }) {
         {seller.photo_url ? (
           <img src={seller.photo_url} alt={seller.name} className="h-full w-full rounded-full object-cover" />
         ) : (
-          <span className="flex h-full w-full items-center justify-center rounded-full bg-[#1B1530] text-[17px] font-bold text-[#6FA8FF]">
+          <span className="flex h-full w-full items-center justify-center rounded-full bg-[#151e30] text-[17px] font-bold text-[#6FA8FF]">
             {(seller.name || "S")[0].toUpperCase()}
           </span>
         )}
@@ -37,7 +37,7 @@ export default function SellerCard({ seller }) {
 
       <div className="grid w-full grid-cols-2 gap-1.5">
         <div className="flex flex-col items-center gap-1 rounded-xl border border-[#6FA8FF]/25 bg-[rgba(19,17,28,.5)] px-1 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,.05)]">
-          <span className="flex items-center gap-1 text-[8px] font-semibold uppercase tracking-[.07em] text-[#9a94c4]">
+          <span className="flex items-center gap-1 text-[8px] font-semibold uppercase tracking-[.07em] text-[#94a3c4]">
             <ShoppingCart className="h-2.5 w-2.5 shrink-0 text-[#6FA8FF]" strokeWidth={2.2} />
             {t("mk.totalSell")}
           </span>
@@ -46,7 +46,7 @@ export default function SellerCard({ seller }) {
           </span>
         </div>
         <div className="flex flex-col items-center gap-1 rounded-xl border border-[#F5C451]/25 bg-[rgba(19,17,28,.5)] px-1 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,.05)]">
-          <span className="flex items-center gap-1 text-[8px] font-semibold uppercase tracking-[.07em] text-[#9a94c4]">
+          <span className="flex items-center gap-1 text-[8px] font-semibold uppercase tracking-[.07em] text-[#94a3c4]">
             <Package className="h-2.5 w-2.5 shrink-0 text-[#F5C451]" strokeWidth={2.2} />
             {t("mk.stockLabel")}
           </span>
