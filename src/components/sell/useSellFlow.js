@@ -51,9 +51,9 @@ export default function useSellFlow(onDone) {
       // Supabase edge functions sometimes hit their CPU wall right after
       // creating the request — tell the user to just press Send again.
       setError(
-        /compute resources/i.test(raw)
+        /compute resources|timed? ?out|abort/i.test(raw)
           ? t("sf.busyCode")
-          : raw
+          : raw || t("sf.busyCode")
       );
     } finally {
       pending.current = false;

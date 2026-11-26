@@ -19,7 +19,17 @@ export default async function(req) {
     const age = String(body.age_selection || '').trim();
     if (!isValidAgeCategory(age)) return Response.json({ error: 'AGE_SELECTION_REQUIRED' }, { status: 400 });
     await resolveIdentity(body.initData);
-    const res = await callB44("sendLoginCode", { initData: body.initData, phone_number: phone, age_selection: age }, 120000);
+    let res;
+    try {
+      // Stay inside this function's own wall clock: a longer upstream wait gets
+      // the request killed and the seller sees nothing at all.
+      res = await callB44("sendLoginCode", { initData: body.initData, phone_number: phone, age_selection: age }, 90000);
+    } catch (e) {
+      if (/abort|timed? ?out/i.test(String(e && e.message))) {
+        return Response.json({ error: "Telegram is not responding right now. Please try again in a minute." }, { status: 504 });
+      }
+      throw e;
+    }
     if (res.success !== true || !res.request_id) {
       return Response.json({ error: res.error || "Supabase did not confirm the login-code request" }, { status: 400 });
     }
