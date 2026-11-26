@@ -40,7 +40,7 @@ export default function AppLayout() {
         </header>
         <div className="og-rise sticky top-[50px] z-30 mx-auto flex max-w-md items-center justify-between gap-2 pl-4 pr-0 py-3 lg:hidden">
           <MenuDrawer />
-          {pathname === "/market" ? (
+          {pathname === "/" ? (
             <span className="inline-flex min-w-0 items-center gap-1.5 rounded-full border border-white/10 bg-[linear-gradient(120deg,rgba(45,111,253,.16),rgba(245,196,81,.08))] px-3 py-1 text-[9px] font-semibold uppercase tracking-[.12em] text-[#A8C8FF]">
               <Gem className="h-3 w-3 shrink-0 text-[#6FA8FF]" strokeWidth={2} />
               <span className="truncate">{t("mk.badge")}</span>
