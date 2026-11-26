@@ -27,11 +27,11 @@ export default function AppLayout() {
       <DesktopSidebar balance={balance} />
       <div className="lg:pl-[264px]">
         <header className="og-rise sticky top-0 z-40 lg:hidden">
-          <div className="mx-auto flex max-w-md items-center justify-center px-4 py-2">
+          <div className="mx-auto flex max-w-md items-center justify-center px-4 pb-1 pt-4">
             <img
               src="/tgtop-logo.png"
               alt="TGTOP"
-              className="h-16 w-16 object-contain"
+              className="h-20 w-20 object-contain"
             />
           </div>
         </header>
