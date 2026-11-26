@@ -43,7 +43,7 @@ export default function Admin() {
   if (role === null) {
     return (
       <div className="flex justify-center py-10">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200/20 border-t-[#A29BFE]" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200/20 border-t-[#6FA8FF]" />
       </div>
     );
   }
@@ -65,7 +65,7 @@ export default function Admin() {
       <div className="relative z-[1] mx-auto flex w-full flex-col gap-4 lg:max-w-5xl lg:gap-6">
         <div className="adm-hd">
           <span className="adm-ic">
-            <ShieldCheck className="h-5 w-5 text-[#A29BFE]" strokeWidth={1.6} />
+            <ShieldCheck className="h-5 w-5 text-[#6FA8FF]" strokeWidth={1.6} />
           </span>
           <div>
             <p className="adm-eb">{t("menu.admin")}</p>
