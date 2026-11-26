@@ -9,16 +9,16 @@ export default function Support() {
   return (
     <div className="mk-sec mx-auto flex w-full flex-col gap-4 lg:max-w-3xl">
       <div className="flex items-center gap-3">
-        <span className="flex h-11 w-11 items-center justify-center rounded-full border border-[#A29BFE]/40 bg-[rgba(108,92,231,.14)]">
-          <LifeBuoy className="h-5 w-5 text-[#A29BFE]" strokeWidth={1.5} />
+        <span className="flex h-11 w-11 items-center justify-center rounded-full border border-[#6FA8FF]/40 bg-[rgba(108,92,231,.14)]">
+          <LifeBuoy className="h-5 w-5 text-[#6FA8FF]" strokeWidth={1.5} />
         </span>
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-[#A29BFE]">{t("sup.title")}</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-[#6FA8FF]">{t("sup.title")}</p>
           <h1 className="font-heading text-lg font-bold text-foreground">{t("sup.heading")}</h1>
         </div>
       </div>
 
-      <div className="rounded-[26px] border border-[#A29BFE]/[.22] bg-[rgba(45,38,78,.5)] p-[18px] text-[13px] leading-relaxed text-[#a8a3cf]">
+      <div className="rounded-[26px] border border-[#6FA8FF]/[.22] bg-[rgba(45,38,78,.5)] p-[18px] text-[13px] leading-relaxed text-[#8B93A7]">
         {t("sup.desc")}
       </div>
 
@@ -26,7 +26,7 @@ export default function Support() {
         href={CHANNEL_URL}
         target="_blank"
         rel="noreferrer"
-        className="flex w-full items-center justify-center gap-2 rounded-full border-0 bg-gradient-to-br from-[#6C5CE7] to-[#8E7DFF] px-[18px] py-3 text-[13px] font-semibold text-white shadow-[0_6px_18px_rgba(108,92,231,.5)] transition-opacity duration-200 hover:opacity-90 active:opacity-80"
+        className="flex w-full items-center justify-center gap-2 rounded-full border-0 bg-gradient-to-br from-[#2D6FFD] to-[#4C8DFF] px-[18px] py-3 text-[13px] font-semibold text-white shadow-[0_6px_18px_rgba(108,92,231,.5)] transition-opacity duration-200 hover:opacity-90 active:opacity-80"
       >
         <Send className="h-4 w-4" strokeWidth={1.5} />
         {t("sup.contact")}
