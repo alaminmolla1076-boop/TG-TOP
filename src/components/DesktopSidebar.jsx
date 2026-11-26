@@ -54,8 +54,8 @@ export default function DesktopSidebar({ balance }) {
   const itemClass = (isActive) =>
     "flex items-center gap-3 rounded-full border px-4 py-2.5 text-[13px] font-semibold no-underline transition-colors duration-200 " +
     (isActive
-      ? "border-ring/45 bg-[rgba(108,92,231,.24)] text-[#C9C4FF]"
-      : "border-transparent text-[#a8a3cf] hover:border-ring/25 hover:bg-accent/60 hover:text-foreground");
+      ? "border-ring/45 bg-[rgba(108,92,231,.24)] text-[#A8C8FF]"
+      : "border-transparent text-[#8B93A7] hover:border-ring/25 hover:bg-accent/60 hover:text-foreground");
 
   return (
     <aside className="fixed inset-y-0 left-0 z-40 hidden w-[264px] flex-col gap-5 overflow-y-auto border-r border-ring/[.22] bg-obsidian/[.94] px-5 py-6 backdrop-blur-md lg:flex">
@@ -89,7 +89,7 @@ export default function DesktopSidebar({ balance }) {
                   className={
                     "flex h-8 w-8 shrink-0 items-center justify-center rounded-full " +
                     (isActive
-                      ? "bg-gradient-to-br from-primary to-[#8E7DFF] text-white shadow-[0_4px_14px_rgba(108,92,231,.55)]"
+                      ? "bg-gradient-to-br from-primary to-[#4C8DFF] text-white shadow-[0_4px_14px_rgba(108,92,231,.55)]"
                       : "text-[#8d88b4]")
                   }
                 >
