@@ -32,7 +32,7 @@ export default function StatsLedger({ sold, pending, records, value, onChange })
             <span
               className={cn(
                 "flex w-full items-center gap-1 text-[9.5px] font-semibold uppercase tracking-[.1em]",
-                active ? "text-[#C9C4FF]" : "text-ring/80"
+                active ? "text-[#A8C8FF]" : "text-ring/80"
               )}
             >
               <Icon className="h-3 w-3 shrink-0" strokeWidth={1.8} />
