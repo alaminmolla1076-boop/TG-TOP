@@ -3,15 +3,15 @@ import { Gem } from "lucide-react";
 import SellerCard from "./SellerCard";
 import { useAppLang } from "@/lib/AppLanguageContext";
 
-// Market hero — the Top Account Holder wears the very same card design as every
-// seller in the directory, marked with a gem before the name.
+// Market hero — the Top Account Holder is the same seller card as everyone
+// else, with a blue gem badge.
 export default function TopHolderCapsule({ holder }) {
   const { t } = useAppLang();
   const label = t("mk.topHolder");
   return (
     <SellerCard
       seller={holder || { name: label, sold: 0 }}
-      icon={<Gem className="h-3 w-3 shrink-0 text-[#6FA8FF]" strokeWidth={2.4} aria-label={label} />}
+      badge={{ tone: "blue", label, icon: <Gem className="h-2 w-2 shrink-0" strokeWidth={2.6} /> }}
     />
   );
 }
