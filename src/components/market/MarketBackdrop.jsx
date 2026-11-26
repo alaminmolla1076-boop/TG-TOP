@@ -15,7 +15,7 @@ export default function MarketBackdrop() {
       />
       <div
         aria-hidden
-        className="fixed inset-x-0 top-0 z-0 h-[520px] bg-gradient-to-b from-[rgba(19,17,28,.2)] to-[#13111C]"
+        className="fixed inset-x-0 top-0 z-0 h-[520px] bg-gradient-to-b from-[rgba(19,17,28,.2)] to-[#11141c]"
       />
     </>
   );
