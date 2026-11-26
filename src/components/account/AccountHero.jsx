@@ -46,7 +46,7 @@ export default function AccountHero({ identity, data, onWithdraw }) {
         </div>
       </section>
 
-      <section className="nf-pod rounded-[30px] border border-ring/30 bg-gradient-to-br from-[#2D264E]/85 to-card/90 px-5 py-[22px] outline outline-[6px] outline-primary/10">
+      <section className="nf-pod rounded-[30px] border border-ring/30 bg-gradient-to-br from-[#26334e]/85 to-card/90 px-5 py-[22px] outline outline-[6px] outline-primary/10">
         <div className="text-[10px] font-semibold uppercase tracking-[.08em] text-ring">
           {t("a.balance")}
         </div>
