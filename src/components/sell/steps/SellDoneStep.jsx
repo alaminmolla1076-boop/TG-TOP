@@ -4,7 +4,7 @@ import { useAppLang } from "@/lib/AppLanguageContext";
 import AccountAgeSummary from "@/components/sell/AccountAgeSummary";
 
 const iconBadge =
-  "grid h-11 w-11 place-items-center rounded-full border border-ring/30 bg-secondary/80 text-ring shadow-[0_0_24px_-10px_#6C5CE7]";
+  "grid h-11 w-11 place-items-center rounded-full border border-ring/30 bg-secondary/80 text-ring shadow-[0_0_24px_-10px_#2D6FFD]";
 
 export default function SellDoneStep({ result, onReset }) {
   const { t } = useAppLang();
@@ -28,7 +28,7 @@ export default function SellDoneStep({ result, onReset }) {
       </p>
       <AccountAgeSummary result={result} />
       {result?.number_kind && (
-        <p className="mt-3 rounded-2xl border border-ring/30 bg-ring/[.10] p-3 text-[11px] leading-[1.55] text-[#C9C4FF]">
+        <p className="mt-3 rounded-2xl border border-ring/30 bg-ring/[.10] p-3 text-[11px] leading-[1.55] text-[#A8C8FF]">
           {t("sd.numberPrice")}
         </p>
       )}
@@ -36,7 +36,7 @@ export default function SellDoneStep({ result, onReset }) {
         <button
           type="button"
           onClick={onReset}
-          className="h-12 w-full cursor-pointer rounded-full border border-ring/40 bg-ring/[.14] text-sm font-semibold text-[#C9C4FF] transition-[opacity,background-color] duration-200 hover:bg-ring/[.24] active:scale-[0.985] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          className="h-12 w-full cursor-pointer rounded-full border border-ring/40 bg-ring/[.14] text-sm font-semibold text-[#A8C8FF] transition-[opacity,background-color] duration-200 hover:bg-ring/[.24] active:scale-[0.985] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         >
           {t("sd.another")}
         </button>
