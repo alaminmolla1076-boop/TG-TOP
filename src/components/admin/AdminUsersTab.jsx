@@ -6,7 +6,7 @@ import AdminUserRow from "./AdminUserRow";
 
 export const AdminSpinner = () => (
   <div className="flex justify-center py-10">
-    <div className="h-7 w-7 animate-spin rounded-full border-[3px] border-slate-200/20 border-t-[#A29BFE]" />
+    <div className="h-7 w-7 animate-spin rounded-full border-[3px] border-slate-200/20 border-t-[#6FA8FF]" />
   </div>
 );
 
@@ -33,7 +33,7 @@ export default function AdminUsersTab() {
   return (
     <div className="flex flex-col gap-4">
       <div className="adm-sr">
-        <Search className="h-4 w-4 shrink-0 text-[#A29BFE]" strokeWidth={1.6} />
+        <Search className="h-4 w-4 shrink-0 text-[#6FA8FF]" strokeWidth={1.6} />
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
