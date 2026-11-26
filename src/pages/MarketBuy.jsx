@@ -158,7 +158,7 @@ export default function MarketBuy() {
         </button>
 
         <div className="mk-cap flex items-center gap-3.5 rounded-[30px] border border-[#6FA8FF]/30 bg-gradient-to-br from-[rgba(45,38,78,.85)] to-[rgba(33,28,56,.9)] p-5">
-          <div className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-full border border-[#6FA8FF]/40 bg-[rgba(108,92,231,.14)] text-xl shadow-[0_0_0_2px_#13111C,0_0_0_4px_#2D6FFD,0_0_0_8px_rgba(108,92,231,.18)]">
+          <div className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-full border border-[#6FA8FF]/40 bg-[rgba(108,92,231,.14)] text-xl shadow-[0_0_0_2px_#11141c,0_0_0_4px_#2D6FFD,0_0_0_8px_rgba(108,92,231,.18)]">
             <CountryFlag iso={country.country_iso} emoji={country.flag} label={country.country_name} className="h-6 w-9 shadow-none" />
           </div>
           <div className="min-w-0">
