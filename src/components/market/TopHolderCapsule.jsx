@@ -14,7 +14,7 @@ export default function TopHolderCapsule({ holder }) {
       tone="blue"
       rank={1}
       head={{ icon: <Gem className="h-3 w-3" strokeWidth={2.2} />, label: t("mk.topHolders") }}
-      stat={{ icon: <Coins className="h-3 w-3" strokeWidth={2.4} />, value: stock, label: t("mk.holdings") }}
+      stat={{ icon: <Coins className="h-2.5 w-2.5" strokeWidth={2.6} />, value: stock, label: t("mk.holdings") }}
     />
   );
 }
