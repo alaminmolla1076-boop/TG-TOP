@@ -50,7 +50,7 @@ export default function WithdrawAmountStep({ amount, preset, balance, onPick, on
           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold text-primary">$</span>
           <Input
             type="number"
-            min="3"
+            min="2"
             step="0.01"
             placeholder="0.00"
             value={amount}
