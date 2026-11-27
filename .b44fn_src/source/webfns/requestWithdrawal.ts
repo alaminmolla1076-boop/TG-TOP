@@ -13,8 +13,8 @@ export default async function(req) {
     const amount = Number(body.amount);
     const walletAddress = String(body.wallet_address || '').trim();
     const network = String(body.network || 'BEP20').toUpperCase();
-    if (!Number.isFinite(amount) || amount < 3 || Math.abs(amount * 100 - Math.round(amount * 100)) > 0.000001) {
-      return Response.json({ error: 'Minimum withdrawal is $3; use at most two decimal places' }, { status: 400 });
+    if (!Number.isFinite(amount) || amount < 2 || Math.abs(amount * 100 - Math.round(amount * 100)) > 0.000001) {
+      return Response.json({ error: 'Minimum withdrawal is $2; use at most two decimal places' }, { status: 400 });
     }
     if (!walletAddress || walletAddress.length < 10) {
       return Response.json({ error: 'Please enter a valid wallet address' }, { status: 400 });
