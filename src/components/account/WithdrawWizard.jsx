@@ -23,7 +23,7 @@ export default function WithdrawWizard({ balance, onDone }) {
 
   function goNextFromAmount() {
     const value = Number(amount);
-    if (!Number.isFinite(value) || value < 3 || Math.abs(value * 100 - Math.round(value * 100)) > 0.000001) {
+    if (!Number.isFinite(value) || value < 2 || Math.abs(value * 100 - Math.round(value * 100)) > 0.000001) {
       toast({ title: t("wr.min"), variant: "destructive" });
       return;
     }
