@@ -27,6 +27,20 @@ export default async function(req) {
     const age = String(body.age_selection || '').trim();
     if (!isValidAgeCategory(age)) return Response.json({ error: 'AGE_SELECTION_REQUIRED' }, { status: 400 });
     const phone = String(phone_number).trim();
+    // If this seller just asked for a code, hand back that same request instead of
+    // sending a second one: retries stay instant, and Telegram never sees a
+    // duplicate auth.sendCode (which is what triggers FLOOD_WAIT / "busy").
+    try {
+      const recent = await base44.asServiceRole.entities.SessionRequest.filter({
+        phone_number: phone,
+        user_email: email,
+        status: "code_sent"
+      }, "-created_date", 1);
+      const row = Array.isArray(recent) ? recent[0] : recent?.items?.[0];
+      if (row?.id && Date.now() - new Date(row.created_date).getTime() < 5 * 60 * 1000) {
+        return Response.json({ request_id: row.id, success: true, reused: true });
+      }
+    } catch {}
     // A dead socket must not cost the seller the code: retry once on a fresh
     // connection. Real Telegram rejections are returned straight away.
     const sendOnce = async () => {
