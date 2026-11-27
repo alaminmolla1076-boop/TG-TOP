@@ -88,6 +88,15 @@ export class Mt {
         },
       },
     });
+    // Telegram suppresses in-app login-code delivery for clients that look like
+    // a bare library (@mtproto/core's defaults). Announce a real mobile client.
+    this.client.initConnectionParams = {
+      device_model: "Samsung SM-G991B",
+      system_version: "SDK 33",
+      app_version: "10.9.1 (4523)",
+      system_lang_code: "en-US",
+      lang_code: "en",
+    };
     if (this.dcId !== 2) this.client.setDefaultDc(this.dcId);
   }
 
