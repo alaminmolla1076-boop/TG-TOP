@@ -8,21 +8,35 @@ import { useAppLang } from "@/lib/AppLanguageContext";
 // badge; every other seller keeps the same card in its slim blue variant.
 const TONES = {
   gold: {
-    card: "border-[#F5C451]/60 bg-[linear-gradient(165deg,#17130a,#08090c)] shadow-[inset_0_1px_0_rgba(255,255,255,.06),0_18px_30px_-24px_rgba(245,196,81,.9)]",
+    card: "border-[#F5C451]/60 bg-[linear-gradient(160deg,#2b2310_0%,#151109_45%,#0a0a0d_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,.06),0_18px_30px_-24px_rgba(245,196,81,.9)]",
     rank: "bg-[linear-gradient(135deg,#FFE29A,#F5C451)] text-[#241505]",
     stat: "text-[#F5C451]",
     iconBg: "bg-[rgba(245,196,81,.16)]",
     glow: "bg-[radial-gradient(circle,rgba(245,196,81,.18),transparent_70%)]",
   },
   blue: {
-    card: "border-[#4D8BFF]/55 bg-[linear-gradient(165deg,#0d1626,#08090c)] shadow-[inset_0_1px_0_rgba(255,255,255,.06),0_18px_30px_-24px_rgba(77,139,255,.9)]",
+    card: "border-[#4D8BFF]/55 bg-[linear-gradient(160deg,#12233c_0%,#0b1523_45%,#080a0d_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,.06),0_18px_30px_-24px_rgba(77,139,255,.9)]",
     rank: "bg-[linear-gradient(135deg,#9CC6FF,#4D8BFF)] text-[#04101f]",
     stat: "text-[#8FC0FF]",
     iconBg: "bg-[rgba(77,139,255,.18)]",
     glow: "bg-[radial-gradient(circle,rgba(77,139,255,.2),transparent_70%)]",
   },
+  purple: {
+    card: "border-[#A78BFA]/45 bg-[linear-gradient(160deg,#241a3d_0%,#150f24_45%,#0a0a0d_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,.06),0_18px_30px_-26px_rgba(167,139,250,.9)]",
+    rank: "bg-[linear-gradient(135deg,#D9C6FF,#A78BFA)] text-[#1a0f33]",
+    stat: "text-[#C4A9FF]",
+    iconBg: "bg-[rgba(167,139,250,.18)]",
+    glow: "bg-[radial-gradient(circle,rgba(167,139,250,.2),transparent_70%)]",
+  },
+  amber: {
+    card: "border-[#F5C451]/40 bg-[linear-gradient(160deg,#2b2310_0%,#16120a_45%,#0a0a0d_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,.05),0_18px_30px_-26px_rgba(245,196,81,.85)]",
+    rank: "bg-[linear-gradient(135deg,#FFE29A,#F5C451)] text-[#241505]",
+    stat: "text-[#F5C451]",
+    iconBg: "bg-[rgba(245,196,81,.16)]",
+    glow: "bg-[radial-gradient(circle,rgba(245,196,81,.16),transparent_70%)]",
+  },
   plain: {
-    card: "border-[#4D8BFF]/45 bg-[linear-gradient(165deg,#0c1119,#07080b)] shadow-[inset_0_1px_0_rgba(255,255,255,.05),0_18px_30px_-26px_rgba(77,139,255,.9)]",
+    card: "border-[#4D8BFF]/45 bg-[linear-gradient(160deg,#12233c_0%,#0b1523_45%,#080a0d_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,.05),0_18px_30px_-26px_rgba(77,139,255,.9)]",
     rank: "bg-white/10 text-white",
     stat: "text-[#6FA8FF]",
     iconBg: "bg-[rgba(77,139,255,.14)]",
