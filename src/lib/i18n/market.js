@@ -524,6 +524,10 @@ export const MARKET = {
     en: "Top Holders", bn: "শীর্ষ হোল্ডার", zh: "顶级持有者", es: "Mayores Tenedores", hi: "शीर्ष धारक",
     ar: "أكبر الحائزين", fr: "Meilleurs Détenteurs", ru: "Топ-держатели", pt: "Maiores Detentores", de: "Top-Inhaber",
   },
+  "mk.sellerTag": {
+    en: "Seller", bn: "বিক্রেতা", zh: "卖家", es: "Vendedor", hi: "विक्रेता",
+    ar: "بائع", fr: "Vendeur", ru: "Продавец", pt: "Vendedor", de: "Verkäufer",
+  },
   "mk.salesShort": {
     en: "Sales", bn: "বিক্রি", zh: "销量", es: "Ventas", hi: "बिक्री",
     ar: "مبيعات", fr: "Ventes", ru: "Продажи", pt: "Vendas", de: "Verkäufe",
