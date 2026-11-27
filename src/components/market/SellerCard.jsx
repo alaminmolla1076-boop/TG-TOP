@@ -61,7 +61,7 @@ export default function SellerCard({ seller, tone: toneKey = "plain", rank = nul
         <span aria-hidden className={"pointer-events-none absolute -right-8 -top-10 h-20 w-20 rounded-full " + tone.glow} />
         <div className="relative flex items-center gap-1.5 border-b border-white/[.07] pb-2">
           {head ? <span className={tone.stat}>{head.icon}</span> : null}
-          <p className="min-w-0 flex-1 truncate text-[10px] font-bold uppercase tracking-[.08em] text-white">
+          <p className="min-w-0 flex-1 truncate text-[10.5px] font-semibold text-white">
             {head ? head.label : ""}
           </p>
           <a
