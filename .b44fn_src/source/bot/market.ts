@@ -9,7 +9,7 @@ import { ageCopy, ageName } from '../_shared/botAgeLabels.js';
 // The bot's Market — a direct mirror of the app's Market page: the seller
 // directory (each seller opens a Spam / Non-Spam stock choice, then their
 // country stock), products and the same purchase options (Buy 1, or Buy
-// Session Formats with quick and custom quantities — every purchase + 5%
+// Session Formats with quick and custom quantities — every purchase + 3%
 // service fee, confirmed first). Every screen is localized through
 // t(lang, ...) with English fallback.
 const QUICK_QTY = [
@@ -24,7 +24,7 @@ const QUICK_QTY = [
 ];
 const SEP = '━━━━━━━━━━━━━━━━━━';
 const SEC = (title)=>`┈┈┈┈ ${title} ┈┈┈┈`;
-const feeOf = (amount)=>Math.round(amount * 5) / 100;
+const feeOf = (amount)=>Math.round(amount * 3) / 100;
 const money = (n)=>`$${Number(n || 0).toFixed(2)}`;
 const dial = (code)=>code ? ` +${String(code).replace(/^\+/, '')}` : '';
 // Stock pools: a seller's accounts are filed as Spam or Non-Spam at login
@@ -264,7 +264,7 @@ async function formatsView(base44, user, sellerEmail, iso, pool, lang, age) {
     keyboard: kb
   };
 }
-// Confirmation with the same cost breakdown the app shows (price + 5% fee).
+// Confirmation with the same cost breakdown the app shows (price + 3% fee).
 export async function showMarketConfirm(base44, token, user, chatId, sellerEmail, iso, qty, opts = {
   }) {
   const lang = opts.lang || 'en';
