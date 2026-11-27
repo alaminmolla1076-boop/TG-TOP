@@ -13,8 +13,8 @@ import CountryFlag from "@/components/CountryFlag";
 
 const QUICK_QTY = [5, 10, 20, 50, 100, 500, 1000];
 
-// Platform service fee: $0.05 per $1 (5%) charged to the buyer on top of the price.
-const feeOf = (amount) => Math.round(amount * 5) / 100;
+// Platform service fee: $0.03 per $1 (3%) charged to the buyer on top of the price.
+const feeOf = (amount) => Math.round(amount * 3) / 100;
 
 // Capsule List — purchase page for one seller's country. Buy 1 directly, or
 // open Buy Session Formats for batch sizes 5..1000 plus a custom quantity;
