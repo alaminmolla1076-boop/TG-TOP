@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { BadgeCheck, ChevronRight, ShoppingCart, Package } from "lucide-react";
+import { BadgeCheck, ChevronRight, ShoppingCart, Package, Users } from "lucide-react";
 import { useAppLang } from "@/lib/AppLanguageContext";
 
 // Market — one premium card design for every seller. The top seller and the
@@ -99,48 +99,56 @@ export default function SellerCard({ seller, tone: toneKey = "plain", rank = nul
   }
 
   return (
-    <div className={"relative overflow-hidden rounded-[20px] border p-3 " + tone.card}>
+    <div className={"relative overflow-hidden rounded-[20px] border p-2 " + tone.card}>
       <span aria-hidden className={"pointer-events-none absolute -right-8 -top-10 h-20 w-20 rounded-full " + tone.glow} />
 
-      <Link to={profileTo} className="relative flex items-start gap-2.5 no-underline">
-        <CardAvatar seller={person} size="h-12 w-12" />
+      <div className="relative flex items-center gap-1.5 border-b border-white/[.07] pb-1">
+        <Users className="h-3 w-3 shrink-0 text-[#6FA8FF]" strokeWidth={2.2} />
+        <p className="min-w-0 flex-1 truncate text-[10.5px] font-semibold text-white">{t("mk.sellerTag")}</p>
+        <Link
+          to={profileTo}
+          className="inline-flex shrink-0 items-center gap-0.5 text-[9px] font-semibold text-[#8B93A7] no-underline transition-colors duration-200 hover:text-white"
+        >
+          {t("mk.viewProfile")}
+          <ChevronRight className="h-2.5 w-2.5 shrink-0" strokeWidth={2.6} />
+        </Link>
+      </div>
+
+      <Link to={profileTo} className="relative mt-1.5 flex items-center gap-2 no-underline">
+        <CardAvatar seller={person} size="h-9 w-9" />
         <div className="min-w-0 flex-1">
-          <p className="flex items-center gap-1 text-[12.5px] font-bold leading-tight text-white">
+          <p className="flex items-center gap-1 text-[12px] font-bold leading-tight text-white">
             <span className="truncate">{person.name}</span>
-            <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-[#4DA3FF]" strokeWidth={2.4} />
+            <BadgeCheck className="h-3 w-3 shrink-0 text-[#4DA3FF]" strokeWidth={2.4} />
           </p>
           {person.username ? (
-            <p className="truncate text-[10px] leading-tight text-[#8B93A7]">{"@" + person.username}</p>
+            <p className="truncate text-[9.5px] leading-tight text-[#8B93A7]">{"@" + person.username}</p>
           ) : person.is_self ? (
             <p className="mt-0.5 inline-flex items-center rounded-full bg-[rgba(245,196,81,.12)] px-1.5 text-[9px] font-semibold text-[#F5C451]">
               {t("c.you")}
             </p>
           ) : (
-            <p className="text-[10.5px] leading-tight text-transparent">.</p>
+            <p className="text-[9.5px] leading-tight text-transparent">.</p>
           )}
         </div>
       </Link>
 
-      <div className="relative mt-2.5 flex items-center gap-1.5">
-        <span className="flex min-w-0 flex-1 items-center justify-center gap-0.5 rounded-xl border border-white/[.07] bg-white/[.03] px-1 py-1.5 text-[8px] font-semibold text-[#C7CEDD]">
-          <ShoppingCart className="h-3 w-3 shrink-0 text-[#6FA8FF]" strokeWidth={2.2} />
+      <div className="relative mt-1 flex items-center gap-1 text-[10px] font-medium text-[#8B93A7]">
+        <span className="flex min-w-0 flex-1 items-center gap-1">
+          <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[rgba(77,139,255,.14)]">
+            <ShoppingCart className="h-3 w-3 text-[#6FA8FF]" strokeWidth={2.6} />
+          </span>
           <span className="font-bold tabular-nums text-white">{person.sold || 0}</span>
-          <span className="whitespace-nowrap">{t("mk.totalSell")}</span>
+          <span className="truncate">{t("mk.salesShort")}</span>
         </span>
-        <span className="flex min-w-0 flex-1 items-center justify-center gap-0.5 rounded-xl border border-white/[.07] bg-white/[.03] px-1 py-1.5 text-[8px] font-semibold text-[#C7CEDD]">
-          <Package className="h-3 w-3 shrink-0 text-[#F5C451]" strokeWidth={2.2} />
+        <span className="flex min-w-0 flex-1 items-center gap-1">
+          <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[rgba(245,196,81,.16)]">
+            <Package className="h-3 w-3 text-[#F5C451]" strokeWidth={2.6} />
+          </span>
           <span className="font-bold tabular-nums text-white">{stock}</span>
-          <span className="whitespace-nowrap">{t("mk.stockLabel")}</span>
+          <span className="truncate">{t("mk.stockLabel")}</span>
         </span>
       </div>
-
-      <Link
-        to={profileTo}
-        className="relative mt-2 flex w-full items-center justify-center gap-1 rounded-xl border border-[#6FA8FF]/30 bg-[rgba(45,111,253,.10)] px-2 py-2 text-[11px] font-semibold text-[#A8C8FF] no-underline transition-[background-color,border-color] duration-200 hover:border-[#6FA8FF]/55 hover:bg-[rgba(45,111,253,.20)] active:opacity-85"
-      >
-        {t("mk.viewProfile")}
-        <ChevronRight className="h-3 w-3 shrink-0" strokeWidth={2.6} />
-      </Link>
     </div>
   );
 }
