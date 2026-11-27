@@ -98,11 +98,11 @@ export const WITHDRAW = {
     ru: "Отправить запрос на вывод", pt: "Enviar Solicitação de Saque", de: "Auszahlungsanfrage senden",
   },
   "wr.min": {
-    en: "Enter at least $3 with up to two decimal places", bn: "কমপক্ষে $3 লিখুন, দশমিকের পরে সর্বোচ্চ দুই ঘর",
-    zh: "请输入至少 $3，最多两位小数", es: "Introduce al menos $3 con hasta dos decimales",
-    hi: "कम से कम $3 दर्ज करें, अधिकतम दो दशमलव स्थानों तक", ar: "أدخل 3$ على الأقل بحد أقصى منزلتين عشريتين",
-    fr: "Saisissez au moins 3 $ avec deux décimales maximum", ru: "Введите не менее $3, до двух знаков после запятой",
-    pt: "Digite pelo menos $3 com até duas casas decimais", de: "Gib mindestens 3 $ mit bis zu zwei Dezimalstellen ein",
+    en: "Enter at least $2 with up to two decimal places", bn: "কমপক্ষে $2 লিখুন, দশমিকের পরে সর্বোচ্চ দুই ঘর",
+    zh: "请输入至少 $2，最多两位小数", es: "Introduce al menos $2 con hasta dos decimales",
+    hi: "कम से कम $2 दर्ज करें, अधिकतम दो दशमलव स्थानों तक", ar: "أدخل 2$ على الأقل بحد أقصى منزلتين عشريتين",
+    fr: "Saisissez au moins 2 $ avec deux décimales maximum", ru: "Введите не менее $2, до двух знаков после запятой",
+    pt: "Digite pelo menos $2 com até duas casas decimais", de: "Gib mindestens 2 $ mit bis zu zwei Dezimalstellen ein",
   },
   "wr.insufficient": {
     en: "Insufficient balance", bn: "অপর্যাপ্ত ব্যালেন্স", zh: "余额不足", es: "Saldo insuficiente", hi: "अपर्याप्त बैलेंस",
