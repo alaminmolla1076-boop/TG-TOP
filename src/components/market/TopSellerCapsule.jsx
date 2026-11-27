@@ -14,7 +14,7 @@ export default function TopSellerCapsule({ topSeller }) {
       rank={1}
       head={{ icon: <Trophy className="h-3 w-3" strokeWidth={2.2} />, label: t("mk.topSellers") }}
       stat={{
-        icon: <TrendingUp className="h-3 w-3" strokeWidth={2.4} />,
+        icon: <TrendingUp className="h-2.5 w-2.5" strokeWidth={2.6} />,
         value: (topSeller && topSeller.sold) || 0,
         label: t("mk.salesShort"),
       }}
