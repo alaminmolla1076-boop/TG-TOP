@@ -1,5 +1,7 @@
-// Minimal ZIP archive builder (store method, no compression).
-// Returns a Uint8Array containing the complete .zip file.
+// Minimal ZIP archive builder (deflate).
+// Session files are 28 KB of mostly empty SQLite pages, so compressing them
+// keeps a whole season in a couple of kilobytes while every file still opens
+// exactly as before. Returns a Promise<Uint8Array> with the complete .zip.
 
 const crcTable = (() => {
   const table = new Uint32Array(256);
@@ -21,7 +23,12 @@ function crc32(data) {
   return (crc ^ 0xffffffff) >>> 0;
 }
 
-export function createZip(files) {
+async function deflateRaw(data) {
+  const stream = new Blob([data]).stream().pipeThrough(new CompressionStream('deflate-raw'));
+  return new Uint8Array(await new Response(stream).arrayBuffer());
+}
+
+export async function createZip(files) {
   const encoder = new TextEncoder();
   const localParts = [];
   const centralParts = [];
@@ -31,6 +38,7 @@ export function createZip(files) {
     const nameBytes = encoder.encode(file.name);
     const data = file.data instanceof Uint8Array ? file.data : new Uint8Array(file.data);
     const crc = crc32(data);
+    const packed = await deflateRaw(data);
 
     // Local file header (30 bytes + name)
     const lh = new Uint8Array(30 + nameBytes.length);
@@ -38,16 +46,16 @@ export function createZip(files) {
     lv.setUint32(0, 0x04034b50, true);
     lv.setUint16(4, 20, true);
     lv.setUint16(6, 0, true);
-    lv.setUint16(8, 0, true);
+    lv.setUint16(8, 8, true);
     lv.setUint16(10, 0, true);
     lv.setUint16(12, 0, true);
     lv.setUint32(14, crc, true);
-    lv.setUint32(18, data.length, true);
+    lv.setUint32(18, packed.length, true);
     lv.setUint32(22, data.length, true);
     lv.setUint16(26, nameBytes.length, true);
     lv.setUint16(28, 0, true);
     lh.set(nameBytes, 30);
-    localParts.push(lh, data);
+    localParts.push(lh, packed);
 
     // Central directory entry (46 bytes + name)
     const cd = new Uint8Array(46 + nameBytes.length);
@@ -56,11 +64,11 @@ export function createZip(files) {
     cv.setUint16(4, 20, true);
     cv.setUint16(6, 20, true);
     cv.setUint16(8, 0, true);
-    cv.setUint16(10, 0, true);
+    cv.setUint16(10, 8, true);
     cv.setUint16(12, 0, true);
     cv.setUint16(14, 0, true);
     cv.setUint32(16, crc, true);
-    cv.setUint32(20, data.length, true);
+    cv.setUint32(20, packed.length, true);
     cv.setUint32(24, data.length, true);
     cv.setUint16(28, nameBytes.length, true);
     cv.setUint16(30, 0, true);
@@ -72,7 +80,7 @@ export function createZip(files) {
     cd.set(nameBytes, 46);
     centralParts.push(cd);
 
-    offset += lh.length + data.length;
+    offset += lh.length + packed.length;
   }
 
   let cdSize = 0;
