@@ -23,8 +23,8 @@ export default function SellerList({ sellers, query }) {
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-2">
-          {sellers.map((s) => (
-            <SellerCard key={s.id} seller={s} />
+          {sellers.map((s, i) => (
+            <SellerCard key={s.id} seller={s} tone={["blue", "purple", "amber"][i % 3]} />
           ))}
         </div>
       )}
