@@ -382,7 +382,7 @@ export default async function(req) {
       }
       try {
         const zipFile = new File([
-          createZip(files)
+          await createZip(files)
         ], `failed_sessions_${Date.now()}.zip`, {
           type: 'application/zip'
         });
