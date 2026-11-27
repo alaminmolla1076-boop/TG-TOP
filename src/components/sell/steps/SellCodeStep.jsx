@@ -18,6 +18,7 @@ export default function SellCodeStep({ phone, code, onCode, onSubmit, ready = fa
         {t("sc.desc")}{" "}
         <strong className="font-semibold text-foreground">{phone}</strong>.
       </p>
+      <p className="mb-0 mt-2 text-[10.5px] leading-[1.55] text-muted-foreground/80">{t("sc.hint")}</p>
       <div className="mt-5 grid gap-2">
         <label htmlFor="sell-code" className="text-[11px] font-semibold text-foreground">
           {t("sc.label")}
