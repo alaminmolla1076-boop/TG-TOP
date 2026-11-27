@@ -4,7 +4,7 @@ const STRINGS = {
   en: {
     note: "+888 numbers are Fragment NFTs. Your balance is held while the seller transfers the number to your TON wallet.",
     price: "Number price",
-    fee: "Service fee (5%)",
+    fee: "Service fee (3%)",
     total: "You pay (held)",
     addressTitle: "Your TON wallet address",
     addressHint: "Paste the TON wallet (Tonkeeper / MyTonWallet / Telegram Wallet) that should receive the NFT. The seller copies this address in Fragment.",
@@ -80,7 +80,7 @@ const STRINGS = {
   zh: {
     "note": "+888 号码是 Fragment NFT。卖家将号码转入你的 TON 钱包之前，你的余额会被冻结。",
     "price": "号码价格",
-    "fee": "服务费 (5%)",
+    "fee": "服务费 (3%)",
     "total": "你支付（冻结）",
     "addressTitle": "你的 TON 钱包地址",
     "addressHint": "粘贴用于接收 NFT 的 TON 钱包（Tonkeeper / MyTonWallet / Telegram Wallet）。卖家会在 Fragment 中使用此地址。",
@@ -118,7 +118,7 @@ const STRINGS = {
   es: {
     "note": "Los números +888 son NFT de Fragment. Tu saldo queda retenido mientras el vendedor transfiere el número a tu billetera TON.",
     "price": "Precio del número",
-    "fee": "Comisión de servicio (5%)",
+    "fee": "Comisión de servicio (3%)",
     "total": "Pagas (retenido)",
     "addressTitle": "Tu dirección de billetera TON",
     "addressHint": "Pega la billetera TON (Tonkeeper / MyTonWallet / Telegram Wallet) que recibirá el NFT. El vendedor usa esta dirección en Fragment.",
@@ -156,7 +156,7 @@ const STRINGS = {
   hi: {
     "note": "+888 नंबर Fragment NFT हैं। जब तक विक्रेता नंबर आपके TON वॉलेट में ट्रांसफर नहीं करता, आपका बैलेंस होल्ड रहता है।",
     "price": "नंबर की कीमत",
-    "fee": "सेवा शुल्क (5%)",
+    "fee": "सेवा शुल्क (3%)",
     "total": "आप भुगतान करते हैं (होल्ड)",
     "addressTitle": "आपका TON वॉलेट पता",
     "addressHint": "वह TON वॉलेट (Tonkeeper / MyTonWallet / Telegram Wallet) पेस्ट करें जिसे NFT मिलना है। विक्रेता Fragment में यही पता डालता है।",
@@ -194,7 +194,7 @@ const STRINGS = {
   ar: {
     "note": "أرقام +888 هي NFT من Fragment. يتم حجز رصيدك حتى يحوّل البائع الرقم إلى محفظة TON الخاصة بك.",
     "price": "سعر الرقم",
-    "fee": "رسوم الخدمة (5%)",
+    "fee": "رسوم الخدمة (3%)",
     "total": "تدفعه (محجوز)",
     "addressTitle": "عنوان محفظة TON الخاصة بك",
     "addressHint": "الصق محفظة TON (Tonkeeper / MyTonWallet / Telegram Wallet) التي ستستقبل الـ NFT. يستخدم البائع هذا العنوان في Fragment.",
@@ -232,7 +232,7 @@ const STRINGS = {
   fr: {
     "note": "Les numéros +888 sont des NFT Fragment. Votre solde est bloqué jusqu'au transfert du numéro vers votre portefeuille TON.",
     "price": "Prix du numéro",
-    "fee": "Frais de service (5 %)",
+    "fee": "Frais de service (3 %)",
     "total": "Vous payez (bloqué)",
     "addressTitle": "Votre adresse de portefeuille TON",
     "addressHint": "Collez le portefeuille TON (Tonkeeper / MyTonWallet / Telegram Wallet) qui doit recevoir le NFT. Le vendeur utilise cette adresse dans Fragment.",
@@ -270,7 +270,7 @@ const STRINGS = {
   ru: {
     "note": "Номера +888 — это NFT Fragment. Ваш баланс удерживается, пока продавец не переведёт номер в ваш кошелёк TON.",
     "price": "Цена номера",
-    "fee": "Сервисный сбор (5%)",
+    "fee": "Сервисный сбор (3%)",
     "total": "Вы платите (удержано)",
     "addressTitle": "Адрес вашего кошелька TON",
     "addressHint": "Вставьте кошелёк TON (Tonkeeper / MyTonWallet / Telegram Wallet), который получит NFT. Продавец использует этот адрес в Fragment.",
@@ -308,7 +308,7 @@ const STRINGS = {
   pt: {
     "note": "Os números +888 são NFT da Fragment. Seu saldo fica retido até o vendedor transferir o número para sua carteira TON.",
     "price": "Preço do número",
-    "fee": "Taxa de serviço (5%)",
+    "fee": "Taxa de serviço (3%)",
     "total": "Você paga (retido)",
     "addressTitle": "Seu endereço de carteira TON",
     "addressHint": "Cole a carteira TON (Tonkeeper / MyTonWallet / Telegram Wallet) que deve receber o NFT. O vendedor usa este endereço no Fragment.",
@@ -346,7 +346,7 @@ const STRINGS = {
   de: {
     "note": "+888-Nummern sind Fragment-NFTs. Dein Guthaben wird gehalten, bis der Verkäufer die Nummer in deine TON-Wallet überträgt.",
     "price": "Preis der Nummer",
-    "fee": "Servicegebühr (5 %)",
+    "fee": "Servicegebühr (3 %)",
     "total": "Du zahlst (gehalten)",
     "addressTitle": "Deine TON-Wallet-Adresse",
     "addressHint": "Füge die TON-Wallet (Tonkeeper / MyTonWallet / Telegram Wallet) ein, die das NFT erhalten soll. Der Verkäufer nutzt diese Adresse in Fragment.",
