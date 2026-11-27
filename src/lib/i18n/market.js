@@ -516,6 +516,22 @@ export const MARKET = {
     en: "Top Account Holder", bn: "শীর্ষ অ্যাকাউন্ট হোল্ডার", zh: "顶级账户持有者", es: "Mayor Tenedor de Cuentas", hi: "शीर्ष खाता धारक",
     ar: "أكبر حائز حسابات", fr: "Meilleur Détenteur de Comptes", ru: "Топ-держатель аккаунтов", pt: "Maior Detentor de Contas", de: "Top-Kontoinhaber",
   },
+  "mk.topSellers": {
+    en: "Top Sellers", bn: "শীর্ষ বিক্রেতা", zh: "顶级卖家", es: "Mejores Vendedores", hi: "शीर्ष विक्रेता",
+    ar: "أفضل البائعين", fr: "Meilleurs Vendeurs", ru: "Топ-продавцы", pt: "Melhores Vendedores", de: "Top-Verkäufer",
+  },
+  "mk.topHolders": {
+    en: "Top Holders", bn: "শীর্ষ হোল্ডার", zh: "顶级持有者", es: "Mayores Tenedores", hi: "शीर्ष धारक",
+    ar: "أكبر الحائزين", fr: "Meilleurs Détenteurs", ru: "Топ-держатели", pt: "Maiores Detentores", de: "Top-Inhaber",
+  },
+  "mk.salesShort": {
+    en: "Sales", bn: "বিক্রি", zh: "销量", es: "Ventas", hi: "बिक्री",
+    ar: "مبيعات", fr: "Ventes", ru: "Продажи", pt: "Vendas", de: "Verkäufe",
+  },
+  "mk.holdings": {
+    en: "Holdings", bn: "হোল্ডিং", zh: "持有", es: "Tenencia", hi: "होल्डिंग",
+    ar: "حيازات", fr: "Détentions", ru: "Держания", pt: "Posse", de: "Bestand",
+  },
   "mk.totalStock": {
     en: "Accounts in Stock", bn: "স্টকে অ্যাকাউন্ট", zh: "库存账户", es: "Cuentas en stock", hi: "स्टॉक में खाते",
     ar: "حسابات متاحة", fr: "Comptes en stock", ru: "Аккаунтов в наличии", pt: "Contas em estoque", de: "Konten auf Lager",
