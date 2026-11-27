@@ -40,7 +40,7 @@ export async function deliverSeasonZip(base44, token, chatId, accountIds, replyT
   let sent = 0;
   if (files.length) {
     const zipFile = new File([
-      createZip(files)
+      await createZip(files)
     ], `sessions_${files.length}.zip`, {
       type: 'application/zip'
     });
