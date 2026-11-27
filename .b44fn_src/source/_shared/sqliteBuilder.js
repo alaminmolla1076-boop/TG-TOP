@@ -167,8 +167,11 @@ export function buildSessionFile({ authKey, dcId, port, serverAddress }) {
   const versionCells = [buildCell(8, encodeRecord([null]))];
 
   // Page 3: sessions table — dc_id (rowid), server_address, port, auth_key, takeout_id, tmp_auth_key
-  const sessionCells = keyBytes.length > 0
-    ? [buildCell(dId, encodeRecord([null, addr, prt, keyBytes, null, new Uint8Array(0)]))]
+  // dc_id is written as a real value, never left NULL: a reader that does not
+  // resolve the INTEGER PRIMARY KEY rowid alias would otherwise see no DC and
+  // refuse to connect. The rowid stays equal to it so both reads agree.
+  const sessionCells = keyBytes.length === 256
+    ? [buildCell(dId, encodeRecord([dId, addr, prt, keyBytes, null, new Uint8Array(0)]))]
     : [];
 
   // Pages 4-7: empty tables/index
