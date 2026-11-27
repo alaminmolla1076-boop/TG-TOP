@@ -5,7 +5,7 @@ import { ArrowRight } from "lucide-react";
 import { LOGOS } from "../logos";
 import { useAppLang } from "@/lib/AppLanguageContext";
 
-const PRESETS = [5, 10, 25, 50, 100, 250, 500, 1000];
+const PRESETS = [1, 5, 10, 25, 50, 100, 250, 500, 1000];
 
 export default function AmountStep({ amount, preset, onPick, onCustom, onNext }) {
   const { t } = useAppLang();
@@ -23,7 +23,7 @@ export default function AmountStep({ amount, preset, onPick, onCustom, onNext })
         </p>
       </div>
 
-      <div className="grid grid-cols-4 gap-2.5">
+      <div className="grid grid-cols-3 gap-2.5">
         {PRESETS.map((v) => (
           <button
             key={v}
@@ -59,7 +59,7 @@ export default function AmountStep({ amount, preset, onPick, onCustom, onNext })
       <Button
         type="button"
         onClick={onNext}
-        disabled={!amount}
+        disabled={!amount || Number(amount) < 1}
         className="h-12 rounded-full bg-primary text-base font-semibold text-primary-foreground shadow-lg hover:bg-primary/90"
       >
         {t("c.continue")} <ArrowRight className="h-4 w-4" />
