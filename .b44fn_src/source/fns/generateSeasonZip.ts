@@ -68,7 +68,7 @@ export default async function(req) {
     }
     const sessionCount = files.length;
     const zipFile = new File([
-      createZip(files)
+      await createZip(files)
     ], `sessions_${sessionCount}.zip`, {
       type: 'application/zip'
     });
