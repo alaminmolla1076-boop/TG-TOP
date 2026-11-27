@@ -1,5 +1,5 @@
 import React from "react";
-import { TrendingUp } from "lucide-react";
+import { TrendingUp, Trophy } from "lucide-react";
 import SellerCard from "./SellerCard";
 import { useAppLang } from "@/lib/AppLanguageContext";
 
@@ -12,10 +12,11 @@ export default function TopSellerCapsule({ topSeller }) {
       seller={topSeller || { name: t("mk.topSeller"), sold: 0 }}
       tone="gold"
       rank={1}
+      head={{ icon: <Trophy className="h-3 w-3" strokeWidth={2.2} />, label: t("mk.topSellers") }}
       stat={{
         icon: <TrendingUp className="h-3 w-3" strokeWidth={2.4} />,
         value: (topSeller && topSeller.sold) || 0,
-        label: t("mk.totalSales"),
+        label: t("mk.salesShort"),
       }}
     />
   );
