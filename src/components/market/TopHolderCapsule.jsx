@@ -1,5 +1,5 @@
 import React from "react";
-import { Coins } from "lucide-react";
+import { Coins, Gem } from "lucide-react";
 import SellerCard from "./SellerCard";
 import { useAppLang } from "@/lib/AppLanguageContext";
 
@@ -13,7 +13,8 @@ export default function TopHolderCapsule({ holder }) {
       seller={holder || { name: t("mk.topHolder"), sold: 0 }}
       tone="blue"
       rank={1}
-      stat={{ icon: <Coins className="h-3 w-3" strokeWidth={2.4} />, value: stock, label: t("mk.stockLabel") }}
+      head={{ icon: <Gem className="h-3 w-3" strokeWidth={2.2} />, label: t("mk.topHolders") }}
+      stat={{ icon: <Coins className="h-3 w-3" strokeWidth={2.4} />, value: stock, label: t("mk.holdings") }}
     />
   );
 }
