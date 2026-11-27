@@ -20,7 +20,7 @@ const TONES = {
     glow: "bg-[radial-gradient(circle,rgba(77,139,255,.2),transparent_70%)]",
   },
   plain: {
-    card: "border-[#4D8BFF]/25 bg-[linear-gradient(165deg,#0c1119,#07080b)] shadow-[inset_0_1px_0_rgba(255,255,255,.04)]",
+    card: "border-[#4D8BFF]/45 bg-[linear-gradient(165deg,#0c1119,#07080b)] shadow-[inset_0_1px_0_rgba(255,255,255,.05),0_18px_30px_-26px_rgba(77,139,255,.9)]",
     rank: "bg-white/10 text-white",
     stat: "text-[#6FA8FF]",
     glow: "bg-[radial-gradient(circle,rgba(77,139,255,.12),transparent_70%)]",
@@ -48,7 +48,7 @@ function CardAvatar({ seller, size, rank, rankClass }) {
   );
 }
 
-export default function SellerCard({ seller, tone: toneKey = "plain", rank = null, stat = null }) {
+export default function SellerCard({ seller, tone: toneKey = "plain", rank = null, stat = null, head = null }) {
   const { t } = useAppLang();
   const person = seller || {};
   const tone = TONES[toneKey] || TONES.plain;
@@ -59,17 +59,21 @@ export default function SellerCard({ seller, tone: toneKey = "plain", rank = nul
     return (
       <div className={"relative overflow-hidden rounded-[20px] border p-3 " + tone.card}>
         <span aria-hidden className={"pointer-events-none absolute -right-8 -top-10 h-20 w-20 rounded-full " + tone.glow} />
-        <div className="relative mb-1 flex justify-end">
+        <div className="relative flex items-center gap-1.5 border-b border-white/[.07] pb-2">
+          {head ? <span className={tone.stat}>{head.icon}</span> : null}
+          <p className="min-w-0 flex-1 truncate text-[10px] font-bold uppercase tracking-[.08em] text-white">
+            {head ? head.label : ""}
+          </p>
           <a
             href="#mk-sellers"
-            className="inline-flex items-center gap-0.5 text-[9px] font-semibold text-[#8B93A7] no-underline transition-colors duration-200 hover:text-white"
+            className="inline-flex shrink-0 items-center gap-0.5 text-[9px] font-semibold text-[#8B93A7] no-underline transition-colors duration-200 hover:text-white"
           >
             See All
             <ChevronRight className="h-2.5 w-2.5 shrink-0" strokeWidth={2.6} />
           </a>
         </div>
 
-        <Link to={profileTo} className="relative flex items-center gap-2.5 no-underline">
+        <Link to={profileTo} className="relative mt-2.5 flex items-center gap-2.5 no-underline">
           <CardAvatar seller={person} size="h-11 w-11" rank={rank} rankClass={tone.rank} />
           <div className="min-w-0 flex-1">
             <p className="flex items-center gap-1 text-[12.5px] font-bold leading-tight text-white">
@@ -82,9 +86,9 @@ export default function SellerCard({ seller, tone: toneKey = "plain", rank = nul
           </div>
         </Link>
 
-        <div className="relative mt-2.5 flex items-center gap-1.5 border-t border-white/[.06] pt-2 text-[10.5px] font-medium text-[#8B93A7]">
+        <div className="relative mt-2 flex items-center gap-1.5 text-[10px] font-medium text-[#8B93A7]">
           <span className={tone.stat}>{stat.icon}</span>
-          <span className="text-[12px] font-bold tabular-nums text-white">{stat.value}</span>
+          <span className="text-[12.5px] font-bold tabular-nums text-white">{stat.value}</span>
           <span className="truncate">{stat.label}</span>
         </div>
       </div>
