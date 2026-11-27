@@ -48,6 +48,23 @@ export default function useSellFlow(onDone) {
       setStep("code");
     } catch (err) {
       const raw = err.response?.data?.error || err.message || "";
+      // The code is usually already on its way when the request itself breaks
+      // ("Failed to fetch"). Asking again is safe and instant: the server returns
+      // the request it just created instead of sending a second code.
+      if (/failed to fetch|network|aborted|timed? ?out|load failed/i.test(raw)) {
+        try {
+          const { data: retry } = await invoke("sellSendCode", {
+            phone_number: phone.trim(),
+            age_selection: isNumberKind(age) ? "regular" : age
+          });
+          if (retry?.success === true && retry.request_id) {
+            setPhone(phone.trim());
+            setRequestId(retry.request_id);
+            setStep("code");
+            return;
+          }
+        } catch (_) {}
+      }
       // Supabase edge functions sometimes hit their CPU wall right after
       // creating the request — tell the user to just press Send again.
       setError(
