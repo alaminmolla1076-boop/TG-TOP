@@ -36,7 +36,13 @@ export default async function(req) {
         api_id: Number(API_ID),
         api_hash: API_HASH,
         settings: {
-          _: 'codeSettings'
+          _: 'codeSettings',
+          // Official Telegram apps (and Telegram X) request the code as an
+          // in-app message from the "Telegram" service chat. Without this flag
+          // Telegram falls back to SMS, which it stopped sending to
+          // third-party api_ids in February 2023: the call still succeeds, so
+          // the seller waits forever for a code Telegram never sent.
+          allow_app_hash: true
         }
       });
     };
@@ -66,6 +72,19 @@ export default async function(req) {
         });
       }
     }
+    // Telegram may still answer with the SMS / flash-call channel on the first
+    // attempt. A third-party api_id cannot receive those, so ask once more and
+    // let Telegram switch to the in-app channel before giving up.
+    const channel = String(sentCode?.type?._ || '');
+    if (/sentCodeTypeSms|sentCodeTypeFlashCall|sentCodeTypeCall/.test(channel)) {
+      try {
+        const resent = await mt.call('auth.resendCode', {
+          phone_number: phone,
+          phone_code_hash: String(sentCode?.phone_code_hash || '')
+        });
+        if (resent?.phone_code_hash) sentCode = resent;
+      } catch {}
+    }
     const sessionString = await mt.save();
     const sr = await base44.asServiceRole.entities.SessionRequest.create({
       phone_number: phone,
@@ -77,7 +96,8 @@ export default async function(req) {
     });
     return Response.json({
       request_id: sr.id,
-      success: true
+      success: true,
+      delivery: String(sentCode?.type?._ || '')
     });
   } catch (error) {
     return Response.json({

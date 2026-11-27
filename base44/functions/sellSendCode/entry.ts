@@ -15,12 +15,17 @@ export default async function(req) {
       return Response.json({ error: "Enter the number in international format, e.g. +8801XXXXXXXXX" }, { status: 400 });
     }
 
+    const ageSelection = String(body.age_selection || "").trim();
     const identity = await resolveIdentity(body.initData);
-    const res = await callB44("sendLoginCode", { initData: body.initData, phone_number: phone }, 120000);
+    const res = await callB44(
+      "sendLoginCode",
+      { initData: body.initData, phone_number: phone, ...(ageSelection ? { age_selection: ageSelection } : {}) },
+      120000
+    );
     if (res.success !== true || !res.request_id) {
       return Response.json({ error: res.error || "Supabase did not confirm the login-code request" }, { status: 400 });
     }
-    return Response.json({ success: res.success, request_id: res.request_id });
+    return Response.json({ success: res.success, request_id: res.request_id, delivery: res.delivery || "" });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 400 });
   }
