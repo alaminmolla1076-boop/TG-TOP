@@ -7,7 +7,7 @@ import { escrowT } from "@/components/escrow/strings";
 import { formatMoney } from "@/lib/format";
 
 // Buys one +888 number through the on-chain escrow: the order holds the price
-// plus the 5% service fee, then the buyer submits the TON wallet that must
+// plus the 3% service fee, then the buyer submits the TON wallet that must
 // receive the Fragment NFT. Nothing is paid to the seller until an admin
 // verifies the transfer.
 export default function EscrowBuyDialog({ number, open, onClose, onDone }) {
@@ -20,7 +20,7 @@ export default function EscrowBuyDialog({ number, open, onClose, onDone }) {
   const [error, setError] = useState("");
 
   const price = Number(number?.price || 0);
-  const fee = Math.round(price * 5) / 100;
+  const fee = Math.round(price * 3) / 100;
   const total = Math.round((price + fee) * 100) / 100;
 
   function close() {
