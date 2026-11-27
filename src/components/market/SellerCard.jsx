@@ -11,18 +11,21 @@ const TONES = {
     card: "border-[#F5C451]/60 bg-[linear-gradient(165deg,#17130a,#08090c)] shadow-[inset_0_1px_0_rgba(255,255,255,.06),0_18px_30px_-24px_rgba(245,196,81,.9)]",
     rank: "bg-[linear-gradient(135deg,#FFE29A,#F5C451)] text-[#241505]",
     stat: "text-[#F5C451]",
+    iconBg: "bg-[rgba(245,196,81,.16)]",
     glow: "bg-[radial-gradient(circle,rgba(245,196,81,.18),transparent_70%)]",
   },
   blue: {
     card: "border-[#4D8BFF]/55 bg-[linear-gradient(165deg,#0d1626,#08090c)] shadow-[inset_0_1px_0_rgba(255,255,255,.06),0_18px_30px_-24px_rgba(77,139,255,.9)]",
     rank: "bg-[linear-gradient(135deg,#9CC6FF,#4D8BFF)] text-[#04101f]",
     stat: "text-[#8FC0FF]",
+    iconBg: "bg-[rgba(77,139,255,.18)]",
     glow: "bg-[radial-gradient(circle,rgba(77,139,255,.2),transparent_70%)]",
   },
   plain: {
     card: "border-[#4D8BFF]/45 bg-[linear-gradient(165deg,#0c1119,#07080b)] shadow-[inset_0_1px_0_rgba(255,255,255,.05),0_18px_30px_-26px_rgba(77,139,255,.9)]",
     rank: "bg-white/10 text-white",
     stat: "text-[#6FA8FF]",
+    iconBg: "bg-[rgba(77,139,255,.14)]",
     glow: "bg-[radial-gradient(circle,rgba(77,139,255,.12),transparent_70%)]",
   },
 };
@@ -57,9 +60,9 @@ export default function SellerCard({ seller, tone: toneKey = "plain", rank = nul
 
   if (stat) {
     return (
-      <div className={"relative overflow-hidden rounded-[20px] border p-3 " + tone.card}>
+      <div className={"relative overflow-hidden rounded-[20px] border p-2.5 " + tone.card}>
         <span aria-hidden className={"pointer-events-none absolute -right-8 -top-10 h-20 w-20 rounded-full " + tone.glow} />
-        <div className="relative flex items-center gap-1.5 border-b border-white/[.07] pb-2">
+        <div className="relative flex items-center gap-1.5 border-b border-white/[.07] pb-1.5">
           {head ? <span className={tone.stat}>{head.icon}</span> : null}
           <p className="min-w-0 flex-1 truncate text-[10.5px] font-semibold text-white">
             {head ? head.label : ""}
@@ -73,8 +76,8 @@ export default function SellerCard({ seller, tone: toneKey = "plain", rank = nul
           </a>
         </div>
 
-        <Link to={profileTo} className="relative mt-2.5 flex items-center gap-2.5 no-underline">
-          <CardAvatar seller={person} size="h-11 w-11" rank={rank} rankClass={tone.rank} />
+        <Link to={profileTo} className="relative mt-2 flex items-center gap-2.5 no-underline">
+          <CardAvatar seller={person} size="h-10 w-10" rank={rank} rankClass={tone.rank} />
           <div className="min-w-0 flex-1">
             <p className="flex items-center gap-1 text-[12.5px] font-bold leading-tight text-white">
               <span className="truncate">{person.name}</span>
@@ -86,8 +89,8 @@ export default function SellerCard({ seller, tone: toneKey = "plain", rank = nul
           </div>
         </Link>
 
-        <div className="relative mt-2 flex items-center gap-1.5 text-[10px] font-medium text-[#8B93A7]">
-          <span className={tone.stat}>{stat.icon}</span>
+        <div className="relative mt-1.5 flex items-center gap-1 text-[10px] font-medium text-[#8B93A7]">
+          <span className={"flex h-4 w-4 shrink-0 items-center justify-center rounded-full " + tone.iconBg}>{stat.icon}</span>
           <span className="text-[12.5px] font-bold tabular-nums text-white">{stat.value}</span>
           <span className="truncate">{stat.label}</span>
         </div>
