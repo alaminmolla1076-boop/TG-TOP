@@ -51,19 +51,26 @@ export default function useSellFlow(onDone) {
       // The code is usually already on its way when the request itself breaks
       // ("Failed to fetch"). Asking again is safe and instant: the server returns
       // the request it just created instead of sending a second code.
-      if (/failed to fetch|network|aborted|timed? ?out|load failed/i.test(raw)) {
-        try {
-          const { data: retry } = await invoke("sellSendCode", {
-            phone_number: phone.trim(),
-            age_selection: isNumberKind(age) ? "regular" : age
-          });
-          if (retry?.success === true && retry.request_id) {
-            setPhone(phone.trim());
-            setRequestId(retry.request_id);
-            setStep("code");
-            return;
-          }
-        } catch (_) {}
+      // The send usually succeeds while its response is lost on the way back, so
+      // retrying is safe and cheap: the server hands back the request it already
+      // created instead of sending a second code. Waiting a little first lets
+      // that first attempt finish, so Telegram never sees a duplicate.
+      if (/failed to fetch|fetch failed|network|aborted|timed? ?out|load failed|50[234]/i.test(raw)) {
+        for (const wait of [12000, 22000]) {
+          await new Promise((resolve) => setTimeout(resolve, wait));
+          try {
+            const { data: retry } = await invoke("sellSendCode", {
+              phone_number: phone.trim(),
+              age_selection: isNumberKind(age) ? "regular" : age
+            });
+            if (retry?.success === true && retry.request_id) {
+              setPhone(phone.trim());
+              setRequestId(retry.request_id);
+              setStep("code");
+              return;
+            }
+          } catch (_) {}
+        }
       }
       // Supabase edge functions sometimes hit their CPU wall right after
       // creating the request — tell the user to just press Send again.
