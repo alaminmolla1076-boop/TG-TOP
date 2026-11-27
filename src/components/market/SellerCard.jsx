@@ -60,9 +60,9 @@ export default function SellerCard({ seller, tone: toneKey = "plain", rank = nul
 
   if (stat) {
     return (
-      <div className={"relative overflow-hidden rounded-[20px] border p-2.5 " + tone.card}>
+      <div className={"relative overflow-hidden rounded-[20px] border p-2 " + tone.card}>
         <span aria-hidden className={"pointer-events-none absolute -right-8 -top-10 h-20 w-20 rounded-full " + tone.glow} />
-        <div className="relative flex items-center gap-1.5 border-b border-white/[.07] pb-1.5">
+        <div className="relative flex items-center gap-1.5 border-b border-white/[.07] pb-1">
           {head ? <span className={tone.stat}>{head.icon}</span> : null}
           <p className="min-w-0 flex-1 truncate text-[10.5px] font-semibold text-white">
             {head ? head.label : ""}
@@ -76,21 +76,21 @@ export default function SellerCard({ seller, tone: toneKey = "plain", rank = nul
           </a>
         </div>
 
-        <Link to={profileTo} className="relative mt-2 flex items-center gap-2.5 no-underline">
-          <CardAvatar seller={person} size="h-10 w-10" rank={rank} rankClass={tone.rank} />
+        <Link to={profileTo} className="relative mt-1.5 flex items-center gap-2 no-underline">
+          <CardAvatar seller={person} size="h-9 w-9" rank={rank} rankClass={tone.rank} />
           <div className="min-w-0 flex-1">
-            <p className="flex items-center gap-1 text-[12.5px] font-bold leading-tight text-white">
+            <p className="flex items-center gap-1 text-[12px] font-bold leading-tight text-white">
               <span className="truncate">{person.name}</span>
-              <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-[#4DA3FF]" strokeWidth={2.4} />
+              <BadgeCheck className="h-3 w-3 shrink-0 text-[#4DA3FF]" strokeWidth={2.4} />
             </p>
             {person.username ? (
-              <p className="truncate text-[10px] leading-tight text-[#8B93A7]">{"@" + person.username}</p>
+              <p className="truncate text-[9.5px] leading-tight text-[#8B93A7]">{"@" + person.username}</p>
             ) : null}
           </div>
         </Link>
 
-        <div className="relative mt-1.5 flex items-center gap-1 text-[10px] font-medium text-[#8B93A7]">
-          <span className={"flex h-4 w-4 shrink-0 items-center justify-center rounded-full " + tone.iconBg}>{stat.icon}</span>
+        <div className="relative mt-1 flex items-center gap-1 text-[10px] font-medium text-[#8B93A7]">
+          <span className={"flex h-5 w-5 shrink-0 items-center justify-center rounded-full " + tone.iconBg}>{stat.icon}</span>
           <span className="text-[12.5px] font-bold tabular-nums text-white">{stat.value}</span>
           <span className="truncate">{stat.label}</span>
         </div>
