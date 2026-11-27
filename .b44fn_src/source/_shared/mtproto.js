@@ -259,46 +259,58 @@ export async function setTwoFactor(mt, newPassword, currentPassword = '', hint =
 }
 
 // Removes the 2FA password from an authenticated account.
-// core.telegram.org/api/srp: removal = new_algo passwordKdfAlgoUnknown and an
-// empty new_password_hash.
+// core.telegram.org/api/srp: removal = new_algo passwordKdfAlgoUnknown with an
+// empty new_password_hash. Telegram has accepted both the "empty hash" and the
+// "algo only" shape over time, so both are tried, and the result is confirmed
+// on the same connection before returning.
 export async function removeTwoFactor(mt, currentPassword) {
-  const pwd = await mt.call('account.getPassword', {});
-  if (!pwd.has_password) return;
+  let state = await mt.call('account.getPassword', {});
+  if (!state.has_password) return true;
 
-  // Accounts whose password hash never reached Telegram (builds that dropped
-  // it while serializing new_settings) only verify with an empty password, so
-  // fall back to it when the stored one is rejected.
-  const candidates = currentPassword ? [currentPassword, ''] : [''];
+  // Passwords this account may have been stored with: as given, trimmed, and
+  // empty (accounts whose hash never reached Telegram).
+  const candidates = [];
+  for (const value of [currentPassword, String(currentPassword || '').trim(), '']) {
+    if (!candidates.includes(value)) candidates.push(value);
+  }
+
   let lastError;
   for (const candidate of candidates) {
-    let password;
-    try {
-      password = await srpCheck(pwd, candidate);
-    } catch (e) {
-      lastError = e;
-      continue;
-    }
-    try {
-      await applyPasswordRemoval(mt, pwd, password);
-      return;
-    } catch (e) {
-      lastError = e;
-      // Only a rejected proof moves on to the next candidate; FLOOD_WAIT and
-      // transport failures must abort instead of hammering the account.
-      if (!/PASSWORD_HASH_INVALID/i.test(errorMessageOf(e))) throw normalizeError(e);
+    for (let round = 0; round < 2; round++) {
+      let password;
+      try {
+        password = await srpCheck(state, candidate);
+      } catch (e) {
+        lastError = e;
+        break;
+      }
+      try {
+        await applyPasswordRemoval(mt, password);
+        return true;
+      } catch (e) {
+        lastError = e;
+        const message = errorMessageOf(e);
+        if (/SRP_ID_INVALID|SRP_ID_EXPIRED/i.test(message)) {
+          // Telegram rotated the SRP id mid-flight: rebuild the proof once.
+          state = await mt.call('account.getPassword', {});
+          if (!state.has_password) return true;
+          continue;
+        }
+        // Only a rejected proof means "wrong password": move to the next one.
+        if (/PASSWORD_HASH_INVALID/i.test(message)) break;
+        throw normalizeError(e);
+      }
     }
   }
   throw normalizeError(lastError);
 }
 
-// Sends the removal request and proves against Telegram that it worked.
-async function applyPasswordRemoval(mt, pwd, password) {
+// Sends the removal request in every shape Telegram accepts and confirms with
+// Telegram itself that the cloud password is really gone.
+export async function applyPasswordRemoval(mt, password) {
   const variants = [
-    // Canonical removal: passwordKdfAlgoUnknown with no new hash.
-    {
-      _: 'account.passwordInputSettings',
-      new_algo: { _: 'passwordKdfAlgoUnknown' },
-    },
+    { _: 'account.passwordInputSettings', new_algo: { _: 'passwordKdfAlgoUnknown' }, new_password_hash: new Uint8Array(0) },
+    { _: 'account.passwordInputSettings', new_algo: { _: 'passwordKdfAlgoUnknown' } },
   ];
 
   let lastError;
@@ -307,11 +319,9 @@ async function applyPasswordRemoval(mt, pwd, password) {
       await mt.call('account.updatePasswordSettings', { password, new_settings });
     } catch (e) {
       lastError = e;
-      if (/PASSWORD_HASH_INVALID/i.test(errorMessageOf(e))) throw normalizeError(e);
+      if (/PASSWORD_HASH_INVALID|SRP_ID_INVALID|SRP_ID_EXPIRED|FLOOD_WAIT/i.test(errorMessageOf(e))) throw normalizeError(e);
       continue;
     }
-    // Verify against Telegram itself — only a has_password=false reply proves
-    // the cloud password is really gone.
     const after = await mt.call('account.getPassword', {});
     if (!after.has_password) return;
     lastError = new Error('2FA still active after removal');
