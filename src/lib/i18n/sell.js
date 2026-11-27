@@ -209,6 +209,18 @@ export const SELL = {
     ar: "أدخل الرمز من تيليجرام لرقم", fr: "Saisissez le code de Telegram pour",
     ru: "Введите код из Telegram для", pt: "Digite o código do Telegram para", de: "Gib den Code von Telegram ein für",
   },
+  "sc.hint": {
+    en: "The code arrives as a message from the \u201cTelegram\u201d service chat inside the app on that number, not always by SMS. If it has not arrived, go back and send it again.",
+    bn: "কোডটি সবসময় SMS-এ আসে না — ওই নম্বরের Telegram অ্যাপে \u201cTelegram\u201d সার্ভিস চ্যাটে মেসেজ হিসেবে আসে। না এলে ফিরে গিয়ে আবার পাঠান।",
+    zh: "验证码通常以“Telegram”服务聊天消息的形式发送到该号码的 Telegram 应用中，不一定通过短信。若未收到，请返回重新发送。",
+    es: "El código llega como mensaje del chat de servicio \u201cTelegram\u201d dentro de la app de ese número, no siempre por SMS. Si no llega, vuelve y envíalo de nuevo.",
+    hi: "कोड अक्सर उस नंबर के Telegram ऐप में \u201cTelegram\u201d सर्विस चैट के संदेश के रूप में आता है, हमेशा SMS से नहीं। न आए तो वापस जाकर फिर भेजें।",
+    ar: "يصل الرمز كرسالة من محادثة خدمة \u201cTelegram\u201d داخل تطبيق ذلك الرقم، وليس دائمًا برسالة نصية. إن لم يصل، ارجع وأرسله مرة أخرى.",
+    fr: "Le code arrive en message du chat de service \u201cTelegram\u201d dans l'app de ce numéro, pas toujours par SMS. S'il n'arrive pas, revenez et renvoyez-le.",
+    ru: "Код приходит сообщением от сервисного чата \u201cTelegram\u201d в приложении этого номера, не всегда по SMS. Если он не пришёл, вернитесь и отправьте снова.",
+    pt: "O código chega como mensagem do chat de serviço \u201cTelegram\u201d no app desse número, nem sempre por SMS. Se não chegar, volte e envie de novo.",
+    de: "Der Code kommt als Nachricht des \u201cTelegram\u201d-Service-Chats in der App dieser Nummer, nicht immer per SMS. Falls er nicht ankommt, geh zurück und sende ihn erneut.",
+  },
   "sc.label": {
     en: "Login Code", bn: "লগইন কোড", zh: "登录验证码", es: "Código de Inicio", hi: "लॉगिन कोड",
     ar: "رمز الدخول", fr: "Code de connexion", ru: "Код входа", pt: "Código de Login", de: "Login-Code",
